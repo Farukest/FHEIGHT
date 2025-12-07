@@ -237,14 +237,20 @@ var TutorialLessonsLayout = Backbone.Marionette.LayoutView.extend({
       });
 
       return Promise.all(challengeCompletionPromises)
-        .bind(this)
         .then(function () {
           return NewPlayerManager.getInstance().updateCoreState();
         }).then(function () {
           NavigationManager.getInstance().destroyDialogView();
           NavigationManager.getInstance().requestUserTriggeredExit();
+        }).catch(function (error) {
+          console.error('Tutorial skip error:', error);
+          NavigationManager.getInstance().destroyDialogView();
+          NavigationManager.getInstance().requestUserTriggeredExit();
         });
-    }.bind(this));
+    }.bind(this)).catch(function (error) {
+      // User cancelled the dialog or other error
+      console.log('Tutorial skip cancelled or error:', error);
+    });
   },
 
   onMouseEnterLesson: function () {

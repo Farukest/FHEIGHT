@@ -12,7 +12,7 @@ var RiftRunDeck = SlidingPanelItemView.extend({
   template: Templ,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
 
     var levelUpRequirement = RiftHelper.pointsRequiredForLevel(data.rift_level + 1);
     var pointsSoFar = data.rift_points - RiftHelper.totalPointsForLevel(data.rift_level);

@@ -33,7 +33,7 @@ var ProfileMatchHistoryCollectionView = Backbone.Marionette.ItemView.extend({
   },
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     _.each(data.matchHistory, function (row) {
       if (row.game_type == SDK.GameType.SinglePlayer) {
         row.game_type = 'practice';

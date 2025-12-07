@@ -66,7 +66,7 @@ var ProfileLayout = Backbone.Marionette.LayoutView.extend({
   _requestId: null,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     data.isViewingBuddyProfile = model.userId != null;
     if (!data.isViewingBuddyProfile) {
       data.season_count = Math.floor(moment.duration(moment().utc().valueOf() - data.created_at).asMonths());

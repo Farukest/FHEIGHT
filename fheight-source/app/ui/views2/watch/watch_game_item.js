@@ -32,7 +32,7 @@ var WatchGameItemView = Backbone.Marionette.ItemView.extend({
   _loadingPromise: null,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     var readItems = Storage.get('watched_game_ids');
     if (_.includes(readItems, data.id)) {
       data.is_read = true;

@@ -56,7 +56,7 @@ var QuestLogLayout = Backbone.Marionette.LayoutView.extend({
   /* region MODEL to VIEW DATA */
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     data.first_win_of_the_day_available = this.isFirstWinOfTheDayAvailable();
     data.first_win_gold_amount = CONFIG.FIRST_WIN_OF_DAY_GOLD_REWARD;
     data.is_first_win_visible = NewPlayerManager.getInstance().canSeeFirstWinOfTheDay();

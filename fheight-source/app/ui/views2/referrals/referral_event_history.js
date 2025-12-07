@@ -15,7 +15,7 @@ var ReferralEventHistoryView = Backbone.Marionette.ItemView.extend({
   template: Template,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     _.each(data.eventHistory, function (row) {
       row.updated_at = row.updated_at || row.created_at;
       switch (row.level_reached) {

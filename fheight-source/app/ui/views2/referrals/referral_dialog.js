@@ -35,7 +35,7 @@ var ReferralDialogView = Backbone.Marionette.ItemView.extend({
   },
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     data.username = ProfileManager.getInstance().get('username');
     if (data.stats) {
       data.percent_silver = Math.round(100 * (data.stats.silver / data.stats.signups)) || 0;

@@ -35,7 +35,7 @@ var SelectedCardLayout = Backbone.Marionette.LayoutView.extend({
   },
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
 
     // get lore for card id
     var baseCardId = this.model.get('baseCardId');

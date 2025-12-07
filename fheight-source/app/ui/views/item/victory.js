@@ -134,7 +134,7 @@ var VictoryItemView = Backbone.Marionette.ItemView.extend({
   /* region MODEL to VIEW DATA */
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
 
     var winningPlayer = SDK.GameSession.getInstance().getWinner();
     var isFriendly = SDK.GameSession.getInstance().isFriendly();

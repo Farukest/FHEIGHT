@@ -12,7 +12,7 @@ var ArenaRunDeck = SlidingPanelItemView.extend({
   template: Templ,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
 
     if (data.ended_at == null) {
       data.status_text = 'CURRENT';

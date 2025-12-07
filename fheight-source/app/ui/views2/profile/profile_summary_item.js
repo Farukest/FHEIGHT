@@ -12,7 +12,7 @@ var ProfileSummaryView = Backbone.Marionette.ItemView.extend({
   template: ProfileSummaryViewTempl,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
 
     if (!_.isNumber(data.currentSeasonRank.rank)) { data.currentSeasonRank.rank = 30; }
     if (!_.isNumber(data.currentSeasonRank.win_streak)) { data.currentSeasonRank.win_streak = 0; }

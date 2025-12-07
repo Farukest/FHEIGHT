@@ -12,7 +12,7 @@ var ProfileFactionLevelCollectionView = Backbone.Marionette.ItemView.extend({
   template: Template,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
 
     // ensure all factions are present
     var factionProgressionKeys = Object.keys(data.factionProgression);

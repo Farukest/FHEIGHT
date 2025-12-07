@@ -87,7 +87,7 @@ var MainMenuItemView = Backbone.Marionette.ItemView.extend({
   _stopLoadingSceneTimeoutId: null,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
 
     if (ProgressionManager.getInstance().getHasActiveBossEvent() && NewPlayerManager.getInstance().canPlayBossBattle()) {
       data.boss_battle = ProgressionManager.getInstance().getCurrentBossEventModels()[0].toJSON();

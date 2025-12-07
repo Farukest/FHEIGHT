@@ -18,7 +18,7 @@ var RibbonItemView = Backbone.Marionette.ItemView.extend({
   tagName: 'li',
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     var ribbonData = SDK.RibbonFactory.ribbonForIdentifier(data.ribbon_id);
     data.img_src = ribbonData.rsx.img;
     data.show_count = data.count > 1;
@@ -40,7 +40,7 @@ var GamePlayerProfilePreview = Backbone.Marionette.CompositeView.extend({
   childViewContainer: '.ribbons',
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     if (SDK.GameSession.getInstance().isSinglePlayer()) {
       data.username = i18next.t('battle.your_name_default_label');
     } else {

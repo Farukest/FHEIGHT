@@ -10,7 +10,7 @@ var ProfileRankHistoryCollectionView = Backbone.Marionette.ItemView.extend({
   template: ProfileRankHistoryCollectionViewTempl,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     var pastTwelveSeasons = [];
     for (var i = 0; i < 12; i++) {
       var startingAt = moment.utc().subtract(i, 'months').startOf('month');

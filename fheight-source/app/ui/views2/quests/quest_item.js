@@ -20,7 +20,7 @@ var QuestItemView = Backbone.Marionette.ItemView.extend({
   },
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     var quest = QuestFactory.questForIdentifier(data.quest_type_id);
 
     if (quest) {

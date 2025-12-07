@@ -40,7 +40,7 @@ var ShopProductItemView = Backbone.Marionette.ItemView.extend({
   _loadedPkgValid: false,
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     data.spirit_cost = data.rarity_id ? SDK.RarityFactory.rarityForIdentifier(data.rarity_id).spiritCostCosmetic : 0;
     var saleModel = ShopManager.getInstance().getActiveShopSaleModelForSku(data.sku);
 

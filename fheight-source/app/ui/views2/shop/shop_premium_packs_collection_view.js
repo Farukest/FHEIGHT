@@ -42,7 +42,7 @@ var ShopPremiumPacksCollectionView = Backbone.Marionette.ItemView.extend({
   },
 
   serializeModel: function (model) {
-    var data = model.toJSON.apply(model, _.rest(arguments));
+    var data = model.toJSON.apply(model, [].slice.call(arguments, 1));
     return data;
   },
 

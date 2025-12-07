@@ -9535,7 +9535,7 @@ for (var cosmeticIdKey in cosmeticIdKeys) {
       if (CosmeticsFactory._cachedCosmeticsForTypeAndSubType[type][subType] == null) { CosmeticsFactory._cachedCosmeticsForTypeAndSubType[type][subType] = []; }
       CosmeticsFactory._cachedCosmeticsForTypeAndSubType[type][subType].push(cosmeticData);
 
-      if (!_.contains(CosmeticsFactory._cachedCosmeticSubTypesByType[type],subType)) {
+      if (!_.includes(CosmeticsFactory._cachedCosmeticSubTypesByType[type],subType)) {
         CosmeticsFactory._cachedCosmeticSubTypesByType[type].push(subType);
       }
     }

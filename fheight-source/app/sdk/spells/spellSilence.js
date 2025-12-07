@@ -46,7 +46,7 @@ class SpellSilence extends Spell {
       // both tiles and units can be dispelled
       if ((entity != null) && ((entity.getType() === CardType.Tile) || (entity.getType() === CardType.Unit))) {
         // only add the position as valid once, for the first
-        if (!_.contains(silenceableEntities, entity)) {
+        if (!_.includes(silenceableEntities, entity)) {
           silenceableEntities.push(entity);
         }
       }

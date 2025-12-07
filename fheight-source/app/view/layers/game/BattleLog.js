@@ -155,7 +155,7 @@ const BattleLog = BaseLayer.extend({
    */
   getIsValidEntry(step) {
     if (step != null) {
-      if (!_.contains(this._stepsProcessed, step)) {
+      if (!_.includes(this._stepsProcessed, step)) {
         const action = step.getAction();
         return action instanceof SDK.PlayCardFromHandAction || action instanceof SDK.PlaySignatureCardAction;
       }

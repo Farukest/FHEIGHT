@@ -36,7 +36,7 @@ class ModifierDealOrTakeDamageWatchRandomTeleportOther extends ModifierDealOrTak
       targetToTeleport = action.getTarget();
     }
 
-    if ((targetToTeleport != null) && !_.contains(this._private.cardIndicesTeleported, targetToTeleport.getIndex())) {
+    if ((targetToTeleport != null) && !_.includes(this._private.cardIndicesTeleported, targetToTeleport.getIndex())) {
       this._private.cardIndicesTeleported.push(targetToTeleport.getIndex());
       const randomTeleportAction = new RandomTeleportAction(this.getGameSession());
       randomTeleportAction.setOwnerId(this.getCard().getOwnerId());

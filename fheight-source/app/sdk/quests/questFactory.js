@@ -412,11 +412,11 @@ class QuestFactory {
     for (var questChanceTuple of Array.from(questChancesForSlot)) {
       var sdkQuest = questChanceTuple[0];
 
-      if (_.contains(excludedQuestIds,sdkQuest.getId())) {
+      if (_.includes(excludedQuestIds,sdkQuest.getId())) {
         continue;
       }
 
-      if (_.contains(sdkQuest.getTypes(),QuestType.ExcludeFromSystem)) {
+      if (_.includes(sdkQuest.getTypes(),QuestType.ExcludeFromSystem)) {
         // Quests should primarily be blocked by generation by their existence in _questChancesForSlot
         console.warn(`QuestFactory.randomQuestForSlotExcludingIds - quest with id ${sdkQuest.getId()} blocked from generation by type`);
         continue;
@@ -485,7 +485,7 @@ class QuestFactory {
     if (!this._questCache) {
       this._generateQuestCache();
     }
-    const seasonalQuests = _.filter(this._questCache, q => _.contains(q.types,QuestType.Seasonal));
+    const seasonalQuests = _.filter(this._questCache, q => _.includes(q.types,QuestType.Seasonal));
     for (var q of Array.from(seasonalQuests)) {
       if (q.isAvailableOn && q.isAvailableOn(momentUtc)) {
         return q;
@@ -503,7 +503,7 @@ class QuestFactory {
     if (!this._questCache) {
       this._generateQuestCache();
     }
-    const promoQuests = _.filter(this._questCache, q => _.contains(q.types,QuestType.Promotional));
+    const promoQuests = _.filter(this._questCache, q => _.includes(q.types,QuestType.Promotional));
     for (var q of Array.from(promoQuests)) {
       if (q.isAvailableOn && q.isAvailableOn(momentUtc)) {
         return q;

@@ -379,7 +379,7 @@ whenLocalizationReady.then(function(){
 
       for (var k in SDK.QuestFactory._questCache) {
         var quest = SDK.QuestFactory._questCache[k];
-        if (quest.isCatchUp || quest.isBeginner || _.contains(quest.types,QuestType.ExcludeFromSystem)) {
+        if (quest.isCatchUp || quest.isBeginner || _.includes(quest.types,QuestType.ExcludeFromSystem)) {
           continue;
         } else {
           promptText += `\n${quest.getName()}: ${quest.getId()}`;

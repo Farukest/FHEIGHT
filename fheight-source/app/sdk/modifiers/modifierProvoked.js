@@ -55,7 +55,7 @@ class ModifierProvoked extends Modifier {
         }
 
         // Then check for if target is one of the provokers provoking this unit
-        if (!_.contains(a.getTarget().getEntitiesProvoked(), this.getCard())) {
+        if (!_.includes(a.getTarget().getEntitiesProvoked(), this.getCard())) {
           return this.invalidateAction(a, this.getCard().getPosition(), i18next.t("modifiers.provoked_attack_error"));
         }
       }

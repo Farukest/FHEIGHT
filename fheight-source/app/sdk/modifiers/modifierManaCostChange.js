@@ -36,7 +36,7 @@ class ModifierManaCostChange extends Modifier {
     if (modifierContextObject) {
       const costChange = modifierContextObject.attributeBuffs.manaCost;
       if (costChange >= 0) {
-        if ((modifierContextObject.attributeBuffsAbsolute != null) && _.contains(modifierContextObject.attributeBuffsAbsolute, "manaCost")) {
+        if ((modifierContextObject.attributeBuffsAbsolute != null) && _.includes(modifierContextObject.attributeBuffsAbsolute, "manaCost")) {
           return i18next.t("modifiers.mana_shift_set",{amount: Math.abs(costChange)});
         } else {
           return i18next.t("modifiers.mana_shift_plus",{amount: Math.abs(costChange)});

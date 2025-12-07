@@ -202,27 +202,27 @@ var NavigationManager = Manager.extend({
   destroyAllViewsAndLayers: function (dontDestroy) {
     // unload content view
     var contentView = this.getContentView();
-    var contentViewPromise = contentView != null && !_.contains(dontDestroy, contentView) ? this.destroyContentView() : Promise.resolve();
+    var contentViewPromise = contentView != null && !_.includes(dontDestroy, contentView) ? this.destroyContentView() : Promise.resolve();
 
     // unload modal view
     var modalView = this.getModalView();
-    var modalViewPromise = modalView != null && !_.contains(dontDestroy, modalView) ? this.destroyModalView() : Promise.resolve();
+    var modalViewPromise = modalView != null && !_.includes(dontDestroy, modalView) ? this.destroyModalView() : Promise.resolve();
 
     // unload modal view
     var dialogView = this.getDialogView();
-    var dialogViewPromise = dialogView != null && !_.contains(dontDestroy, dialogView) ? this.destroyDialogView() : Promise.resolve();
+    var dialogViewPromise = dialogView != null && !_.includes(dontDestroy, dialogView) ? this.destroyDialogView() : Promise.resolve();
 
     // unload utility view
     var utilityView = this.getUtilityView();
-    var utilityViewPromise = utilityView != null && !_.contains(dontDestroy, utilityView) ? this.destroyUtilityView() : Promise.resolve();
+    var utilityViewPromise = utilityView != null && !_.includes(dontDestroy, utilityView) ? this.destroyUtilityView() : Promise.resolve();
 
     // unload content layer
     var contentLayer = Scene.getInstance().getContent();
-    var contentLayerPromise = contentLayer != null && !_.contains(dontDestroy, contentLayer) ? Scene.getInstance().destroyContent() : Promise.resolve();
+    var contentLayerPromise = contentLayer != null && !_.includes(dontDestroy, contentLayer) ? Scene.getInstance().destroyContent() : Promise.resolve();
 
     // unload overlay layer
     var overlayLayer = Scene.getInstance().getOverlay();
-    var overlayLayerPromise = overlayLayer != null && !_.contains(dontDestroy, overlayLayer) ? Scene.getInstance().destroyOverlay() : Promise.resolve();
+    var overlayLayerPromise = overlayLayer != null && !_.includes(dontDestroy, overlayLayer) ? Scene.getInstance().destroyOverlay() : Promise.resolve();
 
     return Promise.all([
       contentViewPromise,
@@ -618,7 +618,7 @@ var NavigationManager = Manager.extend({
     if (id == null) {
       id = this._userTriggeredNavigationLockId;
     }
-    if (!_.contains(this._userTriggeredNavigationLockRequests, id)) {
+    if (!_.includes(this._userTriggeredNavigationLockRequests, id)) {
       var numRequests = this._userTriggeredNavigationLockRequests.length;
       this._userTriggeredNavigationLockRequests.push(id);
       if (numRequests === 0 && this._userTriggeredNavigationLockRequests.length === 1) {

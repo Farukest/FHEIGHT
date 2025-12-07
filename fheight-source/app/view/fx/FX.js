@@ -565,7 +565,7 @@ const FX = cc.Class.extend({
    */
   requestBlurScreen(id) {
     if (id != null) {
-      if (!_.contains(this._blurScreenRequests, id)) {
+      if (!_.includes(this._blurScreenRequests, id)) {
         const numRequests = this._blurScreenRequests.length;
         this._blurScreenRequests.push(id);
         if (numRequests === 0 && this._blurScreenRequests.length === 1) {
@@ -606,7 +606,7 @@ const FX = cc.Class.extend({
    */
   requestBlurSurface(id) {
     if (id != null) {
-      if (!_.contains(this._blurSurfaceRequests, id)) {
+      if (!_.includes(this._blurSurfaceRequests, id)) {
         const numRequests = this._blurSurfaceRequests.length;
         this._blurSurfaceRequests.push(id);
         if (numRequests === 0 && this._blurSurfaceRequests.length === 1) {
@@ -779,7 +779,7 @@ const FX = cc.Class.extend({
       instances = this._instancesById[instancingId] = [];
     }
 
-    if (!_.contains(instances, instancedSprite)) {
+    if (!_.includes(instances, instancedSprite)) {
       // add instance to list
       instances.push(instancedSprite);
 

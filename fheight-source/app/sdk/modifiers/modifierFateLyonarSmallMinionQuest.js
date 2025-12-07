@@ -48,7 +48,7 @@ class ModifierFateLyonarSmallMinionQuest extends ModifierFate {
 
   updateFateCondition(action) {
     if (this.getIsActionRelevant(action)) {
-      if (!_.contains(this.getMinionsSummonedIds(), action.getTarget().getIndex())) {
+      if (!_.includes(this.getMinionsSummonedIds(), action.getTarget().getIndex())) {
         this.getMinionsSummonedIds().push(action.getTarget().getIndex());
       }
       if (this.getMinionsSummonedIds().length < this.numMinionsRequired) {

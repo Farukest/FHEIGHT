@@ -125,7 +125,7 @@ class Board extends SDKObject {
       // track index of card while on board
       // so we know what cards are actually on the board
       const cardIndex = card.getIndex();
-      if (!_.contains(this.cardIndices, cardIndex)) { this.cardIndices.push(cardIndex); }
+      if (!_.includes(this.cardIndices, cardIndex)) { this.cardIndices.push(cardIndex); }
 
       // add card to board
       const cardType = card.getType();

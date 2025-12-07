@@ -233,7 +233,7 @@ const RewardLayer = BaseLayer.extend({
   /* region INTERACTION */
 
   addInteractiveElement(node) {
-    if (!_.contains(this._interactiveNodes, node)) {
+    if (!_.includes(this._interactiveNodes, node)) {
       this._interactiveNodes.push(node);
     }
   },

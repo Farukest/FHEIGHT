@@ -1024,7 +1024,7 @@ class Action extends SDKObject {
    */
   getChangedByModifier(modifier) {
     if (this.changedByModifierIndices != null) {
-      return _.contains(this.changedByModifierIndices, modifier.getIndex());
+      return _.includes(this.changedByModifierIndices, modifier.getIndex());
     }
     return false;
   }

@@ -128,7 +128,7 @@ var PlayModeItemView = SlidingPanelItemView.extend({
     var days = this.model.get('availableOnDaysOfWeek');
     if (days && days.length > 0) {
       var myDate = moment().zone('-08:00'); // PDT
-      var isAvailable = _.contains(days, myDate.weekday());
+      var isAvailable = _.includes(days, myDate.weekday());
       return isAvailable;
     } else {
       return true;
@@ -139,7 +139,7 @@ var PlayModeItemView = SlidingPanelItemView.extend({
     var days = this.model.get('availableOnDaysOfWeek');
     if (days && days.length > 0) {
       var myDate = moment().zone('-08:00').add(1, 'day'); // PDT
-      var isAvailable = _.contains(days, myDate.weekday());
+      var isAvailable = _.includes(days, myDate.weekday());
       return isAvailable;
     } else {
       return true;

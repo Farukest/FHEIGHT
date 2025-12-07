@@ -303,7 +303,7 @@ class Deck extends SDKObject {
    * @param {Number|String} cardIndex
    */
   putCardIndexIntoDeck(cardIndex) {
-    if ((cardIndex != null) && !_.contains(this.drawPile, cardIndex)) {
+    if ((cardIndex != null) && !_.includes(this.drawPile, cardIndex)) {
       this.drawPile.push(cardIndex);
       return this.flushCachedCards();
     }

@@ -152,7 +152,7 @@ class FactionFactory {
     const factionIds = Object.keys(this.factionMap);
     for (var factionId of Array.from(factionIds)) {
       var faction = this.factionMap[factionId];
-      if ((faction.generalIds != null) && _.contains(faction.generalIds, generalId)) {
+      if ((faction.generalIds != null) && _.includes(faction.generalIds, generalId)) {
         return faction;
       }
     }

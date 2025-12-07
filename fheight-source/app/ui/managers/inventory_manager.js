@@ -379,7 +379,7 @@ var InventoryManager = Manager.extend({
     var cardLoreModel = this.cardLoreCollection.get(cardId);
     var isUnread;
     if (cardLoreModel == null) {
-      isUnread = !_.contains(this.cardLoreReadRequests, cardId);
+      isUnread = !_.includes(this.cardLoreReadRequests, cardId);
     } else {
       isUnread = cardLoreModel.get('is_unread');
     }
@@ -927,7 +927,7 @@ var InventoryManager = Manager.extend({
 
     var cardLoreModel = this.cardLoreCollection.get(cardId);
     if (cardLoreModel == null) {
-      return !_.contains(this.cardLoreReadRequests, cardId);
+      return !_.includes(this.cardLoreReadRequests, cardId);
     } else {
       return cardLoreModel.get('is_unread');
     }

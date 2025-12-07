@@ -1209,12 +1209,12 @@ var PackageManager = Manager.extend({
       if (pkg != null && pkg.getResources().length > 0) {
         if (majorId === this._activeMajorId) {
           // add id to list of major/minor packages in use
-          if (!_.contains(this._activeMajorMinorIds, id)) {
+          if (!_.includes(this._activeMajorMinorIds, id)) {
             this._activeMajorMinorIds.push(id);
           }
         } else {
           // add id to list of major/minor packages loading
-          if (!_.contains(this._loadingMajorMinorIds, id)) {
+          if (!_.includes(this._loadingMajorMinorIds, id)) {
             this._loadingMajorMinorIds.push(id);
           }
         }
@@ -1383,7 +1383,7 @@ var PackageManager = Manager.extend({
       var factionId = factionIds[i];
       if (factionId != null) {
         var factionGamePkgId = PKGS.getFactionGamePkgIdentifier(factionId);
-        if (!_.contains(gameMinorPkgIds, factionGamePkgId)) {
+        if (!_.includes(gameMinorPkgIds, factionGamePkgId)) {
           gameMinorPkgIds.push(factionGamePkgId);
         }
       }
@@ -1391,7 +1391,7 @@ var PackageManager = Manager.extend({
 
     // always add neutral pkg
     var neutralFactionGamePkgId = PKGS.getFactionGamePkgIdentifier(Factions.Neutral);
-    if (!_.contains(gameMinorPkgIds, neutralFactionGamePkgId)) {
+    if (!_.includes(gameMinorPkgIds, neutralFactionGamePkgId)) {
       gameMinorPkgIds.push(neutralFactionGamePkgId);
     }
 

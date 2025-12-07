@@ -739,7 +739,7 @@ class Card extends SDKObject {
 
   addKeywordClassToInclude(keywordClass) {
     // add a keyword class to keywords needed to explain this card
-    if (!_.contains(this._private.keywordClassesToInclude, keywordClass)) {
+    if (!_.includes(this._private.keywordClassesToInclude, keywordClass)) {
       return this._private.keywordClassesToInclude.push(keywordClass);
     }
   }
@@ -2022,7 +2022,7 @@ class Card extends SDKObject {
     for (var modifier of Array.from(this.getModifiers())) {
       if (modifier != null) {
         var modifierClass = modifier.constructor;
-        if (modifierClass.isKeyworded && !_.contains(keywordClasses, modifierClass)) {
+        if (modifierClass.isKeyworded && !_.includes(keywordClasses, modifierClass)) {
           keywordClasses.push(modifierClass);
         }
       }
@@ -2043,7 +2043,7 @@ class Card extends SDKObject {
 
       // manually included keyword classes
       for (modifierClass of Array.from(this._private.keywordClassesToInclude)) {
-        if (((this.getIndex() == null) || !silenced || !modifierClass.prototype.isRemovable) && !_.contains(keywordClasses, modifierClass)) {
+        if (((this.getIndex() == null) || !silenced || !modifierClass.prototype.isRemovable) && !_.includes(keywordClasses, modifierClass)) {
           keywordClasses.push(modifierClass);
         }
       }
@@ -2063,7 +2063,7 @@ class Card extends SDKObject {
 
       // keyword classes from context objects
       for (modifierClass of Array.from(this._private.cachedKeywordClassesFromContextObjects)) {
-        if (((this.getIndex() == null) || ((!silenced || !modifierClass.prototype.isRemovable) && this.hasModifierType(modifierClass.type))) && !_.contains(keywordClasses, modifierClass)) {
+        if (((this.getIndex() == null) || ((!silenced || !modifierClass.prototype.isRemovable) && this.hasModifierType(modifierClass.type))) && !_.includes(keywordClasses, modifierClass)) {
           keywordClasses.push(modifierClass);
         }
       }

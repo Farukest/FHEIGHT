@@ -1340,7 +1340,7 @@ class Modifier extends SDKObject {
     if (modifier != null) {
       // add modifier to list of sub modifiers
       const modifierIndex = modifier.getIndex();
-      if (!_.contains(this.subModifierIndices, modifierIndex)) {
+      if (!_.includes(this.subModifierIndices, modifierIndex)) {
         this.subModifierIndices.push(modifierIndex);
         this.subModifierIndices = _.sortBy(this.subModifierIndices);
       }
@@ -2306,7 +2306,7 @@ class Modifier extends SDKObject {
   }
 
   getResetsDamage() {
-    return this.resetsDamage || ((this.attributeBuffsRebased != null) && _.contains(this.attributeBuffsRebased, "maxHP"));
+    return this.resetsDamage || ((this.attributeBuffsRebased != null) && _.includes(this.attributeBuffsRebased, "maxHP"));
   }
 
   getCanConvertCardToPrismatic() {

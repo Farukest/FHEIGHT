@@ -667,7 +667,7 @@ App._reloadRequestIds = [];
 
 App.onRequestReload = function(event) {
   const requestId = (event != null ? event.id : undefined) || 0;
-  if (!_.contains(App._reloadRequestIds, requestId)) {
+  if (!_.includes(App._reloadRequestIds, requestId)) {
     App._reloadRequestIds.push(requestId);
     if (App._reloadRequestIds.length === 1) {
       return App._reload(event != null ? event.message : undefined);

@@ -34,7 +34,7 @@ var WatchGameItemView = Backbone.Marionette.ItemView.extend({
   serializeModel: function (model) {
     var data = model.toJSON.apply(model, _.rest(arguments));
     var readItems = Storage.get('watched_game_ids');
-    if (_.contains(readItems, data.id)) {
+    if (_.includes(readItems, data.id)) {
       data.is_read = true;
     }
     return data;
@@ -42,7 +42,7 @@ var WatchGameItemView = Backbone.Marionette.ItemView.extend({
 
   onRender: function () {
     var readItems = Storage.get('watched_game_ids');
-    if (_.contains(readItems, this.model.get('id'))) {
+    if (_.includes(readItems, this.model.get('id'))) {
       this.$el.addClass('read');
     }
 
@@ -109,7 +109,7 @@ var WatchGameItemView = Backbone.Marionette.ItemView.extend({
     var readItems = Storage.get('watched_game_ids') || [];
     var playerId = $(e.currentTarget).data('player-id');
 
-    if (!_.contains(readItems, this.model.get('id'))) {
+    if (!_.includes(readItems, this.model.get('id'))) {
       if (readItems.length > 100) {
         readItems.slice(readItems.length - 100);
       }

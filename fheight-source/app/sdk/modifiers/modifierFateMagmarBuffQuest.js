@@ -50,7 +50,7 @@ class ModifierFateMagmarBuffQuest extends ModifierFate {
   updateFateCondition(action) {
     if (action != null) {
       if (this.getIsActionRelevant(action)) {
-        if (!_.contains(this.getNumBuffSpells(), action.getRootAction().getIndex())) {
+        if (!_.includes(this.getNumBuffSpells(), action.getRootAction().getIndex())) {
           this.getNumBuffSpells().push(action.getRootAction().getIndex());
           if (this.getNumBuffSpells().length < this.attackBuffCount) {
             this.removeQuestStatusModifier();

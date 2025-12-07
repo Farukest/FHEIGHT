@@ -48,7 +48,7 @@ class ModifierFateAbyssianDyingQuest extends ModifierFate {
 
   updateFateCondition(action) {
     if (this.getIsActionRelevant(action)) {
-      if (!_.contains(this.getDeathSpellActionIndices(), action.getRootAction().getIndex())) {
+      if (!_.includes(this.getDeathSpellActionIndices(), action.getRootAction().getIndex())) {
         this.getDeathSpellActionIndices().push(action.getRootAction().getIndex());
       }
       if (this.getDeathSpellActionIndices().length < this.deathCountRequired) {

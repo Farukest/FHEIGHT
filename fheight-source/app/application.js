@@ -6,6 +6,12 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
+
+// Polyfill for _.contains (renamed to _.includes in newer Underscore.js)
+if (typeof _ !== 'undefined' && !_.contains && _.includes) {
+  _.contains = _.includes;
+}
+
 // User Agent Parsing
 const UAParser = require('ua-parser-js');
 const uaparser = new UAParser();
@@ -3887,7 +3893,7 @@ App._reloadRequestIds = [];
   **/
 App.onRequestReload = function(event) {
   const requestId = (event != null ? event.id : undefined) || 0;
-  if (!_.contains(App._reloadRequestIds, requestId)) {
+  if (!_.includes(App._reloadRequestIds, requestId)) {
     App._reloadRequestIds.push(requestId);
     if (App._reloadRequestIds.length === 1) {
       return App._reload(event != null ? event.message : undefined);

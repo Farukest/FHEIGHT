@@ -688,7 +688,7 @@ const Player = cc.Class.extend({
     this.setFollowupCard(null);
   },
   pushCardWithFollowup(card) {
-    if (card && card.getOwnerId() === this.getSdkPlayer().getPlayerId() && !_.contains(this.cardsWithFollowupStack, card)) {
+    if (card && card.getOwnerId() === this.getSdkPlayer().getPlayerId() && !_.includes(this.cardsWithFollowupStack, card)) {
       this.cardsWithFollowupStack.push(card);
       Logger.module('ENGINE').log('Player.pushCardWithFollowup -> NAME:', card.getName(), 'num cards', this.cardsWithFollowupStack.length);
     }
@@ -1913,7 +1913,7 @@ const Player = cc.Class.extend({
     if (id == null) {
       id = this._showPathsLockId;
     }
-    if (!_.contains(this._showPathsLockRequests, id)) {
+    if (!_.includes(this._showPathsLockRequests, id)) {
       const numRequests = this._showPathsLockRequests.length;
       this._showPathsLockRequests.push(id);
       if (numRequests === 0 && this._showPathsLockRequests.length === 1) {

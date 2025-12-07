@@ -209,7 +209,7 @@ var MyPlayerPopoverLayout = PlayerPopoverLayout.extend({
     if (this._emoteCollectionsByCategoryId[categoryId].length === 0) {
       // skip categories with no emotes
       if (_attemptedCategoryIds == null) { _attemptedCategoryIds = []; }
-      if (!_.contains(_attemptedCategoryIds, categoryId)) {
+      if (!_.includes(_attemptedCategoryIds, categoryId)) {
         _attemptedCategoryIds.push(categoryId);
         this.showNextPage(categoryId, targetPageIndex, _attemptedCategoryIds);
       }
@@ -246,7 +246,7 @@ var MyPlayerPopoverLayout = PlayerPopoverLayout.extend({
     if (this._emoteCollectionsByCategoryId[categoryId].length === 0) {
       // skip categories with no emotes
       if (_attemptedCategoryIds == null) { _attemptedCategoryIds = []; }
-      if (!_.contains(_attemptedCategoryIds, categoryId)) {
+      if (!_.includes(_attemptedCategoryIds, categoryId)) {
         _attemptedCategoryIds.push(categoryId);
         this.showPreviousPage(categoryId, targetPageIndex);
       }

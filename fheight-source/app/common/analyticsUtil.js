@@ -27,7 +27,7 @@ class AnalyticsUtil {
     }
 
     for (var recordedDayIndex of Array.from(this.RecordedDaysSeenOn)) {
-      if (_.contains(daysSeenOn,recordedDayIndex)) {
+      if (_.includes(daysSeenOn,recordedDayIndex)) {
         dataTarget[this.nameForSeenOnDay(recordedDayIndex)] = 1;
       }
     }
@@ -45,7 +45,7 @@ class AnalyticsUtil {
   static recordedDayIndexForRegistrationAndSeenOn(registrationMoment,seenOnMoment){
     const daysSinceRegistration = seenOnMoment.clone().diff(registrationMoment.clone(),'days');
 
-    const isRecordedDay = _.contains(this.RecordedDaysSeenOn,daysSinceRegistration);
+    const isRecordedDay = _.includes(this.RecordedDaysSeenOn,daysSinceRegistration);
 
     if (isRecordedDay) {
       return daysSinceRegistration;

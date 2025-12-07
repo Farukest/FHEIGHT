@@ -691,7 +691,7 @@ var GameLayer = FXCompositeLayer.extend({
     if (id == null) {
       id = this._playerSelectionLockedId;
     }
-    if (!_.contains(this._playerSelectionLockedRequests, id)) {
+    if (!_.includes(this._playerSelectionLockedRequests, id)) {
       const numRequests = this._playerSelectionLockedRequests.length;
       this._playerSelectionLockedRequests.push(id);
       if (numRequests === 0 && this._playerSelectionLockedRequests.length === 1) {
@@ -2540,7 +2540,7 @@ var GameLayer = FXCompositeLayer.extend({
       for (let i = actionInterfaces.length - 1; i >= 0; i--) {
         const sdkActionInterface = actionInterfaces[i];
         const { rearrangedActionInterfaces } = sdkActionInterface;
-        if ((!sdkActionInterface.rearranging || rearranged || (rearrangedActionInterfaces != null && rearrangedActionInterfaces.length > 0)) && !_.contains(actionInterfaceSequence, sdkActionInterface)) {
+        if ((!sdkActionInterface.rearranging || rearranged || (rearrangedActionInterfaces != null && rearrangedActionInterfaces.length > 0)) && !_.includes(actionInterfaceSequence, sdkActionInterface)) {
           if (rearrangedActionInterfaces != null) {
             addSequencedActions(rearrangedActionInterfaces, true);
           }
@@ -2851,7 +2851,7 @@ var GameLayer = FXCompositeLayer.extend({
             const findSiblingsFromActions = function (actions) {
               for (let j = 0, jl = actions.length; j < jl; j++) {
                 const action = actions[j];
-                if (action.getType() === currentActionType && !_.contains(siblingActions, action)) {
+                if (action.getType() === currentActionType && !_.includes(siblingActions, action)) {
                   // add matching action as sibling
                   siblingActions.push(action);
                 }
@@ -2860,7 +2860,7 @@ var GameLayer = FXCompositeLayer.extend({
                 const subActions = action.getResolveSubActions();
                 for (let k = 0, kl = subActions.length; k < kl; k++) {
                   const subAction = subActions[k];
-                  if (subAction.getType() === currentActionType && !_.contains(siblingActions, subAction)) {
+                  if (subAction.getType() === currentActionType && !_.includes(siblingActions, subAction)) {
                     siblingActions.push(subAction);
                   }
                 }
@@ -3096,7 +3096,7 @@ var GameLayer = FXCompositeLayer.extend({
 
   _addActionInterfaceToDepthFirstForTriggeringSequence(actionInterface, rearrangingParentActionInterface, depthFirstActionInterfaces) {
     // only add this action interface once to the list of actions
-    if (actionInterface && !_.contains(depthFirstActionInterfaces, actionInterface)) {
+    if (actionInterface && !_.includes(depthFirstActionInterfaces, actionInterface)) {
       actionInterface.rearranging = true;
       actionInterface.rearrangingParentActionInterface = rearrangingParentActionInterface;
       actionInterface.isSequenceRoot = false;
@@ -3584,7 +3584,7 @@ var GameLayer = FXCompositeLayer.extend({
         var playerId = action.getOwnerId();
         if (action instanceof SDK.DrawCardAction && action.getIsDrawFromEmptyDeck()) {
           // show player out of cards dialogue
-          if (!_.contains(this._currentSdkStepInterface.hasShownOutOfCardsForPlayerIds, playerId)) {
+          if (!_.includes(this._currentSdkStepInterface.hasShownOutOfCardsForPlayerIds, playerId)) {
             this._currentSdkStepInterface.hasShownOutOfCardsForPlayerIds.push(playerId);
             showDuration = Math.max(showDuration, this.showSpeechForPlayer(this.getPlayerById(playerId), i18next.t('game_ui.out_of_cards_message'), null, CONFIG.DIALOGUE_OUT_OF_CARDS_DURATION, false, 0.3));
           }
@@ -3592,7 +3592,7 @@ var GameLayer = FXCompositeLayer.extend({
           if (action.getOwner().getDeck().getCardsInHandExcludingMissing().length == CONFIG.MAX_HAND_SIZE) {
             // show hand too full dialogue
             var dialogDuration = 0.0;
-            if (!_.contains(this._currentSdkStepInterface.hasShownHandFullForPlayerIds, playerId)) {
+            if (!_.includes(this._currentSdkStepInterface.hasShownHandFullForPlayerIds, playerId)) {
               this._currentSdkStepInterface.hasShownHandFullForPlayerIds.push(playerId);
               dialogDuration = this.showSpeechForPlayer(this.getPlayerById(playerId), i18next.t('game_ui.hand_is_full_message'), null, CONFIG.DIALOGUE_HAND_FULL_DURATION, false, 0.3);
             }
@@ -6172,7 +6172,7 @@ var GameLayer = FXCompositeLayer.extend({
             const mouseOverEntityNode = this._player.getMouseOverEntityNode();
             if ((!mouseOverEntityNode || mouseOverEntityNode !== entityNode)
               && (!this._lastSelectedEntityNodeForAction || entityNode !== this._lastSelectedEntityNodeForAction)
-              && (!this._lastMouseOverEntityNodesForAction || !_.contains(this._lastMouseOverEntityNodesForAction, entityNode))
+              && (!this._lastMouseOverEntityNodesForAction || !_.includes(this._lastMouseOverEntityNodesForAction, entityNode))
             ) {
               this.stopMouseOverButNotPlayer();
 

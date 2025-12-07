@@ -3554,7 +3554,7 @@ var GameLayer = FXCompositeLayer.extend({
             }
           }
         }
-      } else if (action.type === SDK.MoveAction.type) {
+      } else if (action.getType() === SDK.MoveAction.type) {
         node = this.getNodeForSdkCard(source);
         if (this._getCanShowActionForNode(node)) {
           showDuration += node.showMove(action, action.getSourcePosition(), action.getTargetPosition());
@@ -3566,7 +3566,7 @@ var GameLayer = FXCompositeLayer.extend({
         if (this._getCanShowActionForNode(node)) {
           showDuration += node.showTeleport(action, action.getTargetPosition());
         }
-      } else if (action.type === SDK.SwapUnitsAction.type) {
+      } else if (action.getType() === SDK.SwapUnitsAction.type) {
         if (source) {
           node = this.getNodeForSdkCard(source);
           if (this._getCanShowActionForNode(node)) {
@@ -3816,7 +3816,7 @@ var GameLayer = FXCompositeLayer.extend({
     if (action && sourceSdkCard != null && this._getCanShowActionForNode(sourceNode)) {
       // handle action by type
       if (sourceSdkCard instanceof SDK.Entity) {
-        if (action.type === SDK.HealAction.type) {
+        if (action.getType() === SDK.HealAction.type) {
           // only show healer state when same team as target
           const target = action.getTarget(true);
           if (!target || sourceSdkCard.getIsSameTeamAs(target)) {
@@ -3866,7 +3866,7 @@ var GameLayer = FXCompositeLayer.extend({
               });
           }
           targetNode.showDeathState(action);
-        } else if (action.type === SDK.HealAction.type) {
+        } else if (action.getType() === SDK.HealAction.type) {
           if (CONFIG.razerChromaEnabled) {
             Chroma.flashActionThrottled(new Chroma.Color('00FF00'), 100, action.getTotalHealAmount())
               .then(() => {
@@ -3892,9 +3892,9 @@ var GameLayer = FXCompositeLayer.extend({
               });
           }
           targetNode.showDestroyedState(action);
-        } else if (action.type === SDK.RefreshExhaustionAction.type) {
+        } else if (action.getType() === SDK.RefreshExhaustionAction.type) {
           targetNode.showRefreshExhaustionState(action);
-        } else if (action.type === SDK.SwapUnitAllegianceAction.type) {
+        } else if (action.getType() === SDK.SwapUnitAllegianceAction.type) {
           targetNode.showSwapAllegianceState(action);
         }
       } else if (targetSdkCard instanceof SDK.Spell) {

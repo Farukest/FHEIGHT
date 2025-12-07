@@ -28,6 +28,8 @@ class RevealHiddenCardAction extends Action {
   }
 
   constructor(gameSession, ownerId, cardData) {
+    super(gameSession);
+
     if (this.type == null) { this.type = RevealHiddenCardAction.type; }
 
     if (cardData != null) {
@@ -35,9 +37,6 @@ class RevealHiddenCardAction extends Action {
       this.cardData = UtilsJavascript.fastExtend({}, cardData);
     }
 
-    super(gameSession);
-
-    // has to be done after super()
     this.ownerId = ownerId + "";
   }
 

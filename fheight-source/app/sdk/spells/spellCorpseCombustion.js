@@ -105,7 +105,7 @@ class SpellCorpseCombustion extends SpellSpawnEntity {
 
       // get friendly minions that died
       for (var action of Array.from(actions)) {
-        if (action.type === DieAction.type) {
+        if (action.getType() === DieAction.type) {
           card = action.getTarget();
           if (((card != null ? card.getType() : undefined) === CardType.Unit) && card.getIsRemoved() && (card.getOwnerId() === this.getOwnerId()) && !(card.getRarityId() === Rarity.TokenUnit) && !card.getWasGeneral()) {
             deadUnits.push(card);

@@ -21,10 +21,10 @@ class RemoveManaCoreAction extends Action {
   }
 
   constructor(gameSession, manaAmount) {
+    super(gameSession);
     if (manaAmount == null) { manaAmount = 0; }
     if (this.type == null) { this.type = RemoveManaCoreAction.type; }
     this.manaAmount = manaAmount;
-    super(gameSession);
   }
 
   _execute() {

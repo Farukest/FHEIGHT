@@ -235,22 +235,16 @@ hr.shine {
 
 .activity-animation {
 	position: relative;
-	width: 10.0rem;
-	height: 10.0rem;
+	width: 15.0rem;
+	height: 15.0rem;
 	overflow: hidden;
+	@include backgroundImage("resources/ui/fhe_wizard_loading.gif");
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
 
 	.activity-animation-image {
-		width: 10.0rem;
-		height: 80.0rem;
-		@include backgroundImage("resources/ui/activity_animation.png");
-		background-repeat: no-repeat;
-		background-size: 10.0rem 80.0rem;
-		animation: activity-animation 0.6s steps(7) infinite;
-	}
-
-	@keyframes activity-animation {
-		0% { transform: translateY(0); }
-		100% { transform: translateY(-70.0rem); }
+		display: none; /* Hide old sprite animation */
 	}
 }
 

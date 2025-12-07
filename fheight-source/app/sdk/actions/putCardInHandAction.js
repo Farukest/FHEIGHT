@@ -26,6 +26,8 @@ class PutCardInHandAction extends Action {
   }
 
   constructor(gameSession, ownerId, cardDataOrIndex, indexOfCardInHand=null) {
+    super(gameSession);
+
     if (this.type == null) { this.type = PutCardInHandAction.type; }
     if (cardDataOrIndex != null) {
       // copy data so we don't modify anything unintentionally
@@ -37,10 +39,6 @@ class PutCardInHandAction extends Action {
     }
 
     this.indexOfCardInHand = indexOfCardInHand;
-
-    super(gameSession);
-
-    // has to be done after super()
     this.ownerId = ownerId + "";
   }
 

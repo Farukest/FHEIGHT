@@ -31,6 +31,8 @@ class ApplyCardToBoardAction extends Action {
   }
 
   constructor(gameSession, ownerId, x, y, cardDataOrIndex, cardOwnedByGameSession) {
+    super(gameSession);
+
     if (cardOwnedByGameSession == null) { cardOwnedByGameSession = false; }
     if (this.type == null) { this.type = ApplyCardToBoardAction.type; }
     this.targetPosition = {x,y};
@@ -44,9 +46,6 @@ class ApplyCardToBoardAction extends Action {
       }
     }
 
-    super(gameSession);
-
-    // has to be done after super()
     this.ownerId = ownerId + "";
     this.cardOwnedByGameSession = cardOwnedByGameSession;
   }

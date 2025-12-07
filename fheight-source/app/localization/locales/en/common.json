@@ -1,5 +1,5 @@
 {
-	"loading_dialog_one_moment_label": "One moment...",
+	"loading_dialog_one_moment_label": "Encrypting...",
 	"success_title": "SUCCESS!",
 	"error_occurred_title": "Uh-oh!",
 	"generic_invalid_input_message": "Invalid input",
@@ -16,7 +16,7 @@
 	"done_button_label": "DONE",
 	"mute_button_label": "Mute",
 	"claim_label": "Claim",
-	"play_button_label": "PLAY",
+	"play_button_label": "ENCRYPT & FIGHT",
 	"confirm_button_label": "Confirm",
 
 	"esc_menu_more_settings_label": "Settings",

@@ -3,7 +3,7 @@
 	"boss_battle_available":"Boss Battle Available",
 	"boss_battle_upcoming":"Upcoming Boss Battle",
 	"defeated":"Defeated",
-	"play_button_label": "Battle",
+	"play_button_label": "Encrypt & Fight",
 
 	"boss_1_name":"Boreal Juggernaut",
 	"boss_1_desc":"Frenzy\nWhenever this damages an enemy minion, it is stunned.",
@@ -174,5 +174,5 @@
 
 
 	"defeated":"Defeated",
-	"play_button_label": "Battle"
+	"play_button_label": "Encrypt & Fight"
 }

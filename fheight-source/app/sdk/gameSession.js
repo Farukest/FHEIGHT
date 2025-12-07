@@ -4206,7 +4206,8 @@ class _GameSession extends SDKObject {
         actionIndex = card.getAppliedToBoardByActionIndex();
         if ((actionIndex != null) && (actionIndex > -1)) {
           action = this.getActionByIndex(actionIndex);
-          if (action != null) {
+          // Fix: check if action has setCard method before calling (not all actions do)
+          if (action != null && typeof action.setCard === 'function') {
             action.setCard(card);
           }
         }

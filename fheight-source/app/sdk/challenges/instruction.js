@@ -114,7 +114,7 @@ class Instruction extends Validator {
       action
     } = e;
     if ((action != null) && action.getIsValid() && !action.getIsImplicit() && !action.getIsAutomatic()) {
-      if ((action.type === this.expectedActionType) && this.isValidTargetPosition(action.targetPosition) && this.isValidSourcePosition(action.sourcePosition) && this.isValidHandIndex(action.indexOfCardInHand)) {
+      if ((action.getType() === this.expectedActionType) && this.isValidTargetPosition(action.targetPosition) && this.isValidSourcePosition(action.sourcePosition) && this.isValidHandIndex(action.indexOfCardInHand)) {
         return action.setIsValid(true);
       } else {
         return this.invalidateAction(action, this._getFailureMessagePosition(), this.failedLabel);

@@ -50,7 +50,7 @@ class SpellLucentBeam extends SpellDamage {
     }
 
     for (var action of Array.from(actions)) {
-      if ((action.type === HealAction.type) && (action.getTotalHealApplied() > 0)) {
+      if ((action.getType() === HealAction.type) && (action.getTotalHealApplied() > 0)) {
         wasAnythingHealed = true;
         break;
       }

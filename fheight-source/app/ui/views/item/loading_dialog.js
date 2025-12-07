@@ -15,8 +15,9 @@ var LoadingDialogItemView = Backbone.Marionette.ItemView.extend({
 
   template: LoadingDialogViewTempl,
 
-  animateIn: Animations.fadeIn,
-  animateOut: Animations.fadeOut,
+  // No fade animation - instant show to avoid flash during transitions
+  animateIn: null,
+  animateOut: null,
 
   initialize: function () {
     this.model = new Backbone.Model({

@@ -25,7 +25,7 @@
 
 	"daily_challenge_title": "Daily Challenge",
 	"daily_challenge_instructions": "Complete the Daily Challenge",
-	"daily_challenge_play_button_label": "Play",
+	"daily_challenge_play_button_label": "Encrypt & Fight",
 
 	"quest_faction_games_title": "{{faction_name}} Challenger",
 	"quest_faction_games_desc": "Play {{count}} online games with a {{faction}} Deck",

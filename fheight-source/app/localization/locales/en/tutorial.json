@@ -9,8 +9,8 @@
 	"end_your_turn_message": "End your turn.",
 	"must_end_turn_message": "You must end your turn.",
 
-	"lesson_1_title":"Knowledge is Power",
-	"lesson_1_description":"Summon your Minions and defeat the enemy General.",
+	"lesson_1_title":"ENCRYPTION IS POWER",
+	"lesson_1_description":"Summon your encrypted Minions and defeat the enemy without revealing your strategy.",
 	"lesson_1_difficulty":"2 Minutes",
 	"lesson_1_start_message":"Finish off Calibero THIS turn!",
 	"lesson_1_failure_message":"Use your Hailstone Golem to defeat Calibero in ONE turn.",
@@ -42,8 +42,8 @@
 	"lesson_1_taunt_2":"Taste these claws!",
 	"lesson_1_taunt_3":"You're on borrowed time!",
 
-	"lesson_2_title":"Ready Player Two",
-	"lesson_2_description":"Cast Spells on the battlefield.",
+	"lesson_2_title":"READY PROVER TWO",
+	"lesson_2_description":"Cast homomorphic Spells on the confidential battlefield.",
 	"lesson_2_difficulty":"2 Minutes",
 	"lesson_2_start_message":"Finish off General Rook in ONE turn!",
 	"lesson_2_failure_message":"Finish off General Rook in ONE turn.",
@@ -73,8 +73,8 @@
 	"lesson_3_start_message":"",
 	"lesson_3_failure_message":"",
 
-	"lesson_4_title":"The Bloodbound",
-	"lesson_4_description":"Learn the power of Artifacts and Bloodbound Spells.",
+	"lesson_4_title":"THE PROOFBOUND",
+	"lesson_4_description":"Learn the power of Artifacts and Zero-Knowledge Spells.",
 	"lesson_4_difficulty":"3 Minutes",
 	"lesson_4_start_message":"Defeat the Draugar Lord in ONE turn!",
 	"lesson_4_failure_message":"Defeat the Draugar Lord in ONE turn.",

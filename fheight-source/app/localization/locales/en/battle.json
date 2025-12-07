@@ -1,7 +1,7 @@
 {
 	"finding_game":"Searching",
 	"starting_practice_game":"Starting",
-	"loading_battle":"Loading Battle",
+	"loading_battle":"Encrypting...",
 	"existing_battle_in_progress": "Game in Progress",
 	"continue_battle_button_label": "Continue",
 
@@ -22,8 +22,8 @@
 	"your_name_default_label": "You",
 	"opponent_name_default_label": "Opponent",
 	"battle_log_label": "Battlelog",
-	"turn_button_label_enemy_turn": "Enemy Turn",
-	"turn_button_label_end_turn": "End Turn",
+	"turn_button_label_enemy_turn": "Verifying Opponent",
+	"turn_button_label_end_turn": "Submit Proof",
 	"turn_button_label_restart_turn": "Restart Turn",
 	"menu_button_label": "Menu",
 	"esc_menu_end_game_label": "End Game",
@@ -34,8 +34,8 @@
 	"card_instructions_health": "Health",
 	"card_instructions_mana_cost": "Cost",
 
-	"outcome_victory": "Victory",
-	"outcome_defeat": "Defeat",
+	"outcome_victory": "Proof Verified",
+	"outcome_defeat": "Decryption Failed",
 	"outcome_draw": "Draw",
 	"zero_xp_earned": "+0 XP",
 	"unscored_game_xp_notice": "Games with insufficient gameplay do not earn XP or rewards.",

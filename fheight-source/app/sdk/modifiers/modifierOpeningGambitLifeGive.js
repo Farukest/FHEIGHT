@@ -75,7 +75,7 @@ class ModifierOpeningGambitLifeGive extends ModifierOpeningGambit {
       }
 
       for (var action of Array.from(actions)) {
-        if (action.type === DieAction.type) {
+        if (action.getType() === DieAction.type) {
           var card = action.getTarget();
           // find all friendly non-token units that died
           if (((card != null ? card.getOwnerId() : undefined) === this.getCard().getOwnerId()) && ((card != null ? card.getType() : undefined) === CardType.Unit) && card.getIsRemoved() && !(card.getRarityId() === Rarity.TokenUnit) && !card.getWasGeneral()) {

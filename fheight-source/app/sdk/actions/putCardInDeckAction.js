@@ -26,6 +26,8 @@ class PutCardInDeckAction extends Action {
   }
 
   constructor(gameSession, targetPlayerId, cardDataOrIndex) {
+    super(gameSession);
+
     if (this.type == null) { this.type = PutCardInDeckAction.type; }
     this.targetPlayerId = targetPlayerId;
 
@@ -37,8 +39,6 @@ class PutCardInDeckAction extends Action {
         this.cardDataOrIndex = cardDataOrIndex;
       }
     }
-
-    super(gameSession);
   }
 
   getPrivateDefaults(gameSession) {

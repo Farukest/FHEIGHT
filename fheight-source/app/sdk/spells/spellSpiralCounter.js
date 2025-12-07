@@ -31,7 +31,7 @@ class SpellSpiralCounter extends SpellDamage {
 
       // find enemy minions that attacked last turn
       for (var action of Array.from(actions)) {
-        if (action.type === AttackAction.type) {
+        if (action.getType() === AttackAction.type) {
           var attacker = action.getSource();
           if ((attacker.getType() === CardType.Unit) && !(attacker.getOwnerId() === this.getOwnerId()) && !attacker.getIsGeneral()) {
             possibleTargets.push(attacker);

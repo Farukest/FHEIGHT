@@ -22,6 +22,8 @@ class GenerateSignatureCardAction extends Action {
   }
 
   constructor(gameSession, ownerId, cardDataOrIndex) {
+    super(gameSession);
+
     if (this.type == null) { this.type = GenerateSignatureCardAction.type; }
     if (cardDataOrIndex != null) {
       // copy data so we don't modify anything unintentionally
@@ -32,9 +34,6 @@ class GenerateSignatureCardAction extends Action {
       }
     }
 
-    super(gameSession);
-
-    // has to be done after super()
     this.ownerId = ownerId + "";
   }
 

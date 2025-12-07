@@ -686,6 +686,7 @@ const RSX = {
     name: 'f1CasterProjectileCharge', img: 'resources/fx/fx_f1_casterprojectile.png', is16Bit: true, plist: 'resources/fx/fx_f1_casterprojectile.plist', framePrefix: 'fx_f1casterprojectilecharge_', frameDelay: 0.08,
   },
   frame_ladder: { name: 'frame_ladder', img: 'resources/ui/frame_ladder.png' },
+  fhe_wizard_loading: { name: 'fhe_wizard_loading', img: 'resources/ui/fhe_wizard_loading.gif', noScale: true },
   fxArtifactBreak: {
     name: 'fxArtifactBreak', img: 'resources/fx/fx_artifactbreak.png', is16Bit: true, plist: 'resources/fx/fx_artifactbreak.plist', framePrefix: 'fx_artifactbreak_', frameDelay: 0.08,
   },

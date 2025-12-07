@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FHEIGHT</title>
+    <link rel="icon" type="image/gif" href="/favicon.gif">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="screen-orientation" content="portrait"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="full-screen" content="yes"/>
+    <meta name="x5-fullscreen" content="true"/>
+
+    <script type="text/javascript">
+      window.ccMapLimit = 100
+    </script>
+
+    <link rel="stylesheet" href="/dist/src/fheight.css">
+  </head>
+
+  <body>
+    <div id="app">
+      <div id="app-main">
+        <div id="app-horizontal">
+          <canvas id="app-gamecanvas"></canvas>
+          <div id="app-content-region"></div>
+          <div id="app-utility-region"></div>
+        </div>
+        <div id="app-vertical">
+          <div id="app-modal-region"></div>
+          <div id="app-notifications-region"></div>
+        </div>
+      </div>
+      <div id="app-overlay-region"></div>
+      <div id="maintenance-announcements-region"></div>
+      <div id="app-preloading">
+        <div class="brand-main">
+          <h1>FHEIGHT</h1>
+        </div>
+        <img class="mystic-loader" src="/dist/src/loading.gif">
+      </div>
+    </div>
+
+    <script type="module" src="/app/index.js"></script>
+  </body>
+</html>

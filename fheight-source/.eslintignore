@@ -1,0 +1,17 @@
+# .gitignored files and code which imports them
+app/data/packages.js
+gulp/rsx.js
+
+# Build artifacts
+desktop/dist
+desktop/node_modules
+dist
+node_modules
+
+# Third-party code
+app/vendor
+packages
+scripts/codex/CanvasText-0.4.1.js
+
+# TypeScript type declarations
+*.d.ts

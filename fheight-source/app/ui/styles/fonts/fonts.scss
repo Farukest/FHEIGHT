@@ -1,0 +1,8 @@
+// Use the Bootstrap CDN to serve FontAwesome fonts.
+$fa-font-path: 'https://netdna.bootstrapcdn.com/font-awesome/4.7.0/fonts';
+
+@import 'font-awesome/scss/font-awesome';
+@import 'opensans';
+@import 'lato';
+@import 'averta';
+@import 'trumpgothic';

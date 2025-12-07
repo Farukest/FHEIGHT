@@ -1,0 +1,307 @@
+// ZAMA Button Overrides - Gold Gradient Style
+// This file overrides the default button styles with ZAMA branding
+
+// Primary Button - Gold
+.btn-clean-primary {
+	min-width: 17.4rem;
+	min-height: 5.4rem;
+	font-size: 1.6rem;
+	padding: 1.5rem 3.0rem;
+	background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+	background-image: none !important;
+	border: 1px solid #ffd208 !important;
+	color: #000 !important;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.3) !important;
+	font-weight: bold !important;
+	clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0% 50%);
+	box-shadow: 0 0 12px rgba(255, 210, 8, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+	transition: all 0.15s ease;
+	&:before {
+		display: none !important;
+	}
+	&:hover, &:focus {
+		background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) !important;
+		background-image: none !important;
+		box-shadow: 0 0 18px rgba(255, 210, 8, 0.6), inset 0 1px 0 rgba(255,255,255,0.5);
+		color: #000 !important;
+	}
+	&:active, &:active:focus {
+		background: linear-gradient(180deg, #c9a406 0%, #a88a05 50%, #c9a406 100%) !important;
+		background-image: none !important;
+		box-shadow: 0 0 8px rgba(255, 210, 8, 0.3);
+		color: #000 !important;
+	}
+}
+
+// Secondary Button - Dark with gold hover
+.btn-clean-secondary {
+	min-width: 13.0rem;
+	min-height: 4.0rem;
+	font-size: 1.4rem;
+	padding: 1.5rem 2.5rem;
+	background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 50%, #2a2a2a 100%) !important;
+	background-image: none !important;
+	border: 1px solid #444 !important;
+	color: #fff !important;
+	text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
+	font-weight: bold !important;
+	clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+	transition: all 0.15s ease;
+	&:before {
+		display: none !important;
+	}
+	&:hover, &:focus {
+		background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 50%, #3a3a3a 100%) !important;
+		background-image: none !important;
+		border-color: #ffd208 !important;
+		box-shadow: 0 0 15px rgba(255, 210, 8, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+		color: #fff !important;
+	}
+	&:active, &:active:focus {
+		background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 50%, #1a1a1a 100%) !important;
+		background-image: none !important;
+		box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+		color: #fff !important;
+	}
+}
+
+// Confirm Button - Gold (same as primary)
+.btn-clean-confirm {
+	min-width: 17.4rem;
+	min-height: 5.8rem;
+	font-size: 1.6rem;
+	padding: 1.5rem 3.0rem;
+	background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+	background-image: none !important;
+	border: 1px solid #ffd208 !important;
+	color: #000 !important;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.3) !important;
+	font-weight: bold !important;
+	clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0% 50%);
+	box-shadow: 0 0 12px rgba(255, 210, 8, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+	transition: all 0.15s ease;
+	&:before {
+		display: none !important;
+	}
+	&:hover, &:focus {
+		background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) !important;
+		background-image: none !important;
+		box-shadow: 0 0 18px rgba(255, 210, 8, 0.6), inset 0 1px 0 rgba(255,255,255,0.5);
+		color: #000 !important;
+	}
+	&:active, &:active:focus {
+		background: linear-gradient(180deg, #c9a406 0%, #a88a05 50%, #c9a406 100%) !important;
+		background-image: none !important;
+		box-shadow: 0 0 8px rgba(255, 210, 8, 0.3);
+		color: #000 !important;
+	}
+}
+
+// Cancel Button - Dark red tint
+.btn-clean-cancel {
+	min-width: 17.4rem;
+	min-height: 5.8rem;
+	font-size: 1.6rem;
+	padding: 1.5rem 3.0rem;
+	background: linear-gradient(180deg, #3a2a2a 0%, #2a1a1a 50%, #3a2a2a 100%) !important;
+	background-image: none !important;
+	border: 1px solid #664444 !important;
+	color: #ff8888 !important;
+	text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
+	font-weight: bold !important;
+	clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0% 50%);
+	box-shadow: 0 0 8px rgba(100, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+	transition: all 0.15s ease;
+	&:before {
+		display: none !important;
+	}
+	&:hover, &:focus {
+		background: linear-gradient(180deg, #4a3a3a 0%, #3a2a2a 50%, #4a3a3a 100%) !important;
+		background-image: none !important;
+		border-color: #ff6666 !important;
+		box-shadow: 0 0 15px rgba(255, 100, 100, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+		color: #ffaaaa !important;
+	}
+	&:active, &:active:focus {
+		background: linear-gradient(180deg, #2a1a1a 0%, #1a0a0a 50%, #2a1a1a 100%) !important;
+		background-image: none !important;
+		box-shadow: 0 0 5px rgba(100, 0, 0, 0.2);
+		color: #ff6666 !important;
+	}
+}
+
+// Button Groups - Special handling for left/right buttons
+.btn-group {
+	.btn-clean-primary {
+		// Left button in group - flat right edge
+		&:first-child:not(:last-child) {
+			clip-path: polygon(12px 0%, 100% 0%, 100% 100%, 12px 100%, 0% 50%) !important;
+			margin-right: -1px;
+			background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+			background-image: none !important;
+			&:hover, &:focus {
+				background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) !important;
+				background-image: none !important;
+			}
+			&:active, &:active:focus {
+				background: linear-gradient(180deg, #c9a406 0%, #a88a05 50%, #c9a406 100%) !important;
+				background-image: none !important;
+			}
+		}
+		// Right button in group - flat left edge
+		&:last-child:not(:first-child) {
+			clip-path: polygon(0% 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 0% 100%) !important;
+			margin-left: -1px;
+			background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+			background-image: none !important;
+			&:hover, &:focus {
+				background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) !important;
+				background-image: none !important;
+			}
+			&:active, &:active:focus {
+				background: linear-gradient(180deg, #c9a406 0%, #a88a05 50%, #c9a406 100%) !important;
+				background-image: none !important;
+			}
+		}
+		// Middle button in group - flat both edges
+		&:not(:last-child):not(:first-child) {
+			clip-path: none !important;
+			margin-left: -1px;
+			margin-right: -1px;
+			background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+			background-image: none !important;
+			&:hover, &:focus {
+				background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) !important;
+				background-image: none !important;
+			}
+			&:active, &:active:focus {
+				background: linear-gradient(180deg, #c9a406 0%, #a88a05 50%, #c9a406 100%) !important;
+				background-image: none !important;
+			}
+		}
+	}
+}
+
+// Icon buttons
+.btn-clean-icon {
+	background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 50%, #2a2a2a 100%) !important;
+	background-image: none !important;
+	border: 1px solid #444 !important;
+	clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0% 50%);
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+	transition: all 0.15s ease;
+	&:before {
+		display: none !important;
+	}
+	&:hover, &:focus {
+		background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 50%, #3a3a3a 100%) !important;
+		background-image: none !important;
+		border-color: #ffd208 !important;
+		box-shadow: 0 0 15px rgba(255, 210, 8, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+	}
+	&:active, &:active:focus {
+		background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 50%, #1a1a1a 100%) !important;
+		background-image: none !important;
+	}
+}
+
+// ZAMA Gold text color utility
+.zama-gold {
+	color: #ffd208 !important;
+	text-shadow: 0 0 8px rgba(255, 210, 8, 0.5);
+	font-weight: bold;
+}
+
+// Tutorial Start button - Gold style
+button.start {
+	background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) \!important;
+	background-image: none \!important;
+	border: 1px solid #ffd208 \!important;
+	color: #000 \!important;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.3) \!important;
+	&:hover, &:focus {
+		background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) \!important;
+		box-shadow: 0 0 18px rgba(255, 210, 8, 0.6), inset 0 1px 0 rgba(255,255,255,0.5);
+	}
+	&:active {
+		background: linear-gradient(180deg, #c9a406 0%, #a88a05 50%, #c9a406 100%) \!important;
+	}
+}
+
+// Tutorial Start button - Gold style
+button.start {
+	background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+	background-image: none !important;
+	border: 1px solid #ffd208 !important;
+	color: #000 !important;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.3) !important;
+	&:hover, &:focus {
+		background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) !important;
+		box-shadow: 0 0 18px rgba(255, 210, 8, 0.6), inset 0 1px 0 rgba(255,255,255,0.5);
+	}
+	&:active {
+		background: linear-gradient(180deg, #c9a406 0%, #a88a05 50%, #c9a406 100%) !important;
+	}
+}
+
+// Fix Start button specificity
+.btn.btn-clean.btn-clean-secondary.start {
+	background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+	background-image: none !important;
+	border: 1px solid #ffd208 !important;
+	color: #000 !important;
+}
+
+// Force Start button gold - maximum specificity
+.tutorial-support .dialog-content .dialog-body .btn.btn-clean.btn-clean-secondary.start,
+.btn.btn-clean.btn-clean-secondary.start,
+button.btn-clean-secondary.start {
+	background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+	background-image: none !important;
+	background-color: transparent !important;
+	border: 1px solid #ffd208 !important;
+	color: #000 !important;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.3) !important;
+	&:hover, &:focus {
+		background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) !important;
+		background-image: none !important;
+	}
+}
+.resource-scale-2 .btn.btn-clean-secondary.start,
+.resource-scale-2 button.start {
+	background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+	background-image: none !important;
+}
+
+// FIXED Start button - with background-color fallback
+.tutorial-support .dialog-content .dialog-body .btn.btn-clean.btn-clean-secondary.start,
+.btn.btn-clean.btn-clean-secondary.start,
+button.btn-clean-secondary.start {
+	background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+	background-image: none !important;
+	background-color: #ffd208 !important;
+	border: 1px solid #ffd208 !important;
+	color: #000 !important;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.3) !important;
+	font-weight: bold !important;
+	clip-path: polygon(6px 0%, calc(100% - 6px) 0%, 100% 50%, calc(100% - 6px) 100%, 6px 100%, 0% 50%);
+	box-shadow: 0 0 12px rgba(255, 210, 8, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+	transition: all 0.15s ease;
+}
+.tutorial-support .dialog-content .dialog-body .btn.btn-clean.btn-clean-secondary.start:hover,
+.btn.btn-clean.btn-clean-secondary.start:hover,
+button.btn-clean-secondary.start:hover {
+	background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) !important;
+	background-image: none !important;
+	background-color: #ffe54a !important;
+	box-shadow: 0 0 18px rgba(255, 210, 8, 0.6), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.tutorial-support .dialog-content .dialog-body .btn.btn-clean.btn-clean-secondary.start:active,
+.btn.btn-clean.btn-clean-secondary.start:active,
+button.btn-clean-secondary.start:active {
+	background: linear-gradient(180deg, #c9a406 0%, #a88a05 50%, #c9a406 100%) !important;
+	background-image: none !important;
+	background-color: #c9a406 !important;
+	box-shadow: 0 0 8px rgba(255, 210, 8, 0.3);
+}

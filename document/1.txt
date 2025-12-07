@@ -1,0 +1,591 @@
+# Welcome
+
+**Welcome to the Zama Confidential Blockchain Protocol Docs.**\
+The docs aim to guide you to build confidential dApps on top of any L1 or L2 using Fully Homomorphic Encryption (FHE).
+
+## Where to go next
+
+If you're completely new to FHE or the Zama Protocol, we suggest first checking out the [Litepaper](https://docs.zama.ai/protocol/zama-protocol-litepaper), which offers a thorough overview of the protocol.
+
+Otherwise:
+
+🟨 Go to [**Quick Start**](https://docs.zama.ai/protocol/solidity-guides/getting-started/quick-start-tutorial) to learn how to write your first confidential smart contract using FHEVM.
+
+🟨 Go to [**Solidity Guides**](https://docs.zama.ai/protocol/solidity-guides) to explore how encrypted types, operations, ACLs, and other core features work in practice.
+
+🟨 Go to [**Relayer SDK Guides**](https://docs.zama.ai/protocol/relayer-sdk-guides) to build a frontend that can encrypt, decrypt, and interact securely with the blockchain.
+
+🟨 Go to [**FHE on Blockchain**](https://docs.zama.org/protocol/protocol/overview) to learn the architecture in depth and understand how encrypted computation flows through both on-chain and off-chain components.
+
+🟨 Go to [**Examples**](https://docs.zama.ai/protocol/examples) to find reference and inspiration from smart contract examples and dApp examples.
+
+{% hint style="warning" %}
+The Zama Protocol Testnet is not audited and is not intended for production use. **Do not publish any critical or sensitive data**. For production workloads, please wait for the Mainnet release.
+{% endhint %}
+
+## Help center
+
+Ask technical questions and discuss with the community.
+
+* [Community forum](https://community.zama.ai/c/fhevm/15)
+* [Discord channel](https://discord.com/invite/zama)
+
+
+# FHE on blockchain
+
+This section explains in depth the Zama Confidential Blockchain Protocol (Zama Protocol) and demonstrates how it can bring encrypted computation to smart contracts using Fully Homomorphic Encryption (FHE).
+
+FHEVM is the core technology that powers the Zama Protocol. It is composed of the following key components.
+
+<figure><img src="https://4279888132-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F06EvE9BR7kBlHwVGcFT8%2Fuploads%2Fgit-blob-64b4536b1a1605b9ccd2d0293a7df06aa358b8d3%2FFHEVM.png?alt=media" alt=""><figcaption></figcaption></figure>
+
+* [**FHEVM Solidity library**](https://docs.zama.org/protocol/protocol/overview/library): Enables developers to write confidential smart contracts in plain Solidity using encrypted data types and operations.
+* [**Host contracts**](https://docs.zama.org/protocol/protocol/overview/hostchain) : Trusted on-chain contracts deployed on EVM-compatible blockchains. They manage access control and trigger off-chain encrypted computation.
+* [**Coprocessors**](https://docs.zama.org/protocol/protocol/overview/coprocessor) – Decentralized services that verify encrypted inputs, run FHE computations, and commit results.
+* [**Gateway**](https://docs.zama.org/protocol/protocol/overview/gateway) **–** The central orchestrator of the protocol. It validates encrypted inputs, manages access control lists (ACLs), bridges ciphertexts across chains, and coordinates coprocessors and the KMS.
+* [**Key Management Service (KMS)**](https://docs.zama.org/protocol/protocol/overview/kms) – A threshold MPC network that generates and rotates FHE keys, and handles secure, verifiable decryption.
+* [**Relayer & oracle**](https://docs.zama.org/protocol/protocol/overview/relayer_oracle) – A lightweight off-chain service that helps users interact with the Gateway by forwarding encryption or decryption requests.
+
+
+# FHE library
+
+This document offers a high-level overview of the **FHEVM library**, helping you understand how it fits into the broader Zama Protocol. To learn how to use it in practice, see the [Solidity Guides](https://docs.zama.ai/protocol/solidity-guides).
+
+## What is FHEVM library?
+
+The FHEVM library enables developers to build smart contracts that operate on encrypted data—without requiring any knowledge of cryptography.
+
+It extends the standard Solidity development flow with:
+
+* Encrypted data types
+* Arithmetic, logical, and conditional operations on encrypted values
+* Fine-grained access control
+* Secure input handling and attestation support
+
+This library serves as an **abstraction layer** over Fully Homomorphic Encryption (FHE) and interacts seamlessly with off-chain components such as the **Coprocessors** and the **Gateway**.
+
+## Key features
+
+### Encrypted data types
+
+The library introduces encrypted variants of common Solidity types, implemented as user-defined value types. Internally, these are represented as `bytes32` handles that point to encrypted values stored off-chain.
+
+| Category          | Types                                |
+| ----------------- | ------------------------------------ |
+| Booleans          | `ebool`                              |
+| Unsigned integers | `euint8`, `euint16`, ..., `euint256` |
+| Signed integers   | `eint8`, `eint16,` ..., `eint256`    |
+| Addresses         | `eaddress`                           |
+
+→ See the full guide of [Encrypted data types](https://docs.zama.ai/protocol/solidity-guides/smart-contract/types).
+
+### FHE operations
+
+Each encrypted type supports operations similar to its plaintext counterpart:
+
+* Arithmetic: `add`, `sub`, `mul`, `div`, `rem`, `neg`
+* Logic: `and`, `or`, `xor`, `not`
+* Comparison: `lt`, `gt`, `le`, `ge`, `eq`, `ne`, `min`, `max`
+* Bit manipulation: `shl`, `shr`, `rotl`, `rotr`
+
+These operations are symbolically executed on-chain by generating new handles and emitting events for coprocessors to process the actual FHE computation off-chain.
+
+Example:
+
+```solidity
+function compute(euint64 x, euint64 y, euint64 z) public returns (euint64) {
+  euint64 result = FHE.mul(FHE.add(x, y), z);
+  return result;
+}
+```
+
+→ See the full guide of [Operations on encrypted types](https://docs.zama.ai/protocol/solidity-guides/smart-contract/operations).
+
+### Branching with encrypted Conditions
+
+Direct if or require statements are not compatible with encrypted booleans. Instead, the library provides a `select`operator to emulate conditional logic without revealing which branch was taken:
+
+```solidity
+ebool condition = FHE.lte(x, y);
+euint64 result = FHE.select(condition, valueIfTrue, valueIfFalse);
+```
+
+This preserves confidentiality even in conditional logic.
+
+→ See the full guide of [Branching](https://docs.zama.ai/protocol/solidity-guides/smart-contract/logics/conditions).
+
+### Handling external encrypted inputs
+
+When users want to pass encrypted inputs (e.g., values they’ve encrypted off-chain or bridged from another chain), they provide:
+
+* external values
+* A list of coprocessor signatures (attestation)
+
+The function `fromExternal` is used to validate the attestation and extract a usable encrypted handle:
+
+```solidity
+function handleInput(externalEuint64 param1, externalEbool param2, bytes calldata attestation) public {
+  euint64 val = FHE.fromExternal(param1, attestation);
+  ebool flag = FHE.fromExternal(param2, attestation);
+}
+```
+
+This ensures that only authorized, well-formed ciphertexts are accepted by smart contracts.
+
+→ See the full guide of [Encrypted input](https://docs.zama.ai/protocol/solidity-guides/smart-contract/inputs).
+
+### Access control
+
+The FHE library also exposes methods for managing access to encrypted values using the ACL maintained by host contracts:
+
+* `allow(handle, address)`: Grant persistent access
+* `allowTransient(handle, address)`: Grant access for the current transaction only
+* `allowForDecryption(handle)`: Make handle publicly decryptable
+* `isAllowed(handle, address)`: Check if address has access
+* `isSenderAllowed(handle)`: Shortcut for checking msg.sender permissions
+
+These `allow` methods emit events consumed by the coprocessors to replicate the ACL state in the Gateway.
+
+→ See the full guide of [ACL](https://docs.zama.ai/protocol/solidity-guides/smart-contract/acl).
+
+### Pseudo-random encrypted values
+
+The library allows generation of pseudo-random encrypted integers, useful for games, lotteries, or randomized logic:
+
+* `randEuintXX()`
+* `randEuintXXBounded`(uint bound)
+
+These are deterministic across coprocessors and indistinguishable to external observers.
+
+→ See the full guide of [Generate random number](https://docs.zama.ai/protocol/solidity-guides/smart-contract/operations/random).
+
+
+# Host contracts
+
+This document explains one of the key components of the Zama Protocol - Host contracts.
+
+## What are host contracts?
+
+Host contracts are smart contracts deployed on any supported blockchain (EVM or non-EVM) that act as trusted bridges between on-chain applications and the FHEVM protocol. They serve as the minimal and foundational interface that confidential smart contracts use to:
+
+* Interact with encrypted data (handles)
+* Perform access control operations
+* Emit events for the off-chain components (coprocessors, Gateway)
+
+These host contracts are used indirectly by developers via the FHEVM Solidity library, abstracting away complexity and integrating smoothly into existing workflows.
+
+## Responsibilities of host contracts
+
+### Trusted interface layer
+
+Host contracts are the only on-chain components that:
+
+* Maintain and enforce Access Control Lists (ACLs) for ciphertexts.
+* Emit events that trigger coprocessor execution.
+* Validate access permissions (persistent, transient, or decryption-related).
+
+They are effectively the on-chain authority for:
+
+* Who is allowed to access a ciphertext
+* When and how they can use it
+* These ACLs are mirrored on the Gateway for off-chain enforcement and bridging.
+
+### Access Control API
+
+Host contracts expose access control logic via standardized function calls (wrapped by the FHEVM library):
+
+* `allow(handle, address)`: Grants persistent access.
+* `allowTransient(handle, address)`: Grants temporary access for a single transaction.
+* `allowForDecryption(handle)`: Marks a handle as publicly decryptable.
+* `isAllowed(handle, address)`: Returns whether a given address has access.
+* `isSenderAllowed(handle)`: Checks if msg.sender is allowed to use a handle.
+
+They also emit:
+
+* `Allowed(handle, address)`
+* `AllowedForDecryption(handle)`
+
+These events are crucial for triggering coprocessor state updates and ensuring proper ACL replication to the Gateway.
+
+→ See the full guide of [ACL](https://docs.zama.ai/protocol/solidity-guides/smart-contract/acl).
+
+### Security role
+
+Although the FHE computation happens off-chain, host contracts play a critical role in protocol security by:
+
+* Enforcing ACL-based gating
+* Ensuring only authorized contracts and users can decrypt or use a handle
+* Preventing misuse of encrypted data (e.g., computation without access)
+
+Access attempts without proper authorization are rejected at the smart contract level, protecting both the integrity of confidential operations and user privacy.
+
+
+# Coprocessor
+
+This document explains one of the key components of the Zama Protocol - Coprocessor, the Zama Protocol’s off-chain computation engine.
+
+## What is the Coprocessor?
+
+Coprocessor performs the heavy cryptographic operations—specifically, fully homomorphic encryption (FHE) computations—on behalf of smart contracts that operate on encrypted data. Acting as a decentralized compute layer, the coprocessor bridges symbolic on-chain logic with real-world encrypted execution.
+
+Coprocessor works together with the Gateway, verifying encrypted inputs, executing FHE instructions, and maintaining synchronization of access permissions, in particular:
+
+* Listens to events emitted by host chains and the Gateway.
+* Executes FHE computations (`add`, `mul`, `div`, `cmp`, etc.) on ciphertexts.
+* Validates encrypted inputs and ZK proofs of correctness.
+* Maintains and updates a replica of the host chain’s Access Control Lists (ACLs).
+* Stores and serves encrypted data for decryption or bridging.
+
+Each coprocessor independently executes tasks and publishes verifiable results, enabling a publicly auditable and horizontally scalable confidential compute infrastructure .
+
+## Responsibilities of the Coprocessor
+
+### Encrypted input verification
+
+When users submit encrypted values to the Gateway, each coprocessor:
+
+* Verifies the associated Zero-Knowledge Proof of Knowledge (ZKPoK).
+* Extracts and unpacks individual ciphertexts from a packed submission.
+* Stores the ciphertexts under derived handles.
+* Signs the verified handles, embedding user and contract metadata.
+* Sends the signed data back to the Gateway for consensus.
+
+This ensures only valid, well-formed encrypted values enter the system .
+
+### FHE computation execution
+
+When a smart contract executes a function over encrypted values, the on-chain logic emits symbolic computation events.\
+Each coprocessor:
+
+* Reads these events from the host chain node it runs.
+* Fetches associated ciphertexts from its storage.
+* Executes the required FHE operations using the TFHE-rs library (e.g., add, mul, select).
+* Stores the resulting ciphertext under a deterministically derived handle.
+* Optionally publishes a commitment (digest) of the ciphertext to the Gateway for verifiability.
+
+This offloads expensive computation from the host chain while maintaining full determinism and auditability .
+
+### ACL replication
+
+Coprocessors replicate the Access Control List (ACL) logic from host contracts. They:
+
+* Listen to Allowed and AllowedForDecryption events.
+* Push updates to the Gateway.
+
+This ensures decentralized enforcement of access rights, enabling proper handling of decryptions, bridges, and contract interactions .
+
+### Ciphertext commitment
+
+To ensure verifiability and mitigate misbehavior, each coprocessor:
+
+* Commits to ciphertext digests (via hash) when processing Allowed events.
+* Publishes these commitments to the Gateway.
+* Enables external verification of FHE computations.
+
+This is essential for fraud-proof mechanisms and eventual slashing of malicious or faulty operators .
+
+### Bridging & decryption support
+
+Coprocessors assist in:
+
+* Bridging encrypted values between host chains by generating new handles and signatures.
+* Preparing ciphertexts for public and user decryption using operations like Switch-n-Squash to normalize ciphertexts for the KMS.
+
+These roles help maintain cross-chain interoperability and enable privacy-preserving data access for users and smart contracts .
+
+## Security and trust assumptions
+
+Coprocessors are designed to be minimally trusted and publicly verifiable. Every FHE computation or input verification they perform is accompanied by a cryptographic commitment (hash digest) and a signature, allowing anyone to independently verify correctness.
+
+The protocol relies on a majority-honest assumption: as long as more than 50% of coprocessors are honest, results are valid. The Gateway aggregates responses and accepts outputs only when a majority consensus is reached.
+
+To enforce honest behavior, coprocessors must stake $ZAMA tokens and are subject to slashing if caught misbehaving—either through automated checks or governance-based fraud proofs.
+
+This model ensures correctness through transparency, resilience through decentralization, and integrity through economic incentives.
+
+## Architecture & Scalability
+
+The coprocessor architecture includes:
+
+* Event listeners for host chains and the Gateway
+* A task queue for FHE and ACL update jobs
+* Worker threads that process tasks in parallel
+* A public storage layer (e.g., S3) for ciphertext availability
+
+This modular setup supports horizontal scaling: adding more workers or machines increases throughput. Symbolic computation and delayed execution also ensure low gas costs on-chain .
+
+
+# Gateway
+
+This document explains one of the key components of the Zama Protocol - Gateway, the central orchestrator within Zama’s FHEVM protocol, coordinates interactions between users, host chains, coprocessors, and the Key Management Service (KMS), ensuring that encrypted data flows securely and correctly through the system.
+
+## What is the Gateway?
+
+The Gateway is a specialized blockchain component (implemented as an Arbitrum rollup) responsible for managing:
+
+* Validation of encrypted inputs from users and applications.
+* Bridging of encrypted ciphertexts across different blockchains.
+* Decryption orchestration via KMS nodes.
+* Consensus enforcement among decentralized coprocessors.
+* Staking and reward distribution to operators participating in FHE computations.
+
+It is designed to be trust-minimized: computations are independently verifiable, and no sensitive data or decryption keys are stored on the Gateway itself.
+
+## Responsibilities of the Gateway
+
+### Encrypted input validation
+
+The Gateway ensures that encrypted values provided by users are well-formed and valid. It does this by:
+
+* Accepting encrypted inputs along with Zero-Knowledge Proofs of Knowledge (ZKPoKs).
+* Emitting verification events for coprocessors to validate.
+* Aggregating signatures from a majority of coprocessors to generate attestations, which can then be used on-chain as trusted external values.
+
+### Access Control coordination
+
+The Gateway maintains a synchronized copy of Access Control Lists (ACLs) from host chains, enabling it to independently determine if decryption or computation rights should be granted for a ciphertext. This helps enforce:
+
+* Access permissions (allow)
+* Public decryption permissions (allowForDecryption)
+
+These ACL updates are replicated by coprocessors and pushed to the Gateway for verification and enforcement.
+
+### Decryption orchestration
+
+When a smart contract or user requests the decryption of an encrypted value:
+
+1. The Gateway verifies ACL permissions.
+2. It then triggers the KMS to decrypt (either publicly or privately).
+3. Once the KMS returns signed results, the Gateway emits events that can be picked up by an oracle (for smart contract decryption) or returned to the user (for private decryption).
+
+This ensures asynchronous, secure, and auditable decryption without the Gateway itself knowing the plaintext.
+
+### Cross-chain bridging
+
+The Gateway also handles bridging of encrypted handles between host chains. It:
+
+* Verifies access rights on the source chain using its ACL copy.
+* Requests the coprocessors to compute new handles for the target chain.
+* Collects signatures from coprocessors.
+
+Issues attestations allowing these handles to be used on the destination chain.
+
+### Consensus and slashing enforcement
+
+The Gateway enforces consensus across decentralized coprocessors and KMS nodes. If discrepancies occur:
+
+* Coprocessors must provide commitments to ciphertexts.
+* Fraudulent or incorrect behavior can be challenged and slashed.
+* Governance mechanisms can be triggered for off-chain verification when necessary.
+
+### Protocol administration
+
+The Gateway runs smart contracts that administer:
+
+* Operator and participant registration (coprocessors, KMS nodes, host chains)
+* Key management and rotation
+* Bridging logic
+* Input validation and decryption workflows
+
+## Security and trust assumptions
+
+The Gateway is designed to operate without requiring trust:
+
+* It does not perform any computation itself—it merely orchestrates and validates.
+* All actions are signed, and cryptographic verification is built into every step.
+
+The protocol assumes no trust in the Gateway for security guarantees—it can be fully audited and replaced if necessary.
+
+
+# KMS
+
+This document explains one of the key components of the Zama Protocol - The Key Management Service (KMS), responsible for the secure generation, management, and usage of FHE keys needed to enable confidential smart contracts.
+
+## What is the KMS?
+
+The KMS is a decentralized network of several nodes (also called "parties") that run an MPC (Multi-Party Computation) protocol:
+
+* Securely generate global FHE keys
+* Decrypt ciphertexts securely for public and user-targeted decryptions
+* Support zero-knowledge proof infrastructure
+* Manage key lifecycles with NIST compliance
+
+It works entirely off-chain, but is orchestrated through the Gateway, which initiates and tracks all key-related operations. This separation of powers ensures strong decentralization and auditability.
+
+## Key responsibilities
+
+### FHE threshold key generation
+
+* The KMS securely generates a global public/private key pair used across all host chains.
+* This key enables composability — encrypted data can be shared between contracts and chains.
+* The private FHE key is never directly accessible by a single party; instead, it is secret-shared among the MPC nodes.
+
+The system follows the NIST SP 800-57 key lifecycle model, managing key states such as Active, Suspended, Deactivated,and Destroyed to ensure proper rotation and forward security.
+
+### Threshold Decryption via MPC
+
+The KMS performs decryption using a threshold decryption protocol — at least a minimum number of MPC parties (e.g., 9 out of 13) must participate in the protocol to robustly decrypt a value.
+
+* This protects against compromise: no individual party has access to the full key. And adversary would need to control more than the threshold of KMS nodes to influence the system.
+* The protocol supports both:
+  * Public decryption (e.g., for smart contracts)
+  * User decryption (privately returned, re-encrypted only for the user to access)
+
+All decryption operation outputs are signed by each node and the output can be verified on-chain for full auditability.
+
+### ZK Proof support
+
+The KMS generates Common Reference Strings (CRS) needed to validate Zero-Knowledge Proofs of Knowledge (ZKPoK) when users submit encrypted values.
+
+This ensures encrypted inputs are valid and well-formed, and that a user has knowledge of the plaintext contained in the submitted input ciphertext.
+
+## Security architecture
+
+### MPC-based key sharing
+
+* The KMS currently uses 13 MPC nodes, operated by different reputable organizations.
+* Private keys are split using threshold secret sharing.
+* Communication between nodes are secured using mTLS with gRPC.
+
+### Honest majority assumption
+
+* The protocol is robust against malicious actors as long as at most 1/3 of the nodes act maliciously.
+* It supports guaranteed output delivery even if some nodes are offline or misbehaving.
+
+### Secure execution environments
+
+Each MPC node runs by default inside an AWS Nitro Enclave, a secure execution environment that prevents even node operators from accessing their own key shares. This design mitigates insider risks, such as unauthorized key reconstruction or selling of shares.
+
+### Auditable via gateway
+
+* All operations are broadcast through the Gateway and recorded as blockchain events.
+* KMS responses are signed, allowing smart contracts and users to verify results cryptographically.
+
+### Key lifecycle management
+
+The KMS adheres to a formal key lifecycle, as per NIST SP 800-57:
+
+| State          | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| Pre-activation | Key is created but not in use.                                     |
+| Active         | Key is used for encryption and decryption.                         |
+| Suspended      | Temporarily replaced during rotation. Still usable for decryption. |
+| Deactivated    | Archived; only used for decryption.                                |
+| Compromised    | Flagged for misuse; only decryption allowed.                       |
+| Destroyed      | Key material is deleted permanently.                               |
+
+The KMS supports key switching using FHE, allowing ciphertexts to be securely transferred between keys during rotation. This maintains interoperability across key updates.
+
+### Backup & recovery
+
+In addition to robustness through MPC, the KMS also offers a custodial backup system:
+
+* Each MPC node splits its key share into encrypted fragments, distributing them to independent custodians.
+* If a share is lost, a quorum of custodians can collaboratively restore it, ensuring recovery even if several MPC nodes are offline.
+* This approach guarantees business continuity and resilience against outages.
+* All recovery operations require a quorum of operators and are fully auditable on-chain.
+
+### Workflow example: Public decryption
+
+1. A smart contract requests decryption via an oracle.
+2. The Gateway verifies permissions (i.e. that the contract is allowed to decrypt the ciphertext) and emits an event.
+3. KMS parties retrieve the ciphertext, verify it, and run the MPC decryption protocol to jointly compute the plaintext and sign their result.
+4. Once a quorum agrees on the plaintext result, it is published (with signatures).
+5. The oracle posts the plaintext back on-chain and contracts can verify the authenticity using the KMS signatures.
+
+
+# KMS
+
+This document explains one of the key components of the Zama Protocol - The Key Management Service (KMS), responsible for the secure generation, management, and usage of FHE keys needed to enable confidential smart contracts.
+
+## What is the KMS?
+
+The KMS is a decentralized network of several nodes (also called "parties") that run an MPC (Multi-Party Computation) protocol:
+
+* Securely generate global FHE keys
+* Decrypt ciphertexts securely for public and user-targeted decryptions
+* Support zero-knowledge proof infrastructure
+* Manage key lifecycles with NIST compliance
+
+It works entirely off-chain, but is orchestrated through the Gateway, which initiates and tracks all key-related operations. This separation of powers ensures strong decentralization and auditability.
+
+## Key responsibilities
+
+### FHE threshold key generation
+
+* The KMS securely generates a global public/private key pair used across all host chains.
+* This key enables composability — encrypted data can be shared between contracts and chains.
+* The private FHE key is never directly accessible by a single party; instead, it is secret-shared among the MPC nodes.
+
+The system follows the NIST SP 800-57 key lifecycle model, managing key states such as Active, Suspended, Deactivated,and Destroyed to ensure proper rotation and forward security.
+
+### Threshold Decryption via MPC
+
+The KMS performs decryption using a threshold decryption protocol — at least a minimum number of MPC parties (e.g., 9 out of 13) must participate in the protocol to robustly decrypt a value.
+
+* This protects against compromise: no individual party has access to the full key. And adversary would need to control more than the threshold of KMS nodes to influence the system.
+* The protocol supports both:
+  * Public decryption (e.g., for smart contracts)
+  * User decryption (privately returned, re-encrypted only for the user to access)
+
+All decryption operation outputs are signed by each node and the output can be verified on-chain for full auditability.
+
+### ZK Proof support
+
+The KMS generates Common Reference Strings (CRS) needed to validate Zero-Knowledge Proofs of Knowledge (ZKPoK) when users submit encrypted values.
+
+This ensures encrypted inputs are valid and well-formed, and that a user has knowledge of the plaintext contained in the submitted input ciphertext.
+
+## Security architecture
+
+### MPC-based key sharing
+
+* The KMS currently uses 13 MPC nodes, operated by different reputable organizations.
+* Private keys are split using threshold secret sharing.
+* Communication between nodes are secured using mTLS with gRPC.
+
+### Honest majority assumption
+
+* The protocol is robust against malicious actors as long as at most 1/3 of the nodes act maliciously.
+* It supports guaranteed output delivery even if some nodes are offline or misbehaving.
+
+### Secure execution environments
+
+Each MPC node runs by default inside an AWS Nitro Enclave, a secure execution environment that prevents even node operators from accessing their own key shares. This design mitigates insider risks, such as unauthorized key reconstruction or selling of shares.
+
+### Auditable via gateway
+
+* All operations are broadcast through the Gateway and recorded as blockchain events.
+* KMS responses are signed, allowing smart contracts and users to verify results cryptographically.
+
+### Key lifecycle management
+
+The KMS adheres to a formal key lifecycle, as per NIST SP 800-57:
+
+| State          | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| Pre-activation | Key is created but not in use.                                     |
+| Active         | Key is used for encryption and decryption.                         |
+| Suspended      | Temporarily replaced during rotation. Still usable for decryption. |
+| Deactivated    | Archived; only used for decryption.                                |
+| Compromised    | Flagged for misuse; only decryption allowed.                       |
+| Destroyed      | Key material is deleted permanently.                               |
+
+The KMS supports key switching using FHE, allowing ciphertexts to be securely transferred between keys during rotation. This maintains interoperability across key updates.
+
+### Backup & recovery
+
+In addition to robustness through MPC, the KMS also offers a custodial backup system:
+
+* Each MPC node splits its key share into encrypted fragments, distributing them to independent custodians.
+* If a share is lost, a quorum of custodians can collaboratively restore it, ensuring recovery even if several MPC nodes are offline.
+* This approach guarantees business continuity and resilience against outages.
+* All recovery operations require a quorum of operators and are fully auditable on-chain.
+
+### Workflow example: Public decryption
+
+1. A smart contract requests decryption via an oracle.
+2. The Gateway verifies permissions (i.e. that the contract is allowed to decrypt the ciphertext) and emits an event.
+3. KMS parties retrieve the ciphertext, verify it, and run the MPC decryption protocol to jointly compute the plaintext and sign their result.
+4. Once a quorum agrees on the plaintext result, it is published (with signatures).
+5. The oracle posts the plaintext back on-chain and contracts can verify the authenticity using the KMS signatures.

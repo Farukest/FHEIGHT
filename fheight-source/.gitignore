@@ -1,0 +1,28 @@
+# Secrets
+.env
+.env_for_alpha
+serviceAccountKey.json
+
+# Build artifacts
+/app/data/packages.js
+/app/localization/locales/en/index.json
+/dist
+node_modules
+.awspublish*
+
+# Development artifacts
+*.log
+*.log.txt
+dump.rdb
+.foreman
+.idea/
+.node-version
+.sass-cache
+.tmp
+.vagrant/
+.vscode
+/.pgdata
+.yarn/install-state.gz
+
+# OSX-specific artifacts
+.DS_Store

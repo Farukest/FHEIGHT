@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="387" height="84" viewBox="0 0 387 84">
+  <defs>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e0e0e0;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- FHEIGHT text styled like original logo -->
+  <g fill="url(#textGradient)" filter="url(#glow)">
+    <!-- F -->
+    <path d="M5 10 L5 74 L18 74 L18 48 L45 48 L45 36 L18 36 L18 22 L50 22 L50 10 Z"/>
+
+    <!-- H -->
+    <path d="M60 10 L60 74 L73 74 L73 48 L100 48 L100 74 L113 74 L113 10 L100 10 L100 36 L73 36 L73 10 Z"/>
+
+    <!-- E -->
+    <path d="M123 10 L123 74 L168 74 L168 62 L136 62 L136 48 L163 48 L163 36 L136 36 L136 22 L168 22 L168 10 Z"/>
+
+    <!-- I -->
+    <path d="M178 10 L178 74 L191 74 L191 10 Z"/>
+
+    <!-- G -->
+    <path d="M201 10 L201 74 L251 74 L251 36 L226 36 L226 48 L238 48 L238 62 L214 62 L214 22 L251 22 L251 10 Z"/>
+
+    <!-- H -->
+    <path d="M261 10 L261 74 L274 74 L274 48 L301 48 L301 74 L314 74 L314 10 L301 10 L301 36 L274 36 L274 10 Z"/>
+
+    <!-- T -->
+    <path d="M324 10 L324 22 L344 22 L344 74 L357 74 L357 22 L377 22 L377 10 Z"/>
+  </g>
+
+  <!-- Decorative lines -->
+  <line x1="0" y1="78" x2="180" y2="78" stroke="#ffffff" stroke-width="2"/>
+  <line x1="207" y1="78" x2="387" y2="78" stroke="#ffffff" stroke-width="2"/>
+
+  <!-- Center diamond accent -->
+  <polygon points="193,70 200,78 193,86 186,78" fill="#ffffff"/>
+</svg>

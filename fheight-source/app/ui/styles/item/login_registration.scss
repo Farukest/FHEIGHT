@@ -1,0 +1,268 @@
+/* ---------- LOGIN ---------- */
+
+#app-login {
+	position: absolute;
+	left: 50%;
+	top: 60%;
+	transform: translate(-50%, -60%);
+	background: radial-gradient(ellipse closest-side at 50% 60%,rgba(0,0,0,0.5), transparent);
+	padding: 6.0rem;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+	a, button {
+		text-align: center;
+		@include altHeaderFont();
+	}
+	button {
+		&:after {
+			left: -12.5%;
+		}
+	}
+
+	.login-form {
+		display: flex;
+		flex-flow: column nowrap;
+		justify-content: center;
+		align-items: center;
+		align-content: center;
+
+	 	div.utility-links {
+			color:rgba(255,255,255,0.5);
+			margin:1rem 0;
+			a {
+				font-size: 1.25rem;
+				text-transform: uppercase;
+				display: inline;
+				font-weight: bold;
+				text-shadow: 0px 0px 10px #000, 0px 0px 10px #000;
+				&:hover {
+					color:#fff;
+					text-shadow: 0px 0px 10px $blue, 0px 0px 10px $blue;
+				}
+			}
+		}
+
+		.input-group {
+			margin: 0;
+		}
+		.form-group {
+			position: relative;
+			margin: 0;
+			&.has-error {
+				.form-control {
+					border-color: #c10000;
+					background: rgba(127,0,0,0.5);
+				}
+				.tooltip {
+					.tooltip-inner {
+						color: #FFF;
+						text-shadow: none;
+						background-color: rgba(255,0,60,1);
+						border: none;
+					}
+					&.left {
+						.tooltip-arrow {
+							border-left-color: rgba(255,0,60,1);
+						}
+					}
+					&.right {
+						.tooltip-arrow {
+							border-right-color: rgba(255,0,60,1);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	.login {
+		margin-top: 1.5rem;
+		background: linear-gradient(180deg, #ffd208 0%, #c9a406 50%, #ffd208 100%) !important;
+		border: 2px solid #ffd208 !important;
+		color: #000 !important;
+		text-shadow: 0 1px 0 rgba(255,255,255,0.3) !important;
+		font-weight: bold !important;
+		padding: 1rem 3rem !important;
+		clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+		box-shadow: 0 0 15px rgba(255, 210, 8, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+		transition: all 0.2s ease;
+		&:hover {
+			background: linear-gradient(180deg, #ffe54a 0%, #ffd208 50%, #ffe54a 100%) !important;
+			box-shadow: 0 0 25px rgba(255, 210, 8, 0.7), inset 0 1px 0 rgba(255,255,255,0.5);
+			transform: scale(1.02);
+		}
+		&:active {
+			background: linear-gradient(180deg, #c9a406 0%, #a88a05 50%, #c9a406 100%) !important;
+			transform: scale(0.98);
+		}
+	}
+
+	.registration {
+		display: block;
+		width: 20.0rem;
+		margin-bottom: 1.0rem;
+		background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 50%, #2a2a2a 100%) !important;
+		border: 2px solid #444 !important;
+		color: #fff !important;
+		text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
+		font-weight: bold !important;
+		padding: 1rem 3rem !important;
+		clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+		transition: all 0.2s ease;
+		&:hover {
+			background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 50%, #3a3a3a 100%) !important;
+			border-color: #ffd208 !important;
+			box-shadow: 0 0 20px rgba(255, 210, 8, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+			transform: scale(1.02);
+		}
+		&:active {
+			background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 50%, #1a1a1a 100%) !important;
+			transform: scale(0.98);
+		}
+	}
+
+	.registration-message {
+		color: #fff;
+		font-size: 1.4rem;
+		text-align: center;
+		text-shadow: 0 0 1.0rem black;
+	}
+
+	.registration-block {
+		margin-top: 2.0rem;
+		.registration-message, .registration {
+			opacity:0;
+			transform-origin: top center;
+		}
+		&.active {
+			.registration-message {
+				animation: scaleIn 0.3s ease-out forwards;
+			}
+			.registration {
+				animation: slideInFromBottom 0.3s 0.15s ease-out forwards;
+			}
+		}
+	}
+}
+
+/* ---------- REGISTRATION ---------- */
+
+#app-registration {
+	#show_friend_referral_code_button {
+		font-size: 1.5rem;
+		color: $off-white;
+		&:hover {
+			color: white;
+		}
+	}
+	#existing_account_button {
+		margin-top: 1.0rem;
+		font-size: 1.5rem;
+		color: $off-white;
+		&:hover {
+			color: white;
+		}
+	}
+}
+
+/* ---------- FORGOT PASSWORD ---------- */
+
+#app-forgot-password {
+
+}
+
+/* ---------- CHANGE USERNAME ---------- */
+
+#app-change-username {
+	text-align: center;
+	.btn {
+		overflow: visible;
+		.icon-gold {
+			text-indent: 0;
+			position: absolute;
+			left: 1.5rem;
+			top: -1.0rem;
+		}
+		.text-gold {
+			margin-left: 6.0rem;
+		}
+	}
+}
+
+/* ---------- CHANGE PASSWORD ---------- */
+
+#app-change-password {
+	text-align: center;
+}
+
+/* ---------- SOCIAL LINKS ---------- */
+
+#app-login .social-links {
+	margin-top: 2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.8rem;
+
+	.mystic-separator {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+
+		.sep-line {
+			width: 30px;
+			height: 1px;
+			background: linear-gradient(90deg, transparent, #ffd208, transparent);
+			opacity: 0.6;
+		}
+
+		.sep-diamond {
+			width: 6px;
+			height: 6px;
+			background: #ffd208;
+			transform: rotate(45deg);
+			box-shadow: 0 0 8px rgba(255, 210, 8, 0.6);
+		}
+	}
+
+	.social-icons {
+		display: flex;
+		gap: 1.5rem;
+		align-items: center;
+
+		.social-icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 36px;
+			height: 36px;
+			color: rgba(255, 255, 255, 0.6);
+			transition: all 0.3s ease;
+			
+			svg {
+				width: 22px;
+				height: 22px;
+			}
+
+			&:hover {
+				color: #ffd208;
+				transform: scale(1.15);
+				filter: drop-shadow(0 0 8px rgba(255, 210, 8, 0.6));
+			}
+
+			&.github:hover {
+				color: #fff;
+				filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+			}
+
+			&.twitter:hover {
+				color: #fff;
+				filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+			}
+		}
+	}
+}

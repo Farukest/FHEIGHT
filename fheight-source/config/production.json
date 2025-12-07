@@ -1,0 +1,32 @@
+{
+	"env": "production",
+	"api": "",
+	"cdn": "",
+	"consul": {
+		"gameServiceName": "production-game"
+	},
+	"s3": {
+		"params": {
+			"Bucket": "fheight-assets"
+		},
+		"accessKeyId": "",
+		"secretAccessKey": ""
+	},
+	"analyticsEnabled": true,
+	"gaId":"",
+	"zendeskEnabled": true,
+	"bugsnag": {
+		"client_key": ""
+	},
+	"postgres_connection_string": "",
+	"recordClientLogs":true,
+	"inviteCodesActive":false,
+	"watchSectionCacheTTL":3600,
+	"recaptcha": {
+		"enabled":false
+	},
+	"fastly": {
+		"token": "",
+		"serviceId": ""
+	}
+}

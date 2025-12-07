@@ -1,0 +1,114 @@
+services:
+  redis:
+    image: redis:6
+
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: fheight
+      POSTGRES_PASSWORD: fheight
+      POSTGRES_DB: fheight
+    volumes:
+      - ./.pgdata:/var/lib/postgresql/data:z
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    working_dir: /fheight
+    ports: [3000:3000]
+    volumes:
+      - ./dist/src:/fheight/dist/src:z # Serve frontend via API in localdev.
+    environment:
+      FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL}
+      FIREBASE_LEGACY_TOKEN: ${FIREBASE_LEGACY_TOKEN}
+      FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+      FIREBASE_URL: ${FIREBASE_URL}
+      POSTGRES_CONNECTION: "pg://fheight:fheight@db/fheight"
+      REDIS_HOST: redis
+    depends_on: [db, redis]
+
+  game:
+    build:
+      context: .
+      dockerfile: docker/game.Dockerfile
+    working_dir: /fheight
+    ports: [8001:8001]
+    environment:
+      REDIS_HOST: redis
+      FIREBASE_LEGACY_TOKEN: ${FIREBASE_LEGACY_TOKEN}
+    depends_on: [redis]
+
+  sp:
+    build:
+      context: .
+      dockerfile: docker/sp.Dockerfile
+    working_dir: /fheight
+    ports: [8000:8000]
+    environment:
+      REDIS_HOST: redis
+      FIREBASE_LEGACY_TOKEN: ${FIREBASE_LEGACY_TOKEN}
+    depends_on: [redis]
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    working_dir: /fheight
+    environment:
+      FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL}
+      FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+      FIREBASE_URL: ${FIREBASE_URL}
+      POSTGRES_CONNECTION: "pg://fheight:fheight@db/fheight"
+      REDIS_HOST: redis
+    depends_on: [db, redis]
+
+  worker-ui:
+    build:
+      context: .
+      dockerfile: docker/general.Dockerfile
+    working_dir: /fheight
+    environment:
+      REDIS_HOST: redis
+    profiles: [donotstart]
+    ports: [4000:4000]
+    entrypoint: ["yarn", "worker-ui"]
+    depends_on: [redis]
+
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/migrate.Dockerfile
+    working_dir: /fheight
+    profiles: [donotstart]
+    environment:
+      NODE_ENV: development
+      POSTGRES_CONNECTION: "pg://fheight:fheight@db/fheight"
+    depends_on: [db]
+
+  test-unit:
+    build:
+      context: .
+      dockerfile: docker/general.Dockerfile
+    working_dir: /fheight
+    profiles: [donotstart]
+    entrypoint: ["yarn", "test:unit"]
+
+  test-integration:
+    build:
+      context: .
+      dockerfile: docker/general.Dockerfile
+    working_dir: /fheight
+    profiles: [donotstart]
+    environment:
+      FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL}
+      FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+      FIREBASE_URL: ${FIREBASE_URL}
+      POSTGRES_CONNECTION: "pg://fheight:fheight@db/fheight"
+      REDIS_HOST: redis
+    depends_on: [db, redis]
+    entrypoint: ["yarn", "test:integration"]

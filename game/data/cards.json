@@ -1,0 +1,398 @@
+{
+  "version": "1.0.0",
+  "factions": {
+    "1": "Lyonar",
+    "2": "Songhai",
+    "3": "Vetruvian",
+    "4": "Abyssian",
+    "5": "Magmar",
+    "6": "Vanar",
+    "100": "Neutral"
+  },
+  "rarities": {
+    "1": "Common",
+    "2": "Rare",
+    "3": "Epic",
+    "4": "Legendary"
+  },
+  "cards": [
+    {
+      "id": 14,
+      "name": "Silverguard Squire",
+      "faction": 1,
+      "type": "Unit",
+      "atk": 1,
+      "hp": 4,
+      "mana": 1,
+      "rarity": "Common"
+    },
+    {
+      "id": 9,
+      "name": "Windblade Adept",
+      "faction": 1,
+      "type": "Unit",
+      "atk": 2,
+      "hp": 3,
+      "mana": 2,
+      "rarity": "Common"
+    },
+    {
+      "id": 10,
+      "name": "Sunstone Templar",
+      "faction": 1,
+      "type": "Unit",
+      "atk": 1,
+      "hp": 4,
+      "mana": 2,
+      "rarity": "Common",
+      "ability": "Dispel nearby enemy minion"
+    },
+    {
+      "id": 11,
+      "name": "Silverguard Knight",
+      "faction": 1,
+      "type": "Unit",
+      "atk": 3,
+      "hp": 5,
+      "mana": 3,
+      "rarity": "Common",
+      "ability": "Provoke, Zeal: +2 Attack"
+    },
+    {
+      "id": 17,
+      "name": "Ironcliffe Guardian",
+      "faction": 1,
+      "type": "Unit",
+      "atk": 3,
+      "hp": 10,
+      "mana": 5,
+      "rarity": "Rare",
+      "ability": "Airdrop, Provoke"
+    },
+    {
+      "id": 108,
+      "name": "Heartseeker",
+      "faction": 2,
+      "type": "Unit",
+      "atk": 1,
+      "hp": 1,
+      "mana": 1,
+      "rarity": "Common",
+      "ability": "Ranged"
+    },
+    {
+      "id": 110,
+      "name": "Kaido Assassin",
+      "faction": 2,
+      "type": "Unit",
+      "atk": 2,
+      "hp": 3,
+      "mana": 2,
+      "rarity": "Common",
+      "ability": "Backstab: 2"
+    },
+    {
+      "id": 115,
+      "name": "Chakri Avatar",
+      "faction": 2,
+      "type": "Unit",
+      "atk": 1,
+      "hp": 2,
+      "mana": 2,
+      "rarity": "Common",
+      "ability": "+1/+1 when you cast a spell"
+    },
+    {
+      "id": 122,
+      "name": "Lantern Fox",
+      "faction": 2,
+      "type": "Unit",
+      "atk": 2,
+      "hp": 4,
+      "mana": 3,
+      "rarity": "Epic",
+      "ability": "When damaged, add Phoenix Fire to hand"
+    },
+    {
+      "id": 208,
+      "name": "Wind Shrike",
+      "faction": 3,
+      "type": "Unit",
+      "atk": 4,
+      "hp": 3,
+      "mana": 4,
+      "rarity": "Common",
+      "ability": "Flying, Dying Wish: Draw a card"
+    },
+    {
+      "id": 211,
+      "name": "Dunecaster",
+      "faction": 3,
+      "type": "Unit",
+      "atk": 2,
+      "hp": 3,
+      "mana": 2,
+      "rarity": "Common",
+      "ability": "Opening Gambit: Give friendly Dervish +2/+2"
+    },
+    {
+      "id": 220,
+      "name": "Aymara Healer",
+      "faction": 3,
+      "type": "Unit",
+      "atk": 5,
+      "hp": 5,
+      "mana": 6,
+      "rarity": "Legendary",
+      "ability": "Provoke, Dying Wish: Deal 5 damage and heal 5"
+    },
+    {
+      "id": 308,
+      "name": "Abyssal Crawler",
+      "faction": 4,
+      "type": "Unit",
+      "atk": 2,
+      "hp": 1,
+      "mana": 1,
+      "rarity": "Common",
+      "ability": "Shadow Creep: +1 Attack"
+    },
+    {
+      "id": 311,
+      "name": "Bloodmoon Priestess",
+      "faction": 4,
+      "type": "Unit",
+      "atk": 3,
+      "hp": 3,
+      "mana": 4,
+      "rarity": "Rare",
+      "ability": "When a friendly minion dies, summon a 1/1 Wraithling"
+    },
+    {
+      "id": 318,
+      "name": "Vorpal Reaver",
+      "faction": 4,
+      "type": "Unit",
+      "atk": 6,
+      "hp": 6,
+      "mana": 6,
+      "rarity": "Legendary",
+      "ability": "Dying Wish: Summon six 1/1 Wraithlings"
+    },
+    {
+      "id": 408,
+      "name": "Young Silithar",
+      "faction": 5,
+      "type": "Unit",
+      "atk": 2,
+      "hp": 3,
+      "mana": 2,
+      "rarity": "Common",
+      "ability": "Rebirth"
+    },
+    {
+      "id": 410,
+      "name": "Veteran Silithar",
+      "faction": 5,
+      "type": "Unit",
+      "atk": 4,
+      "hp": 3,
+      "mana": 4,
+      "rarity": "Common",
+      "ability": "Rebirth"
+    },
+    {
+      "id": 416,
+      "name": "Makantor Warbeast",
+      "faction": 5,
+      "type": "Unit",
+      "atk": 4,
+      "hp": 4,
+      "mana": 6,
+      "rarity": "Epic",
+      "ability": "Rush, Frenzy"
+    },
+    {
+      "id": 508,
+      "name": "Crystal Cloaker",
+      "faction": 6,
+      "type": "Unit",
+      "atk": 2,
+      "hp": 3,
+      "mana": 2,
+      "rarity": "Common",
+      "ability": "Infiltrate: +2 Attack"
+    },
+    {
+      "id": 510,
+      "name": "Borean Bear",
+      "faction": 6,
+      "type": "Unit",
+      "atk": 1,
+      "hp": 6,
+      "mana": 3,
+      "rarity": "Common",
+      "ability": ""
+    },
+    {
+      "id": 1001,
+      "name": "Healing Mystic",
+      "faction": 100,
+      "type": "Unit",
+      "atk": 2,
+      "hp": 3,
+      "mana": 2,
+      "rarity": "Common",
+      "ability": "Opening Gambit: Restore 2 health"
+    },
+    {
+      "id": 1005,
+      "name": "Primus Fist",
+      "faction": 100,
+      "type": "Unit",
+      "atk": 2,
+      "hp": 3,
+      "mana": 2,
+      "rarity": "Common",
+      "ability": "Opening Gambit: Give nearby friendly minion +2 Attack"
+    },
+    {
+      "id": 1010,
+      "name": "Dancing Blades",
+      "faction": 100,
+      "type": "Unit",
+      "atk": 4,
+      "hp": 6,
+      "mana": 5,
+      "rarity": "Common",
+      "ability": "Opening Gambit: Deal 3 damage to minion in front"
+    },
+    {
+      "id": 30008,
+      "name": "True Strike",
+      "faction": 1,
+      "type": "Spell",
+      "mana": 1,
+      "rarity": "Common",
+      "description": "Deal 2 damage to an enemy minion."
+    },
+    {
+      "id": 30009,
+      "name": "Sundrop Elixir",
+      "faction": 1,
+      "type": "Spell",
+      "mana": 1,
+      "rarity": "Common",
+      "description": "Restore 5 health to a minion."
+    },
+    {
+      "id": 30011,
+      "name": "Holy Immolation",
+      "faction": 1,
+      "type": "Spell",
+      "mana": 4,
+      "rarity": "Rare",
+      "description": "Heal a friendly minion for 4. Deal 4 damage to all nearby enemies."
+    },
+    {
+      "id": 30108,
+      "name": "Phoenix Fire",
+      "faction": 2,
+      "type": "Spell",
+      "mana": 2,
+      "rarity": "Common",
+      "description": "Deal 3 damage to an enemy."
+    },
+    {
+      "id": 30110,
+      "name": "Inner Focus",
+      "faction": 2,
+      "type": "Spell",
+      "mana": 1,
+      "rarity": "Common",
+      "description": "Reactivate a friendly minion with 3 or less Attack."
+    },
+    {
+      "id": 30111,
+      "name": "Mist Dragon Seal",
+      "faction": 2,
+      "type": "Spell",
+      "mana": 1,
+      "rarity": "Common",
+      "description": "Teleport a friendly minion up to 2 spaces. It gains +1/+1."
+    },
+    {
+      "id": 30208,
+      "name": "Scion's First Wish",
+      "faction": 3,
+      "type": "Spell",
+      "mana": 1,
+      "rarity": "Common",
+      "description": "Give a friendly minion +1/+1. Draw a card."
+    },
+    {
+      "id": 30209,
+      "name": "Entropic Decay",
+      "faction": 3,
+      "type": "Spell",
+      "mana": 4,
+      "rarity": "Rare",
+      "description": "Destroy a minion that is not nearby its General."
+    },
+    {
+      "id": 30308,
+      "name": "Void Pulse",
+      "faction": 4,
+      "type": "Spell",
+      "mana": 1,
+      "rarity": "Common",
+      "description": "Deal 2 damage to the enemy General. Restore 3 health to your General."
+    },
+    {
+      "id": 30309,
+      "name": "Dark Transformation",
+      "faction": 4,
+      "type": "Spell",
+      "mana": 5,
+      "rarity": "Common",
+      "description": "Destroy a minion. Summon a 1/1 Wraithling in its place."
+    },
+    {
+      "id": 30408,
+      "name": "Natural Selection",
+      "faction": 5,
+      "type": "Spell",
+      "mana": 2,
+      "rarity": "Common",
+      "description": "Destroy a minion with the lowest Attack."
+    },
+    {
+      "id": 30410,
+      "name": "Plasma Storm",
+      "faction": 5,
+      "type": "Spell",
+      "mana": 5,
+      "rarity": "Rare",
+      "description": "Destroy all minions with 3 or less Attack."
+    },
+    {
+      "id": 30508,
+      "name": "Chromatic Cold",
+      "faction": 6,
+      "type": "Spell",
+      "mana": 2,
+      "rarity": "Common",
+      "description": "Deal 2 damage to an enemy. Dispel it."
+    },
+    {
+      "id": 30509,
+      "name": "Frostfire",
+      "faction": 6,
+      "type": "Spell",
+      "mana": 3,
+      "rarity": "Common",
+      "description": "Give a minion +3 Attack until end of turn. If it's an enemy, Stun it."
+    }
+  ],
+  "totalCards": 37
+}

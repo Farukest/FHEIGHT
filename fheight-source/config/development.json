@@ -1,0 +1,22 @@
+{
+	"env": "development",
+	"api": "http://localhost:3000",
+	"postgres_connection_string": "postgres://fheight:fheight@0.0.0.0:5432/fheight",
+	"redis": {
+		"host": "localhost",
+		"port": 6379,
+		"ttl": 3600,
+		"password": ""
+	},
+	"inviteCodesActive": false,
+	"datGuiEditorEnabled": true,
+	"aiToolsEnabled": true,
+	"allCardsAvailable": true,
+	"watchSectionMinCurrentVersionGameCount": 1,
+	"recaptcha": {
+		"enabled": false
+	},
+	"matchmaking": {
+		"allowMatchWithLastOpponent": true
+	}
+}

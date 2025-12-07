@@ -1,0 +1,425 @@
+# Configuration
+
+This document explains how to enable encrypted computations in your smart contract by setting up the `fhevm` environment. Learn how to integrate essential libraries, configure encryption, and add secure computation logic to your contracts.
+
+## Core configuration setup
+
+To utilize encrypted computations in Solidity contracts, you must configure the **FHE library** and **Oracle addresses**. The `fhevm` package simplifies this process with prebuilt configuration contracts, allowing you to focus on developing your contract’s logic without handling the underlying cryptographic setup.
+
+This library and its associated contracts provide a standardized way to configure and interact with Zama's FHEVM (Fully Homomorphic Encryption Virtual Machine) infrastructure on different Ethereum networks. It supplies the necessary contract addresses for Zama's FHEVM components (`ACL`, `FHEVMExecutor`, `KMSVerifier`, `InputVerifier`) and the decryption oracle, enabling seamless integration for Solidity contracts that require FHEVM support.
+
+## Key components configured automatically
+
+1. **FHE library**: Sets up encryption parameters and cryptographic keys.
+2. **Oracle**: Manages secure cryptographic operations such as public decryption.
+3. **Network-specific settings**: Adapts to local testing, testnets (Sepolia for example), or mainnet deployment.
+
+By inheriting these configuration contracts, you ensure seamless initialization and functionality across environments.
+
+## ZamaConfig.sol
+
+The `ZamaConfig` library exposes functions to retrieve FHEVM configuration structs and oracle addresses for supported networks (currently only the Sepolia testnet).
+
+Under the hood, this library encapsulates the network-specific addresses of Zama's FHEVM infrastructure into a single struct (`FHEVMConfigStruct`).
+
+## ZamaEthereumConfig
+
+The `ZamaEthereumConfig` contract is designed to be inherited by a user contract. The constructor automatically sets up the FHEVM coprocessor and decryption oracle using the configuration provided by the library for the respective network. When a contract inherits from `ZamaEthereumConfig`, the constructor calls `FHE.setCoprocessor` with the appropriate addresses. This ensures that the inheriting contract is automatically wired to the correct FHEVM contracts and oracle for the target network, abstracting away manual address management and reducing the risk of misconfiguration.
+
+**Example**
+
+```solidity
+// SPDX-License-Identifier: BSD-3-Clause-Clear
+pragma solidity ^0.8.24;
+
+import { ZamaEthereumConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+
+contract MyERC20 is ZamaEthereumConfig {
+  constructor() {
+    // Additional initialization logic if needed
+  }
+}
+```
+
+## Using `isInitialized`
+
+The `isInitialized` utility function checks whether an encrypted variable has been properly initialized, preventing unexpected behavior due to uninitialized values.
+
+**Function signature**
+
+```solidity
+function isInitialized(T v) internal pure returns (bool)
+```
+
+**Purpose**
+
+* Ensures encrypted variables are initialized before use.
+* Prevents potential logic errors in contract execution.
+
+**Example: Initialization Check for Encrypted Counter**
+
+```solidity
+require(FHE.isInitialized(counter), "Counter not initialized!");
+```
+
+## Summary
+
+By leveraging prebuilt a configuration contract like `ZamaEthereumConfig` in `ZamaConfig.sol`, you can efficiently set up your smart contract for encrypted computations. These tools abstract the complexity of cryptographic initialization, allowing you to focus on building secure, confidential smart contracts.
+
+
+
+# Contract addresses
+
+These are Sepolia addresses.
+
+| Contract/Service             | Address/Value                              |
+| ---------------------------- | ------------------------------------------ |
+| FHEVM\_EXECUTOR\_CONTRACT    | 0x92C920834Ec8941d2C77D188936E1f7A6f49c127 |
+| ACL\_CONTRACT                | 0xf0Ffdc93b7E186bC2f8CB3dAA75D86d1930A433D |
+| HCU\_LIMIT\_CONTRACT         | 0xa10998783c8CF88D886Bc30307e631D6686F0A22 |
+| KMS\_VERIFIER\_CONTRACT      | 0xbE0E383937d564D7FF0BC3b46c51f0bF8d5C311A |
+| INPUT\_VERIFIER\_CONTRACT    | 0xBBC1fFCdc7C316aAAd72E807D9b0272BE8F84DA0 |
+| DECRYPTION\_ADDRESS          | 0x5D8BD78e2ea6bbE41f26dFe9fdaEAa349e077478 |
+| INPUT\_VERIFICATION\_ADDRESS | 0x483b9dE06E4E4C7D35CCf5837A1668487406D955 |
+| RELAYER\_URL                 | `https://relayer.testnet.zama.org`         |
+| GATEWAY\_CHAIN\_ID           | 10901                                      |
+
+
+
+
+# Supported types
+
+This document introduces the encrypted integer types provided by the `FHE` library in FHEVM and explains their usage, including casting, state variable declarations, and type-specific considerations.
+
+## Introduction
+
+The `FHE` library offers a robust type system with encrypted integer types, enabling secure computations on confidential data in smart contracts. These encrypted types are validated both at compile time and runtime to ensure correctness and security.
+
+### Key features of encrypted types
+
+* Encrypted integers function similarly to Solidity’s native integer types, but they operate on **Fully Homomorphic Encryption (FHE)** ciphertexts.
+* Arithmetic operations on `e(u)int` types are **unchecked**, meaning they wrap around on overflow. This design choice ensures confidentiality by avoiding the leakage of information through error detection.
+* Future versions of the `FHE` library will support encrypted integers with overflow checking, but with the trade-off of exposing limited information about the operands.
+
+{% hint style="info" %}
+Encrypted integers with overflow checking will soon be available in the `FHE` library. These will allow reversible arithmetic operations but may reveal some information about the input values.
+{% endhint %}
+
+Encrypted integers in FHEVM are represented as FHE ciphertexts, abstracted using ciphertext handles. These types, prefixed with `e` (for example, `euint64`) act as secure wrappers over the ciphertext handles.
+
+## List of encrypted types
+
+The `FHE` library currently supports the following encrypted types:
+
+| Type     | Bit Length | Supported Operators                                                                                                                | Aliases (with supported operators) |
+| -------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Ebool    | 2          | and, or, xor, eq, ne, not, select, rand                                                                                            |                                    |
+| Euint8   | 8          | add, sub, mul, div, rem, and, or, xor, shl, shr, rotl, rotr, eq, ne, ge, gt, le, lt, min, max, neg, not, select, rand, randBounded |                                    |
+| Euint16  | 16         | add, sub, mul, div, rem, and, or, xor, shl, shr, rotl, rotr, eq, ne, ge, gt, le, lt, min, max, neg, not, select, rand, randBounded |                                    |
+| Euint32  | 32         | add, sub, mul, div, rem, and, or, xor, shl, shr, rotl, rotr, eq, ne, ge, gt, le, lt, min, max, neg, not, select, rand, randBounded |                                    |
+| Euint64  | 64         | add, sub, mul, div, rem, and, or, xor, shl, shr, rotl, rotr, eq, ne, ge, gt, le, lt, min, max, neg, not, select, rand, randBounded |                                    |
+| Euint128 | 128        | add, sub, mul, div, rem, and, or, xor, shl, shr, rotl, rotr, eq, ne, ge, gt, le, lt, min, max, neg, not, select, rand, randBounded |                                    |
+| Euint160 | 160        |                                                                                                                                    | Eaddress (eq, ne, select)          |
+| Euint256 | 256        | and, or, xor, shl, shr, rotl, rotr, eq, ne, neg, not, select, rand, randBounded                                                    |                                    |
+
+{% hint style="info" %}
+Division (`div`) and remainder (`rem`) operations are only supported when the right-hand side (`rhs`) operand is a plaintext (non-encrypted) value. Attempting to use an encrypted value as `rhs` will result in a panic. This restriction ensures correct and secure computation within the current framework.
+{% endhint %}
+
+{% hint style="info" %}
+Higher-precision integer types are available in the `TFHE-rs` library and can be added to `fhevm` as needed.
+{% endhint %}
+
+
+# Operations on encrypted types
+
+This document outlines the operations supported on encrypted types in the `FHE` library, enabling arithmetic, bitwise, comparison, and more on Fully Homomorphic Encryption (FHE) ciphertexts.
+
+## Arithmetic operations
+
+The following arithmetic operations are supported for encrypted integers (`euintX`):
+
+| Name                         | Function name | Symbol | Type   |
+| ---------------------------- | ------------- | ------ | ------ |
+| Add                          | `FHE.add`     | `+`    | Binary |
+| Subtract                     | `FHE.sub`     | `-`    | Binary |
+| Multiply                     | `FHE.mul`     | `*`    | Binary |
+| Divide (plaintext divisor)   | `FHE.div`     |        | Binary |
+| Reminder (plaintext divisor) | `FHE.rem`     |        | Binary |
+| Negation                     | `FHE.neg`     | `-`    | Unary  |
+| Min                          | `FHE.min`     |        | Binary |
+| Max                          | `FHE.max`     |        | Binary |
+
+{% hint style="info" %}
+Division (FHE.div) and remainder (FHE.rem) operations are currently supported only with plaintext divisors.
+{% endhint %}
+
+## Bitwise operations
+
+The FHE library also supports bitwise operations, including shifts and rotations:
+
+| Name         | Function name | Symbol | Type   |
+| ------------ | ------------- | ------ | ------ |
+| Bitwise AND  | `FHE.and`     | `&`    | Binary |
+| Bitwise OR   | `FHE.or`      | `\|`   | Binary |
+| Bitwise XOR  | `FHE.xor`     | `^`    | Binary |
+| Bitwise NOT  | `FHE.not`     | `~`    | Unary  |
+| Shift Right  | `FHE.shr`     |        | Binary |
+| Shift Left   | `FHE.shl`     |        | Binary |
+| Rotate Right | `FHE.rotr`    |        | Binary |
+| Rotate Left  | `FHE.rotl`    |        | Binary |
+
+The shift operators `FHE.shr` and `FHE.shl` can take any encrypted type `euintX` as a first operand and either a `uint8`or a `euint8` as a second operand, however the second operand will always be computed modulo the number of bits of the first operand. For example, `FHE.shr(euint64 x, 70)` is equivalent to `FHE.shr(euint64 x, 6)` because `70 % 64 = 6`. This differs from the classical shift operators in Solidity, where there is no intermediate modulo operation, so for instance any `uint64` shifted right via `>>` would give a null result.
+
+## Comparison operations
+
+Encrypted integers can be compared using the following functions:
+
+| Name                  | Function name | Symbol | Type   |
+| --------------------- | ------------- | ------ | ------ |
+| Equal                 | `FHE.eq`      |        | Binary |
+| Not equal             | `FHE.ne`      |        | Binary |
+| Greater than or equal | `FHE.ge`      |        | Binary |
+| Greater than          | `FHE.gt`      |        | Binary |
+| Less than or equal    | `FHE.le`      |        | Binary |
+| Less than             | `FHE.lt`      |        | Binary |
+
+## Ternary operation
+
+The `FHE.select` function is a ternary operation that selects one of two encrypted values based on an encrypted condition:
+
+| Name   | Function name | Symbol | Type    |
+| ------ | ------------- | ------ | ------- |
+| Select | `FHE.select`  |        | Ternary |
+
+## Random operations
+
+You can generate cryptographically secure random numbers fully on-chain:
+
+<table data-header-hidden><thead><tr><th></th><th width="206"></th><th></th><th></th></tr></thead><tbody><tr><td><strong>Name</strong></td><td><strong>Function Name</strong></td><td><strong>Symbol</strong></td><td><strong>Type</strong></td></tr><tr><td>Random Unsigned Integer</td><td><code>FHE.randEuintX()</code></td><td></td><td>Random</td></tr></tbody></table>
+
+For more details, refer to the [Random Encrypted Numbers](https://docs.zama.org/protocol/solidity-guides/smart-contract/operations/random) document.
+
+## Best Practices
+
+Here are some best practices to follow when using encrypted operations in your smart contracts:
+
+### Use the appropriate encrypted type size
+
+Choose the smallest encrypted type that can accommodate your data to optimize gas costs. For example, use `euint8` for small numbers (0-255) rather than `euint256`.
+
+❌ Avoid using oversized types:
+
+```solidity
+// Bad: Using euint256 for small numbers wastes gas
+euint64 age = FHE.asEuint128(25);  // age will never exceed 255
+euint64 percentage = FHE.asEuint128(75);  // percentage is 0-100
+```
+
+✅ Instead, use the smallest appropriate type:
+
+```solidity
+// Good: Using appropriate sized types
+euint8 age = FHE.asEuint8(25);  // age fits in 8 bits
+euint8 percentage = FHE.asEuint8(75);  // percentage fits in 8 bits
+```
+
+### Use scalar operands when possible to save gas
+
+Some FHE operators exist in two versions: one where all operands are ciphertexts handles, and another where one of the operands is an unencrypted scalar. Whenever possible, use the scalar operand version, as this will save a lot of gas.
+
+❌ For example, this snippet cost way more in gas:
+
+```solidity
+euint32 x;
+...
+x = FHE.add(x,FHE.asEuint(42));
+```
+
+✅ Than this one:
+
+```solidity
+euint32 x;
+// ...
+x = FHE.add(x,42);
+```
+
+Despite both leading to the same encrypted result!
+
+### Beware of overflows of FHE arithmetic operators
+
+FHE arithmetic operators can overflow. Do not forget to take into account such a possibility when implementing FHEVM smart contracts.
+
+❌ For example, if you wanted to create a mint function for an encrypted ERC20 token with an encrypted `totalSupply` state variable, this code is vulnerable to overflows:
+
+```solidity
+function mint(externalEuint32 encryptedAmount, bytes calldata inputProof) public {
+  euint32 mintedAmount = FHE.asEuint32(encryptedAmount, inputProof);
+  totalSupply = FHE.add(totalSupply, mintedAmount);
+  balances[msg.sender] = FHE.add(balances[msg.sender], mintedAmount);
+  FHE.allowThis(balances[msg.sender]);
+  FHE.allow(balances[msg.sender], msg.sender);
+}
+```
+
+✅ But you can fix this issue by using `FHE.select` to cancel the mint in case of an overflow:
+
+```solidity
+function mint(externalEuint32 encryptedAmount, bytes calldata inputProof) public {
+  euint32 mintedAmount = FHE.asEuint32(encryptedAmount, inputProof);
+  euint32 tempTotalSupply = FHE.add(totalSupply, mintedAmount);
+  ebool isOverflow = FHE.lt(tempTotalSupply, totalSupply);
+  totalSupply = FHE.select(isOverflow, totalSupply, tempTotalSupply);
+  euint32 tempBalanceOf = FHE.add(balances[msg.sender], mintedAmount);
+  balances[msg.sender] = FHE.select(isOverflow, balances[msg.sender], tempBalanceOf);
+  FHE.allowThis(balances[msg.sender]);
+  FHE.allow(balances[msg.sender], msg.sender);
+}
+```
+
+Notice that we did not check separately the overflow on `balances[msg.sender]` but only on `totalSupply` variable, because `totalSupply` is the sum of the balances of all the users, so `balances[msg.sender]` could never overflow if `totalSupply` did not.
+
+
+# Casting and trivial encryption
+
+This documentation covers the `asEbool`, `asEuintXX`, and `asEaddress` operations provided by the FHE library for working with encrypted data in the FHEVM. These operations are essential for converting between plaintext and encrypted types, as well as handling encrypted inputs.
+
+The operations can be categorized into two main use cases:
+
+1. **Trivial encryption**: Converting plaintext values to encrypted types
+2. **Type casting**: Converting between different encrypted types
+
+## 1. Trivial encryption
+
+Trivial encryption simply put is a plain text in a format of a ciphertext.
+
+### Overview
+
+Trivial encryption is the process of converting plaintext values into encrypted types (ciphertexts) compatible with FHE operators. Although the data is in ciphertext format, it remains publicly visible on-chain, making it useful for operations between public and private values.
+
+This type of casting involves converting plaintext (unencrypted) values into their encrypted equivalents, such as:
+
+* `bool` → `ebool`
+* `uint` → `euintXX`
+* `address` → `eaddress`
+
+{% hint style="info" %}
+When doing trivial encryption, the data is made compatible with FHE operations but remains publicly visible on-chain unless explicitly encrypted.
+{% endhint %}
+
+#### **Example**
+
+```solidity
+euint64 value64 = FHE.asEuint64(7262);  // Trivial encrypt a uint64
+ebool valueBool = FHE.asEbool(true);   // Trivial encrypt a boolean
+```
+
+## 2. Casting between encrypted types
+
+This type of casting is used to reinterpret or convert one encrypted type into another. For example:
+
+* `euint32` → `euint64`
+
+Casting between encrypted types is often required when working with operations that demand specific sizes or precisions.
+
+> **Important**: When casting between encrypted types:
+>
+> * Casting from smaller types to larger types (e.g. `euint32` → `euint64`) preserves all information
+> * Casting from larger types to smaller types (e.g. `euint64` → `euint32`) will truncate and lose information
+
+The table below summarizes the available casting functions:
+
+| From type | To type  | Function        |
+| --------- | -------- | --------------- |
+| `euintX`  | `euintX` | `FHE.asEuintXX` |
+| `ebool`   | `euintX` | `FHE.asEuintXX` |
+| `euintX`  | `ebool`  | `FHE.asEboolXX` |
+
+{% hint style="info" %}
+Casting between encrypted types is efficient and often necessary when handling data with differing precision requirements.
+{% endhint %}
+
+### **Workflow for encrypted types**
+
+```solidity
+// Casting between encrypted types
+euint32 value32 = FHE.asEuint32(value64); // Cast to euint32
+ebool valueBool = FHE.asEbool(value32);   // Cast to ebool
+```
+
+## Overall operation summary
+
+| Casting Type             | Function            | Input Type        | Output Type |
+| ------------------------ | ------------------- | ----------------- | ----------- |
+| Trivial encryption       | `FHE.asEuintXX(x)`  | `uintX`           | `euintX`    |
+|                          | `FHE.asEbool(x)`    | `bool`            | `ebool`     |
+|                          | `FHE.asEaddress(x)` | `address`         | `eaddress`  |
+| Conversion between types | `FHE.asEuintXX(x)`  | `euintXX`/`ebool` | `euintYY`   |
+|                          | `FHE.asEbool(x)`    | `euintXX`         | `ebool`     |
+
+
+# Generate random numbers
+
+This document explains how to generate cryptographically secure random encrypted numbers fully on-chain using the `FHE` library in fhevm. These numbers are encrypted and remain confidential, enabling privacy-preserving smart contract logic.
+
+## **Key notes on random number generation**
+
+* **On-chain execution**: Random number generation must be executed during a transaction, as it requires the pseudo-random number generator (PRNG) state to be updated on-chain. This operation cannot be performed using the `eth_call` RPC method.
+* **Cryptographic security**: The generated random numbers are cryptographically secure and encrypted, ensuring privacy and unpredictability.
+
+{% hint style="info" %}
+Random number generation must be performed during transactions, as it requires the pseudo-random number generator (PRNG) state to be mutated on-chain. Therefore, it cannot be executed using the `eth_call` RPC method.
+{% endhint %}
+
+## **Basic usage**
+
+The `FHE` library allows you to generate random encrypted numbers of various bit sizes. Below is a list of supported types and their usage:
+
+```solidity
+// Generate random encrypted numbers
+ebool rb = FHE.randEbool();       // Random encrypted boolean
+euint8 r8 = FHE.randEuint8();     // Random 8-bit number
+euint16 r16 = FHE.randEuint16();  // Random 16-bit number
+euint32 r32 = FHE.randEuint32();  // Random 32-bit number
+euint64 r64 = FHE.randEuint64();  // Random 64-bit number
+euint128 r128 = FHE.randEuint128(); // Random 128-bit number
+euint256 r256 = FHE.randEuint256(); // Random 256-bit number
+```
+
+### **Example: Random Boolean**
+
+```solidity
+function randomBoolean() public returns (ebool) {
+  return FHE.randEbool();
+}
+```
+
+## **Bounded random numbers**
+
+To generate random numbers within a specific range, you can specify an **upper bound**. The specified upper bound must be a power of 2. The random number will be in the range `[0, upperBound - 1]`.
+
+```solidity
+// Generate random numbers with upper bounds
+euint8 r8 = FHE.randEuint8(32);      // Random number between 0-31
+euint16 r16 = FHE.randEuint16(512);  // Random number between 0-511
+euint32 r32 = FHE.randEuint32(65536); // Random number between 0-65535
+```
+
+### **Example: Random number with upper bound**
+
+```solidity
+function randomBoundedNumber(uint16 upperBound) public returns (euint16) {
+  return FHE.randEuint16(upperBound);
+}
+```
+
+## **Security Considerations**
+
+* **Cryptographic security**:\
+  The random numbers are generated using a cryptographically secure pseudo-random number generator (CSPRNG) and remain encrypted until explicitly decrypted.
+* **Gas consumption**:\
+  Each call to a random number generation function consumes gas. Developers should optimize the use of these functions, especially in gas-sensitive contracts.
+* **Privacy guarantee**:\
+  Random values are fully encrypted, ensuring they cannot be accessed or predicted by unauthorized parties.
+
+

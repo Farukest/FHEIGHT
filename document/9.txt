@@ -1,0 +1,629 @@
+# Branching
+
+This document explains how to implement conditional logic (if/else branching) when working with encrypted values in FHEVM. Unlike typical Solidity programming, working with Fully Homomorphic Encryption (FHE) requires specialized methods to handle conditions on encrypted data.
+
+This document covers encrypted branching and how to move from an encrypted condition to a non-encrypted business logic in your smart contract.
+
+## What is confidential branching?
+
+In FHEVM, when you perform [comparison operations](https://docs.zama.org/protocol/solidity-guides/operations#comparison-operations), the result is an encrypted boolean (`ebool`). Since encrypted booleans do not support standard boolean operations like `if` statements or logical operators, conditional logic must be implemented using specialized methods.
+
+To facilitate conditional assignments, FHEVM provides the `FHE.select` function, which acts as a ternary operator for encrypted values.
+
+## **Using `FHE.select` for conditional logic**
+
+The `FHE.select` function enables branching logic by selecting one of two encrypted values based on an encrypted condition (`ebool`). It works as follows:
+
+```solidity
+FHE.select(condition, valueIfTrue, valueIfFalse);
+```
+
+* **`condition`**: An encrypted boolean (`ebool`) resulting from a comparison.
+* **`valueIfTrue`**: The encrypted value to return if the condition is true.
+* **`valueIfFalse`**: The encrypted value to return if the condition is false.
+
+## **Example: Auction Bidding Logic**
+
+Here's an example of using conditional logic to update the highest winning number in a guessing game:
+
+```solidity
+function bid(externalEuint64 encryptedValue, bytes calldata inputProof) external onlyBeforeEnd {
+  // Convert the encrypted input to an encrypted 64-bit integer
+  euint64 bid = FHE.asEuint64(encryptedValue, inputProof);
+
+  // Compare the current highest bid with the new bid
+  ebool isAbove = FHE.lt(highestBid, bid);
+
+  // Update the highest bid if the new bid is greater
+  highestBid = FHE.select(isAbove, bid, highestBid);
+
+  // Allow the contract to use the updated highest bid ciphertext
+  FHE.allowThis(highestBid);
+}
+```
+
+{% hint style="info" %}
+This is a simplified example to demonstrate the functionality.
+{% endhint %}
+
+### How Does It Work?
+
+* **Comparison**:
+  * The `FHE.lt` function compares `highestBid` and `bid`, returning an `ebool` (`isAbove`) that indicates whether the new bid is higher.
+* **Selection**:
+  * The `FHE.select` function updates `highestBid` to either the new bid or the previous highest bid, based on the encrypted condition `isAbove`.
+* **Permission Handling**:
+  * After updating `highestBid`, the contract reauthorizes itself to manipulate the updated ciphertext using `FHE.allowThis`.
+
+## Key Considerations
+
+* **Value change behavior:** Each time `FHE.select` assigns a value, a new ciphertext is created, even if the underlying plaintext value remains unchanged. This behavior is inherent to FHE and ensures data confidentiality, but developers should account for it when designing their smart contracts.
+* **Gas consumption:** Using `FHE.select` and other encrypted operations incurs additional gas costs compared to traditional Solidity logic. Optimize your code to minimize unnecessary operations.
+* **Access control:** Always use appropriate ACL functions (e.g., `FHE.allowThis`, `FHE.allow`) to ensure the updated ciphertexts are authorized for use in future computations or transactions.
+
+***
+
+## How to branch to a non-confidential path?
+
+So far, this section only covered how to do branching using encrypted variables. However, there may be many cases where the "public" contract logic will depend on the outcome from a encrypted path.
+
+To do so, there are only one way to branch from an encrypted path to a non-encrypted path: it requires an off-chain public decryption. Hence, any contract logic that requires moving from an encrypted input to a non-encrypted path always requires an async contract logic.
+
+## **Example: Auction Bidding Logic: Item Release**
+
+Going back to our previous example with the auction bidding logic. Let's assume that the winner of the auction can receive some prize, which is not confidential.
+
+```solidity
+bool public isPrizeDistributed;
+eaddress internal highestBidder;
+euint64 internal highestBid;
+
+function bid(externalEuint64 encryptedValue, bytes calldata inputProof) external onlyBeforeEnd {
+  // Convert the encrypted input to an encrypted 64-bit integer
+  euint64 bid = FHE.asEuint64(encryptedValue, inputProof);
+
+  // Compare the current highest bid with the new bid
+  ebool isAbove = FHE.lt(highestBid, bid);
+
+  // Update the highest bid if the new bid is greater
+  highestBid = FHE.select(isAbove, bid, highestBid);
+
+  // Update the highest bidder address if the new bid is greater
+  highestBidder = FHE.select(isAbove, FHE.asEaddress(msg.sender), currentBidder));
+
+  // Allow the contract to use the highest bidder address
+  FHE.allowThis(highestBidder);
+
+  // Allow the contract to use the updated highest bid ciphertext
+  FHE.allowThis(highestBid);
+}
+
+function revealWinner() external onlyAfterEnd {
+  FHE.makePubliclyDecryptable(highestBidder);
+}
+
+function transferPrize(address auctionWinner, bytes calldata decryptionProof) external {
+  require(!isPrizeDistributed, "Prize has already been distributed");
+
+  bytes32[] memory cts = new bytes32[](1);
+  cts[0] = FHE.toBytes32(highestBidder);
+
+  bytes memory cleartexts = abi.encode(auctionWinner);
+
+  // This FHE call reverts the transaction if:
+  // - the decryption proof is invalid.
+  // - the provided cleartext (auctionWinner) does not match the cleartext value
+  //   that results from the off-chain decryption of the ciphertext (highestBidder).
+  // - the decryption proof does not correspond to the specific pairing of
+  //   the ciphertext (highestBidder) and the cleartext (auctionWinner).
+  FHE.checkSignatures(cts, cleartexts, decryptionProof);
+
+  isPrizeDistributed = true;
+  // Business logic to transfer the prize to the auction winner
+}
+```
+
+{% hint style="info" %}
+This is a simplified example to demonstrate the functionality.
+{% endhint %}
+
+As you can see the in the above example, the path to move from an encrypted condition to a decrypted business logic must be async and requires an off-chain public decryption to reveal the result of the logic using encrypted variables.
+
+## Summary
+
+* **`FHE.select`** is a powerful tool for conditional logic on encrypted values.
+* Encrypted booleans (`ebool`) and values maintain confidentiality, enabling privacy-preserving logic.
+* Developers should account for gas costs and ciphertext behavior when designing conditional operations.
+
+
+# Dealing with branches and conditions
+
+This document explains how to handle branches, loops or conditions when working with Fully Homomorphic Encryption (FHE), specifically when the condition / index is encrypted.
+
+## Breaking a loop
+
+❌ In FHE, it is not possible to break a loop based on an encrypted condition. For example, this would not work:
+
+```solidity
+euint8 maxValue = FHE.asEuint(6); // Could be a value between 0 and 10
+euint8 x = FHE.asEuint(0);
+// some code
+while(FHE.lt(x, maxValue)){
+    x = FHE.add(x, 2);
+}
+```
+
+If your code logic requires looping on an encrypted boolean condition, we highly suggest to try to replace it by a finite loop with an appropriate constant maximum number of steps and use `FHE.select` inside the loop.
+
+## Suggested approach
+
+✅ For example, the previous code could maybe be replaced by the following snippet:
+
+```solidity
+euint8 maxValue = FHE.asEuint(6); // Could be a value between 0 and 10
+euint8 x;
+// some code
+for (uint32 i = 0; i < 10; i++) {
+    euint8 toAdd = FHE.select(FHE.lt(x, maxValue), 2, 0);
+    x = FHE.add(x, toAdd);
+}
+```
+
+In this snippet, we perform 10 iterations, adding 4 to `x` in each iteration as long as the iteration count is less than `maxValue`. If the iteration count exceeds `maxValue`, we add 0 instead for the remaining iterations because we can't break the loop.
+
+## Best practices
+
+### Obfuscate branching
+
+The previous paragraph emphasized that branch logic should rely as much as possible on `FHE.select` instead of decryptions. It hides effectively which branch has been executed.
+
+However, this is sometimes not enough. Enhancing the privacy of smart contracts often requires revisiting your application's logic.
+
+For example, if implementing a simple AMM for two encrypted ERC20 tokens based on a linear constant function, it is recommended to not only hide the amounts being swapped, but also the token which is swapped in a pair.
+
+✅ Here is a very simplified example implementation, we suppose here that the rate between tokenA and tokenB is constant and equals to 1:
+
+```solidity
+// typically either encryptedAmountAIn or encryptedAmountBIn is an encrypted null value
+// ideally, the user already owns some amounts of both tokens and has pre-approved the AMM on both tokens
+function swapTokensForTokens(
+  externalEuint32 encryptedAmountAIn,
+  externalEuint32 encryptedAmountBIn,
+  bytes calldata inputProof
+) external {
+  euint32 encryptedAmountA = FHE.asEuint32(encryptedAmountAIn, inputProof); // even if amount is null, do a transfer to obfuscate trade direction
+  euint32 encryptedAmountB = FHE.asEuint32(encryptedAmountBIn, inputProof); // even if amount is null, do a transfer to obfuscate trade direction
+
+  // send tokens from user to AMM contract
+  FHE.allowTransient(encryptedAmountA, tokenA);
+  IConfidentialERC20(tokenA).transferFrom(msg.sender, address(this), encryptedAmountA);
+
+  FHE.allowTransient(encryptedAmountB, tokenB);
+  IConfidentialERC20(tokenB).transferFrom(msg.sender, address(this), encryptedAmountB);
+
+  // send tokens from AMM contract to user
+  // Price of tokenA in tokenB is constant and equal to 1, so we just swap the encrypted amounts here
+  FHE.allowTransient(encryptedAmountB, tokenA);
+  IConfidentialERC20(tokenA).transfer(msg.sender, encryptedAmountB);
+
+  FHE.allowTransient(encryptedAmountA, tokenB);
+  IConfidentialERC20(tokenB).transferFrom(msg.sender, address(this), encryptedAmountA);
+}
+```
+
+Notice that to preserve confidentiality, we had to make two inputs transfers on both tokens from the user to the AMM contract, and similarly two output transfers from the AMM to the user, even if technically most of the times it will make sense that one of the user inputs `encryptedAmountAIn` or `encryptedAmountBIn` is actually an encrypted zero.
+
+This is different from a classical non-confidential AMM with regular ERC20 tokens: in this case, the user would need to just do one input transfer to the AMM on the token being sold, and receive only one output transfer from the AMM on the token being bought.
+
+### Avoid using encrypted indexes
+
+Using encrypted indexes to pick an element from an array without revealing it is not very efficient, because you would still need to loop on all the indexes to preserve confidentiality.
+
+However, there are plans to make this kind of operation much more efficient in the future, by adding specialized operators for arrays.
+
+For instance, imagine you have an encrypted array called `encArray` and you want to update an encrypted value `x` to match an item from this list, `encArray[i]`, *without* disclosing which item you're choosing.
+
+❌ You must loop over all the indexes and check equality homomorphically, however this pattern is very expensive in gas and should be avoided whenever possible.
+
+```solidity
+euint32 x;
+euint32[] encArray;
+
+function setXwithEncryptedIndex(externalEuint32 encryptedIndex, bytes calldata inputProof) public {
+    euint32 index = FHE.asEuint32(encryptedIndex, inputProof);
+    for (uint32 i = 0; i < encArray.length; i++) {
+        ebool isEqual = FHE.eq(index, i);
+        x = FHE.select(isEqual, encArray[i], x);
+    }
+    FHE.allowThis(x);
+}
+```
+
+
+# Error handling
+
+This document explains how to handle errors effectively in FHEVM smart contracts. Since transactions involving encrypted data do not automatically revert when conditions are not met, developers need alternative mechanisms to communicate errors to users.
+
+## **Challenges in error handling**
+
+In the context of encrypted data:
+
+1. **No automatic reversion**: Transactions do not revert if a condition fails, making it challenging to notify users of issues like insufficient funds or invalid inputs.
+2. **Limited feedback**: Encrypted computations lack direct mechanisms for exposing failure reasons while maintaining confidentiality.
+
+## **Recommended approach: Error logging with a handler**
+
+To address these challenges, implement an **error handler** that records the most recent error for each user. This allows dApps or frontends to query error states and provide appropriate feedback to users.
+
+### **Example implementation**
+
+The following contract snippet demonstrates how to implement and use an error handler:
+
+```solidity
+struct LastError {
+  euint8 error;      // Encrypted error code
+  uint timestamp;    // Timestamp of the error
+}
+
+// Define error codes
+euint8 internal NO_ERROR;
+euint8 internal NOT_ENOUGH_FUNDS;
+
+constructor() {
+  NO_ERROR = FHE.asEuint8(0);           // Code 0: No error
+  NOT_ENOUGH_FUNDS = FHE.asEuint8(1);   // Code 1: Insufficient funds
+}
+
+// Store the last error for each address
+mapping(address => LastError) private _lastErrors;
+
+// Event to notify about an error state change
+event ErrorChanged(address indexed user);
+
+/**
+ * @dev Set the last error for a specific address.
+ * @param error Encrypted error code.
+ * @param addr Address of the user.
+ */
+function setLastError(euint8 error, address addr) private {
+  _lastErrors[addr] = LastError(error, block.timestamp);
+  emit ErrorChanged(addr);
+}
+
+/**
+ * @dev Internal transfer function with error handling.
+ * @param from Sender's address.
+ * @param to Recipient's address.
+ * @param amount Encrypted transfer amount.
+ */
+function _transfer(address from, address to, euint32 amount) internal {
+  // Check if the sender has enough balance to transfer
+  ebool canTransfer = FHE.le(amount, balances[from]);
+
+  // Log the error state: NO_ERROR or NOT_ENOUGH_FUNDS
+  setLastError(FHE.select(canTransfer, NO_ERROR, NOT_ENOUGH_FUNDS), msg.sender);
+
+  // Perform the transfer operation conditionally
+  balances[to] = FHE.add(balances[to], FHE.select(canTransfer, amount, FHE.asEuint32(0)));
+  FHE.allowThis(balances[to]);
+  FHE.allow(balances[to], to);
+
+  balances[from] = FHE.sub(balances[from], FHE.select(canTransfer, amount, FHE.asEuint32(0)));
+  FHE.allowThis(balances[from]);
+  FHE.allow(balances[from], from);
+}
+```
+
+## **How It Works**
+
+1. **Define error codes**:
+   * `NO_ERROR`: Indicates a successful operation.
+   * `NOT_ENOUGH_FUNDS`: Indicates insufficient balance for a transfer.
+2. **Record errors**:
+   * Use the `setLastError` function to log the latest error for a specific address along with the current timestamp.
+   * Emit the `ErrorChanged` event to notify external systems (e.g., dApps) about the error state change.
+3. **Conditional updates**:
+   * Use the `FHE.select` function to update balances and log errors based on the transfer condition (`canTransfer`).
+4. **Frontend integration**:
+   * The dApp can query `_lastErrors` for a user’s most recent error and display appropriate feedback, such as "Insufficient funds" or "Transaction successful."
+
+## **Example error query**
+
+The frontend or another contract can query the `_lastErrors` mapping to retrieve error details:
+
+```solidity
+/**
+ * @dev Get the last error for a specific address.
+ * @param user Address of the user.
+ * @return error Encrypted error code.
+ * @return timestamp Timestamp of the error.
+ */
+function getLastError(address user) public view returns (euint8 error, uint timestamp) {
+  LastError memory lastError = _lastErrors[user];
+  return (lastError.error, lastError.timestamp);
+}
+```
+
+## **Benefits of this approach**
+
+1. **User feedback**:
+   * Provides actionable error messages without compromising the confidentiality of encrypted computations.
+2. **Scalable error tracking**:
+   * Logs errors per user, making it easy to identify and debug specific issues.
+3. **Event-driven notifications**:
+   * Enables frontends to react to errors in real time via the `ErrorChanged` event.
+
+By implementing error handlers as demonstrated, developers can ensure a seamless user experience while maintaining the privacy and integrity of encrypted data operations.
+
+
+
+# Decryption
+
+## Public Decryption
+
+This section explains how to handle public decryption in FHEVM. Public decryption allows plaintext data to be accessed when required for contract logic or user presentation, ensuring confidentiality is maintained throughout the process.
+
+Public decryption is essential in two primary cases:
+
+1. **Smart contract logic**: A contract requires plaintext values for computations or decision-making.
+2. **User interaction**: Plaintext data needs to be revealed to all users, such as revealing the decision of the vote.
+
+### Overview
+
+Public decryption of a confidential on-chain result is designed as an asynchronous three-steps process that splits the work between the blockchain (on-chain) and off-chain execution environments.
+
+**Step 1: On-Chain Setup - Enabling Permanent Public Access**
+
+This step is executed by the smart contract using the FHE Solidity library to signal that a specific confidential result is ready to be revealed.
+
+* **FHE Solidity Library Function:** `FHE.makePubliclyDecryptable`
+* **Action:** The contract sets the ciphertext handle's status as publicly decryptable, **globally and permanently** authorizing any entity to request its off-chain cleartext value.
+* **Result:** The ciphertext is now accessible to any entity, which can request its decryption from the Zama off-chain Relayer.
+
+**Step 2: Off-chain Decryption - Decryption and Proof Generation**
+
+This step can be executed by any off-chain client using the Relayer SDK.
+
+* **Relayer SDK Function:** `FhevmInstance.publicDecrypt`
+* **Action:** The off-chain client submits the ciphertext handle to the Zama Relayer's Key Management System (KMS).
+* **Result:** The Zama Relayer returns three items:
+  1. The cleartext (the decrypted value).
+  2. The ABI-encoding of that cleartext.
+  3. A Decryption Proof (a byte array of signatures and metadata) that serves as a cryptographic guarantee that the cleartext is the authentic, unmodified result of the decryption performed by the KMS.
+
+**Step 3: On-Chain Verification - Submit and Guarantee Authenticity**
+
+This final step is executed on-chain by the contrat using the FHE Solidity library with the proof generated off-chain to ensure the cleartext submitted to the contract is trustworthy.
+
+* **FHE Solidity Library Function:** `FHE.checkSignatures`
+* **Action:** The caller submits the cleartext and decryption proof back to a contract function. The contract calls `FHE.checkSignatures`, which reverts the transaction if the proof is invalid or does not match the cleartext/ciphertext pair.
+* **Result:** The receiving contract gains a cryptographic guarantee that the submitted cleartext is the authentic decrypted value of the original ciphertext. The contract can then securely execute its business logic (e.g., reveal a vote, transfer funds, update state).
+
+### Tutorial
+
+This tutorial provides a deep dive into the three-step asynchronous public decryption process required to finalize a confidential on-chain computation by publicly revealing its result.
+
+The Solidity contract provided below, `FooBarContract`, is used to model this entire workflow. The contract's main function `runFooBarConfidentialLogic` simulates the execution of a complex confidential computation (e.g., calculating a winner or a final price) that results in 2 encrypted final values (ciphertexts) `_encryptedFoo` and `_encryptedBar`.
+
+Then, in order to finalize the workflow, the `FooBarContract` needs the decrypted clear values of both `_encryptedFoo` and `_encryptedBar` to decide whether to trigger some finalization logic (e.g. reveal a vote, transfer funds). The `FooBarContract`'s function `_runFooBarClearBusinessLogicFinalization` simulates this step. Since the FHEVM prevents direct on-chain decryption, the process must shift to an off-chain decryption phase, which presents a challenge: ***How can the\*\*\*\* ****`FooBarContract`**** ****trust that the cleartext submitted back to the chain is the authentic, unmodified result of the decryption of both**** ****`_encryptedFoo`**** ****and**** ****`_encryptedBar`****?***
+
+This is where the off-chain `publicDecrypt` function and the on-chain `checkSignatures` function come into play.
+
+#### The Solidity Contract
+
+```solidity
+pragma solidity ^0.8.24;
+
+import "@fhevm/solidity/lib/FHE.sol";
+import { ZamaEthereumConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+
+contract FooBarContract is ZamaEthereumConfig {
+  ebool _encryptedFoo;
+  euint8 _encryptedBar;
+  bool _clearFoo;
+  uint8 _clearBar;
+  bool _isFinalized;
+
+  event ClearFooBarRequested(ebool encryptedFoo, euint8 encryptedBar);
+
+  constructor() {}
+
+  function _isFooBarConfidentialLogicExecuted() private returns (bool) {
+    return FHE.isInitialized(_encryptedFoo) && FHE.isInitialized(_encryptedBar);
+  }
+
+  modifier whenConfidentialLogicExecuted() {
+    require(_isFooBarConfidentialLogicExecuted(), "foo confidential logic not yet executed!")
+    _;
+  }
+
+  function runFooBarConfidentialLogic() external {
+    require(!_isFooBarConfidentialLogicExecuted(), "foobar confidential logic already executed!")
+    _encryptedFoo = FHE.randEbool();
+    _encryptedBar = FHE.randEuint8();
+  }
+
+  function getEncryptedFoo() public whenConfidentialLogicExecuted returns (ebool) {
+    return _encryptedFoo;
+  }
+
+  function getEncryptedBar() public whenConfidentialLogicExecuted returns (euint8) {
+    return _encryptedBar;
+  }
+
+  function requestClearFooBar() external whenConfidentialLogicExecuted {
+    FHE.makePubliclyDecryptable(_encryptedFoo);
+    FHE.makePubliclyDecryptable(_encryptedBar);
+
+    emit ClearFooBarRequested(_encryptedFoo, _encryptedBar);
+  }
+
+  function finalizeClearFooBar(bool clearFoo, uint8 clearBar, bytes memory publicDecryptionProof) external whenConfidentialLogicExecuted {
+    require(!_isFinalized, "foo is already revealed");
+
+    // ⚠️ Crucial Ordering Constraint
+    // ==============================
+    // The decryption proof is cryptographically bound to the specific ORDER of handles.
+    // A proof computed for `[efoo, ebar]` will be different
+    // from a proof computed for `[ebar, efoo]`.
+    //
+    // Here we expect a proof computed for `[efoo, ebar]`
+    //
+    bytes32[] memory ciphertextEfooEbar = new bytes32[](2);
+    ciphertextEfooEbar[0] = FHE.toBytes32(_encryptedFoo);
+    ciphertextEfooEbar[1] = FHE.toBytes32(_encryptedBar);
+
+    // ⚠️ Once again, the order is critical to compute the ABI encoded array of clear values
+    // The order must match the order in ciphertextEfooEbar: (efoo, ebar)
+    bytes memory abiClearFooClearBar = abi.encode(clearFoo, clearBar);
+    FHE.checkSignatures(ciphertextEfooEbar, abiClearFooClearBar, publicDecryptionProof);
+
+    _isFinalized = true;
+
+    _runFooBarClearBusinessLogicFinalization();
+  }
+
+  function _runFooBarClearBusinessLogicFinalization() private {
+    // Business logic starts here.
+    // Transfer ERC20, releave price or winner etc.
+  }
+}
+```
+
+{% stepper %}
+{% step %}
+
+### Run On-Chain Confidential Logic
+
+We first execute the on-chain confidential logic using a TypeScript client. This simulates the initial phase of the confidential computation.
+
+```typescript
+const tx = await contract.runFooBarConfidentialLogic();
+await tx.wait();
+```
+
+{% endstep %}
+
+{% step %}
+
+### Run On-Chain Request Clear Values
+
+With the confidential logic complete, the next step is to execute the on-chain function that requests and enables public decryption of the computed encrypted values `_encryptedFoo` and `_encryptedBar`. In a production scenario, we might use a Solidity event to notify the off-chain client that the necessary encrypted values are ready for off-chain public decryption.
+
+```typescript
+const tx = await contract.requestClearFooBar();
+const txReceipt = await tx.wait();
+const { efoo, ebar } = parseClearFooBarRequestedEvent(contract, txReceipt);
+```
+
+{% endstep %}
+
+{% step %}
+
+### Run Off-Chain Public Decryption
+
+Now that the ciphertexts are marked as publicly decryptable, we call the off-chain function `publicDecrypt` using the `relayer-sdk`. This fetches the clear values along with the Zama KMS decryption proof required for the final on-chain verification.
+
+{% hint style="warning" %}
+**Crucial Ordering Constraint:** The decryption proof is cryptographically bound to the specific order of handles passed in the input array. The proof computed for `[efoo, ebar]` is different from the proof computed for `[ebar, efoo]`.
+{% endhint %}
+
+```typescript
+const instance: FhevmInstance = await createInstance();
+const results: PublicDecryptResults = await instance.publicDecrypt([efoo, ebar]);
+const clearFoo = results.values[efoo];
+const clearBar = results.values[ebar];
+// Warning! The decryption proof is computed for [efoo, ebar], NOT [ebar, efoo]!
+const decryptionProof: `0x${string}` = results.decryptionProof;
+```
+
+{% endstep %}
+
+{% step %}
+
+### Run On-Chain
+
+On the client side, we have computed all the clear values and, crucially, obtained the associated decryption proof. We can now securely move on to the final step: sending this data on-chain to trigger verification and final business logic simulated in the `_runFooBarClearBusinessLogicFinalization` contract function. If verification succeeds, the contract securely executes the `_runFooBarClearBusinessLogicFinalization` (e.g., transfers funds, publishes the vote result, etc.), completing the full confidential workflow.
+
+```typescript
+const tx = await contract.finalizeClearFooBar(clearFoo, clearBar, results.decryptionProof);
+const txReceipt = await tx.wait();
+```
+
+{% endstep %}
+{% endstepper %}
+
+## Public Decryption On-Chain & Off-Chain API
+
+#### On-chain `FHE.makePubliclyDecryptable` function
+
+The contract sets the ciphertext handle's status as publicly decryptable, globally and permanently authorizing any entity to request its off-chain cleartext value. Note the calling contract must have ACL permission to access the handle in the first place.
+
+```solidity
+function makePubliclyDecryptable(ebool value) internal;
+function makePubliclyDecryptable(euint8 value) internal;
+function makePubliclyDecryptable(euint16 value) internal;
+...
+function makePubliclyDecryptable(euint256 value) internal;
+```
+
+**Function arguments**
+
+**Function return**
+
+This function has no return value
+
+#### Off-chain relayer-sdk `publicDecrypt` function
+
+The relayer-sdk `publicDecrypt` function is defined as follow:
+
+```typescript
+export type PublicDecryptResults = {
+  clearValues: Record<`0x${string}`, bigint | boolean | `0x${string}`>;
+  abiEncodedClearValues: `0x${string}`;
+  decryptionProof: `0x${string}`;
+};
+export type FhevmInstance = {
+  //...
+  publicDecrypt: (handles: (string | Uint8Array)[]) => Promise<PublicDecryptResults>;
+  //...
+};
+```
+
+**Function arguments**
+
+| Argument  | Description                                                                | Constraints                                                                                          |
+| --------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `handles` | The list of ciphertext handles (represented as bytes32 values) to decrypt. | These handles must correspond to ciphertexts that have been marked as publicly decryptable on-chain. |
+
+**Function return type `PublicDecryptResults`**
+
+The function returns an object containing the three essential components required for the final on-chain verification in Step 3 of the public decryption workflow:
+
+| Property                | Type                                                        | Description                                                                                                                            | On-Chain usage                                                                  |
+| ----------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `clearValues`           | `Record<`0x${string}`, bigint \| boolean \|` 0x${string}`>` | An object mapping each input ciphertext handle to its raw decrypted cleartext value.                                                   | N/A                                                                             |
+| `abiEncodedClearValues` | `0x${string}`                                               | The ABI-encoded byte string of all decrypted cleartext values, preserving the exact order of the input handles list.                   | `abiEncodedCleartexts` argument when calling the on-chain `FHE.checkSignatures` |
+| `decryptionProof`       | `0x${string}`                                               | A byte array containing the KMS cryptographic signatures and necessary metadata that proves the decryption was legitimately performed. | `decryptionProof` argument when calling the on-chain `FHE.checkSignatures`      |
+
+#### On-chain `FHE.checkSignatures` function
+
+```solidity
+function checkSignatures(bytes32[] memory handlesList, bytes memory abiEncodedCleartexts, bytes memory decryptionProof) internal
+```
+
+**Function arguments**
+
+| Argument               | Description                                                                                                                                                                     | Constraint                                                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `handlesList`          | The list of ciphertext handles (represented as bytes32 values) whose decryption is being verified.                                                                              | Must contain the exact same number of elements as the cleartext values in abiEncodedCleartexts.                                                |
+| `abiEncodedCleartexts` | The ABI encoding of the decrypted cleartext values associated with the handles. (Use abi.encode to prepare this argument.)                                                      | Order is critical: The i-th value in this encoding must be the cleartext that corresponds to the i-th handle in handlesList. Types must match. |
+| `decryptionProof`      | A byte array containing the KMS cryptographic signatures and necessary metadata that prove the off-chain decryption was performed by the authorized Zama Key Management System. | This proof is generated by the Zama KMS and is obtained via the `relayer-sdk.publicDecrypt` function.                                          |
+
+**Function return**
+
+This function has no return value and simply reverts if the proof verification failed.
+
+{% hint style="warning" %}
+Notice that the callback should always verify the signatures and implement a replay protection mechanism (see below).
+{% endhint %}

@@ -1,0 +1,123 @@
+<!-- dynamic brand -->
+
+<div class="brand-dynamic">
+    <svg style="overflow:visible" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="387px" height="84px" viewBox="0 0 387 84" enable-background="new 0 0 387 84" xml:space="preserve">
+        <defs>
+            <style type="text/css">
+                <![CDATA[.draw-line {
+                    fill:transparent;
+                    stroke:url(#myLinearGradient1);
+                    stroke-width:1;
+                }
+                .fill {
+                    fill:#ffffff;
+                    opacity:0;
+                }
+                ]]>
+            </style>
+            <linearGradient id="myLinearGradient1" x1="0%" y1="0%" x2="0%" y2="100%" spreadMethod="pad">
+                <stop offset="0%" stop-color="#00ffff" stop-opacity="0.5" />
+                <stop offset="100%" stop-color="#00ffff" stop-opacity="1" />
+            </linearGradient>
+            <filter id="blurFilter2">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1" />
+                <feMerge>
+                    <feMergeNode in="blur1" />
+                    <feMergeNode in="blur1" />
+                    <feMergeNode in="blur1" />
+                    <feMergeNode in="blur1" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+            <filter id="dropshadow" height="200%" width="200%" x="-50%" y="-50%">
+                <feGaussianBlur in="SourceAlpha" stdDeviation="20"/>
+                <feOffset dx="0" dy="0" result="offsetblur"/>
+                <feMerge>
+                    <feMergeNode/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+        <g id="fheight_logo" style="overflow:visible; filter: url(#blurFilter2);">
+            <!-- F -->
+            <path class="draw-line" d="M5 10 L5 74 L18 74 L18 48 L45 48 L45 36 L18 36 L18 22 L50 22 L50 10 Z"/>
+            <!-- H -->
+            <path class="draw-line" d="M60 10 L60 74 L73 74 L73 48 L100 48 L100 74 L113 74 L113 10 L100 10 L100 36 L73 36 L73 10 Z"/>
+            <!-- E -->
+            <path class="draw-line" d="M123 10 L123 74 L168 74 L168 62 L136 62 L136 48 L163 48 L163 36 L136 36 L136 22 L168 22 L168 10 Z"/>
+            <!-- I -->
+            <path class="draw-line" d="M178 10 L178 74 L191 74 L191 10 Z"/>
+            <!-- G -->
+            <path class="draw-line" d="M201 10 L201 74 L251 74 L251 36 L226 36 L226 48 L238 48 L238 62 L214 62 L214 22 L251 22 L251 10 Z"/>
+            <!-- H -->
+            <path class="draw-line" d="M261 10 L261 74 L274 74 L274 48 L301 48 L301 74 L314 74 L314 10 L301 10 L301 36 L274 36 L274 10 Z"/>
+            <!-- T -->
+            <path class="draw-line" d="M324 10 L324 22 L344 22 L344 74 L357 74 L357 22 L377 22 L377 10 Z"/>
+            <!-- Decorative lines -->
+            <line class="draw-line" x1="0" y1="78" x2="180" y2="78"/>
+            <line class="draw-line" x1="207" y1="78" x2="387" y2="78"/>
+            <!-- Center diamond accent -->
+            <polygon class="draw-line" points="193,70 200,78 193,86 186,78"/>
+        </g>
+        <g id="fheight_logo_2" style="overflow:visible; filter: url(#dropshadow);">
+            <!-- F -->
+            <path class="fill" d="M5 10 L5 74 L18 74 L18 48 L45 48 L45 36 L18 36 L18 22 L50 22 L50 10 Z"/>
+            <!-- H -->
+            <path class="fill" d="M60 10 L60 74 L73 74 L73 48 L100 48 L100 74 L113 74 L113 10 L100 10 L100 36 L73 36 L73 10 Z"/>
+            <!-- E -->
+            <path class="fill" d="M123 10 L123 74 L168 74 L168 62 L136 62 L136 48 L163 48 L163 36 L136 36 L136 22 L168 22 L168 10 Z"/>
+            <!-- I -->
+            <path class="fill" d="M178 10 L178 74 L191 74 L191 10 Z"/>
+            <!-- G -->
+            <path class="fill" d="M201 10 L201 74 L251 74 L251 36 L226 36 L226 48 L238 48 L238 62 L214 62 L214 22 L251 22 L251 10 Z"/>
+            <!-- H -->
+            <path class="fill" d="M261 10 L261 74 L274 74 L274 48 L301 48 L301 74 L314 74 L314 10 L301 10 L301 36 L274 36 L274 10 Z"/>
+            <!-- T -->
+            <path class="fill" d="M324 10 L324 22 L344 22 L344 74 L357 74 L357 22 L377 22 L377 10 Z"/>
+            <!-- Decorative lines -->
+            <line class="fill" x1="0" y1="78" x2="180" y2="78" stroke="#ffffff" stroke-width="2"/>
+            <line class="fill" x1="207" y1="78" x2="387" y2="78" stroke="#ffffff" stroke-width="2"/>
+            <!-- Center diamond accent -->
+            <polygon class="fill" points="193,70 200,78 193,86 186,78"/>
+        </g>
+    </svg>
+</div>
+
+<!-- end dynamic brand -->
+
+<div class="login-form">
+  <div class="form-group">
+    <input type="text" class="form-control login-username" placeholder="{{localize 'login.username_input_label'}}">
+  </div>
+  <div class="form-group">
+    <div class="input-group">
+      <input type="password" class="form-control login-password" placeholder="{{localize 'login.password_input_label'}}">
+    </div>
+  </div>
+  <button class="btn btn-clean btn-clean-primary login">{{localize 'login.login_button_label'}}</button>
+</div>
+
+<div class="registration-block">
+	<button class="btn btn-clean btn-clean-confirm registration">{{localize 'login.create_account_button_label'}}</button>
+</div>
+
+<div class="social-links">
+	<div class="mystic-separator">
+		<span class="sep-line"></span>
+		<span class="sep-diamond"></span>
+		<span class="sep-line"></span>
+	</div>
+	<div class="social-icons">
+		<a href="https://github.com/Farukest" target="_blank" class="social-icon github" title="GitHub">
+			<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+		</a>
+		<a href="https://twitter.com/0xFlydev" target="_blank" class="social-icon twitter" title="X">
+			<svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+		</a>
+	</div>
+	<div class="mystic-separator">
+		<span class="sep-line"></span>
+		<span class="sep-diamond"></span>
+		<span class="sep-line"></span>
+	</div>
+</div>

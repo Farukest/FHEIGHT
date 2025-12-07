@@ -1,0 +1,492 @@
+# Overview
+
+**Welcome to the Relayer SDK Docs.**
+
+This section provides an overview of the key features of Zama’s FHEVM Relayer JavaScript SDK. The SDK lets you interact with FHEVM smart contracts without dealing directly with the [Gateway Chain](https://docs.zama.ai/protocol/protocol/overview/gateway).
+
+With the Relayer, FHEVM clients only need a wallet on the FHEVM host chain. All interactions with the Gateway chain are handled through HTTP calls to Zama's Relayer, which pays for it on the Gateway chain.
+
+## Where to go next
+
+If you’re new to the Zama Protocol, start with the [Litepaper](https://docs.zama.ai/protocol/zama-protocol-litepaper) or the [Protocol Overview](https://docs.zama.ai/protocol) to understand the foundations.
+
+Otherwise:
+
+🟨 Go to [**Setup guide**](https://docs.zama.org/protocol/relayer-sdk-guides/fhevm-relayer/initialization) to learn how to configure the Relayer SDK for your project.
+
+🟨 Go to [**Input registration**](https://docs.zama.org/protocol/relayer-sdk-guides/fhevm-relayer/input) to see how to register new encrypted inputs for your smart contracts.
+
+🟨 Go to [**User decryption**](https://docs.zama.org/protocol/relayer-sdk-guides/fhevm-relayer/decryption/user-decryption) to enable users to decrypt data with their own keys, once permissions have been granted via Access Control List(ACL).
+
+🟨 Go to [**Public decryption**](https://docs.zama.org/protocol/relayer-sdk-guides/fhevm-relayer/decryption/public-decryption) to learn how to decrypt outputs that are publicly accessible via HTTP.
+
+🟨 Go to [**Solidity ACL Guide**](https://docs.zama.ai/protocol/solidity-guides/smart-contract/acl) for more detailed instructions about access control.
+
+## Help center
+
+Ask technical questions and discuss with the community.
+
+* [Community forum](https://community.zama.ai/c/fhevm/15)
+* [Discord channel](https://discord.com/invite/zama)
+
+
+
+# Initialization
+
+The use of `@zama-fhe/relayer-sdk` requires a setup phase. This consists of the instantiation of the `FhevmInstance`. This object holds all the configuration and methods needed to interact with an FHEVM using a Relayer. It can be created using the following code snippet:
+
+```ts
+import { createInstance } from '@zama-fhe/relayer-sdk';
+
+const instance = await createInstance({
+  // ACL_CONTRACT_ADDRESS (FHEVM Host chain)
+  aclContractAddress: '0xf0Ffdc93b7E186bC2f8CB3dAA75D86d1930A433D',
+  // KMS_VERIFIER_CONTRACT_ADDRESS (FHEVM Host chain)
+  kmsContractAddress: '0xbE0E383937d564D7FF0BC3b46c51f0bF8d5C311A',
+  // INPUT_VERIFIER_CONTRACT_ADDRESS (FHEVM Host chain)
+  inputVerifierContractAddress: '0xBBC1fFCdc7C316aAAd72E807D9b0272BE8F84DA0',
+  // DECRYPTION_ADDRESS (Gateway chain)
+  verifyingContractAddressDecryption:
+    '0x5D8BD78e2ea6bbE41f26dFe9fdaEAa349e077478',
+  // INPUT_VERIFICATION_ADDRESS (Gateway chain)
+  verifyingContractAddressInputVerification:
+    '0x483b9dE06E4E4C7D35CCf5837A1668487406D955',
+  // FHEVM Host chain id
+  chainId: 11155111,
+  // Gateway chain id
+  gatewayChainId: 10901,
+  // Optional RPC provider to host chain
+  network: 'https://eth-sepolia.public.blastapi.io',
+  // Relayer URL
+  relayerUrl: 'https://relayer.testnet.zama.org',
+});
+```
+
+or the even simpler:
+
+```ts
+import { createInstance, SepoliaConfig } from '@zama-fhe/relayer-sdk';
+
+const instance = await createInstance(SepoliaConfig);
+```
+
+The information regarding the configuration of Sepolia's FHEVM and associated Relayer maintained by Zama can be found in the `SepoliaConfig` object or in the [contract addresses page](https://docs.zama.ai/protocol/solidity-guides/smart-contract/configure/contract_addresses). The `gatewayChainId` is `10901`. The `chainId` is the chain-id of the FHEVM chain, so for Sepolia it would be `11155111`.
+
+{% hint style="info" %}
+For more information on the Relayer's part in the overall architecture please refer to [the Relayer's page in the architecture documentation](https://docs.zama.ai/protocol/protocol/overview/relayer_oracle).
+{% endhint %}
+
+
+
+# Input
+
+This document explains how to register ciphertexts to the FHEVM. Registering ciphertexts to the FHEVM allows for future use on-chain using the `FHE.fromExternal` solidity function. All values encrypted for use with the FHEVM are encrypted under a public key of the protocol.
+
+```ts
+// We first create a buffer for values to encrypt and register to the fhevm
+const buffer = instance.createEncryptedInput(
+  // The address of the contract allowed to interact with the "fresh" ciphertexts
+  contractAddress,
+  // The address of the entity allowed to import ciphertexts to the contract at `contractAddress`
+  userAddress,
+);
+
+// We add the values with associated data-type method
+buffer.add64(BigInt(23393893233));
+buffer.add64(BigInt(1));
+// buffer.addBool(false);
+// buffer.add8(BigInt(43));
+// buffer.add16(BigInt(87));
+// buffer.add32(BigInt(2339389323));
+// buffer.add128(BigInt(233938932390));
+// buffer.addAddress('0xa5e1defb98EFe38EBb2D958CEe052410247F4c80');
+// buffer.add256(BigInt('2339389323922393930'));
+
+// This will encrypt the values, generate a proof of knowledge for it, and then upload the ciphertexts using the relayer.
+// This action will return the list of ciphertext handles.
+const ciphertexts = await buffer.encrypt();
+```
+
+With a contract `MyContract` that implements the following it is possible to add two "fresh" ciphertexts.
+
+```solidity
+contract MyContract {
+  ...
+
+  function add(
+    externalEuint64 a,
+    externalEuint64 b,
+    bytes calldata proof
+  ) public virtual returns (euint64) {
+    return FHE.add(FHE.fromExternal(a, proof), FHE.fromExternal(b, proof))
+  }
+}
+```
+
+With `my_contract` the contract in question using `ethers` it is possible to call the add function as following.
+
+```js
+my_contract.add(
+  ciphertexts.handles[0],
+  ciphertexts.handles[1],
+  ciphertexts.inputProof,
+);
+```
+
+
+
+# User decryption
+
+This document explains how to perform user decryption. User decryption is required when you want a user to access their private data without it being exposed to the blockchain.
+
+User decryption in FHEVM enables the secure sharing or reuse of encrypted data under a new public key without exposing the plaintext.
+
+This feature is essential for scenarios where encrypted data must be transferred between contracts, dApps, or users while maintaining its confidentiality.
+
+## When to use user decryption
+
+User decryption is particularly useful for **allowing individual users to securely access and decrypt their private data**, such as balances or counters, while maintaining data confidentiality.
+
+## Overview
+
+The user decryption process involves retrieving ciphertext from the blockchain and performing user-decryption on the client-side. In other words we take the data that has been encrypted by the KMS, decrypt it and encrypt it with the user's private key, so only he can access the information.
+
+This ensures that the data remains encrypted under the blockchain’s FHE key but can be securely shared with a user by re-encrypting it under the user’s NaCl public key.
+
+User decryption is facilitated by the **Relayer** and the **Key Management System (KMS)**. The workflow consists of the following:
+
+1. Retrieving the ciphertext from the blockchain using a contract’s view function.
+2. Re-encrypting the ciphertext client-side with the user’s public key, ensuring only the user can decrypt it.
+
+## Step 1: retrieve the ciphertext
+
+To retrieve the ciphertext that needs to be decrypted, you can implement a view function in your smart contract. Below is an example implementation:
+
+```solidity
+import "@fhevm/solidity/lib/FHE.sol";
+
+contract ConfidentialERC20 {
+  ...
+  function balanceOf(account address) public view returns (euint64) {
+    return balances[msg.sender];
+  }
+  ...
+}
+```
+
+Here, `balanceOf` allows retrieval of the user’s encrypted balance handle stored on the blockchain. Doing this will return the ciphertext handle, an identifier for the underlying ciphertext.
+
+{% hint style="warning" %}
+For the user to be able to user decrypt (also called re-encrypt) the ciphertext value the access control (ACL) needs to be set properly using the `FHE.allow(ciphertext, address)` function in the solidity contract holding the ciphertext. For more details on the topic please refer to [the ACL documentation](https://docs.zama.ai/protocol/solidity-guides/solidity-guides/smart-contract/acl).
+{% endhint %}
+
+## Step 2: decrypt the ciphertext
+
+Using that ciphertext handle user decryption is performed client-side using the `@zama-fhe/relayer-sdk` library. The user needs to have created an instance object prior to that (for more context see [the relayer-sdk setup page](https://docs.zama.org/protocol/relayer-sdk-guides/fhevm-relayer/initialization)).
+
+```ts
+// instance: [`FhevmInstance`] from `zama-fhe/relayer-sdk`
+// signer: [`Signer`] from ethers (could a [`Wallet`])
+// ciphertextHandle: [`string`]
+// contractAddress: [`string`]
+
+const keypair = instance.generateKeypair();
+const handleContractPairs = [
+  {
+    handle: ciphertextHandle,
+    contractAddress: contractAddress,
+  },
+];
+const startTimeStamp = Math.floor(Date.now() / 1000).toString();
+const durationDays = '10'; // String for consistency
+const contractAddresses = [contractAddress];
+
+const eip712 = instance.createEIP712(
+  keypair.publicKey,
+  contractAddresses,
+  startTimeStamp,
+  durationDays,
+);
+
+const signature = await signer.signTypedData(
+  eip712.domain,
+  {
+    UserDecryptRequestVerification: eip712.types.UserDecryptRequestVerification,
+  },
+  eip712.message,
+);
+
+const result = await instance.userDecrypt(
+  handleContractPairs,
+  keypair.privateKey,
+  keypair.publicKey,
+  signature.replace('0x', ''),
+  contractAddresses,
+  signer.address,
+  startTimeStamp,
+  durationDays,
+);
+
+const decryptedValue = result[ciphertextHandle];
+```
+
+
+# Public decryption
+
+This document explains how to perform public decryption of FHEVM ciphertexts. Public decryption is required when you want everyone to see the value in a ciphertext, for example the result of private auction. Public decryption can be done using the Relayer HTTP endpoint.
+
+## HTTP Public Decrypt
+
+Calling the public decryption endpoint of the Relayer can be done easily using the following code snippet.
+
+```ts
+// A list of ciphertexts handles to decrypt
+const handles = [
+  '0x830a61b343d2f3de67ec59cb18961fd086085c1c73ff0000000000aa36a70000',
+  '0x98ee526413903d4613feedb9c8fa44fe3f4ed0dd00ff0000000000aa36a70400',
+  '0xb837a645c9672e7588d49c5c43f4759a63447ea581ff0000000000aa36a70700',
+];
+
+// The list of decrypted values
+// results = {
+//    clearValues: {
+//      '0x830a61b343d2f3de67ec59cb18961fd086085c1c73ff0000000000aa36a70000': true,
+//      '0x98ee526413903d4613feedb9c8fa44fe3f4ed0dd00ff0000000000aa36a70400': 242n,
+//      '0xb837a645c9672e7588d49c5c43f4759a63447ea581ff0000000000aa36a70700': '0xfC4382C084fCA3f4fB07c3BCDA906C01797595a8'
+//    }
+//    abiEncodedClearValues: '0x.....'
+//    decryptionProof: '0x.....'
+// }
+const results: PublicDecryptResults = instance.publicDecrypt(handles);
+```
+
+## Onchain Public Decryption Verification
+
+For more details about public decryption and on-chain decryption proof please refer to the on [public decryption page](https://docs.zama.ai/protocol/solidity-guides/smart-contract/oracle).
+
+
+
+
+# Web applications
+
+This document guides you through building a web application using the `@zama-fhe/relayer-sdk` library.
+
+## Using directly the library
+
+### Step 1: Setup the library
+
+`@zama-fhe/relayer-sdk` consists of multiple files, including WASM files and WebWorkers, which can make packaging these components correctly in your setup cumbersome. To simplify this process, especially if you're developing a dApp with server-side rendering (SSR), we recommend using our CDN.
+
+#### Using UMD CDN
+
+The Zama CDN url format is `https://cdn.zama.org/relayer-sdk-js/<package-version>/relayer-sdk-js.umd.cjs`
+
+Include this line at the top of your project.
+
+```html
+<script
+  src="https://cdn.zama.org/relayer-sdk-js/0.3.0-5/relayer-sdk-js.umd.cjs"
+  type="text/javascript"
+></script>
+```
+
+In your project, you can use the bundle import if you install `@zama-fhe/relayer-sdk` package:
+
+```javascript
+import {
+  initSDK,
+  createInstance,
+  SepoliaConfig,
+} from '@zama-fhe/relayer-sdk/bundle';
+```
+
+#### Using ESM CDN
+
+If you prefer You can also use the `@zama-fhe/relayer-sdk` as a ES module:
+
+```html
+<script type="module">
+  import {
+    initSDK,
+    createInstance,
+    SepoliaConfig,
+  } from 'https://cdn.zama.org/relayer-sdk-js/0.3.0-5/relayer-sdk-js.umd.cjs';
+
+  await initSDK();
+  const config = { ...SepoliaConfig, network: window.ethereum };
+  config.network = window.ethereum;
+  const instance = await createInstance(config);
+</script>
+```
+
+#### Using npm package
+
+Install the `@zama-fhe/relayer-sdk` library to your project:
+
+```bash
+# Using npm
+npm install @zama-fhe/relayer-sdk
+
+# Using Yarn
+yarn add @zama-fhe/relayer-sdk
+
+# Using pnpm
+pnpm add @zama-fhe/relayer-sdk
+```
+
+`@zama-fhe/relayer-sdk` uses ESM format. You need to set the [type to "module" in your package.json](https://nodejs.org/api/packages.html#type). If your node project use `"type": "commonjs"` or no type, you can force the loading of the web version by using `import { createInstance } from '@zama-fhe/relayer-sdk/web';`
+
+```javascript
+import { initSDK, createInstance, SepoliaConfig } from '@zama-fhe/relayer-sdk';
+```
+
+### Step 2: Initialize your project
+
+To use the library in your project, you need to load the WASM of [TFHE](https://www.npmjs.com/package/tfhe) first with `initSDK`.
+
+```javascript
+import { initSDK } from '@zama-fhe/relayer-sdk/bundle';
+
+const init = async () => {
+  await initSDK(); // Load needed WASM
+};
+```
+
+### Step 3: Create an instance
+
+Once the WASM is loaded, you can now create an instance.
+
+```javascript
+import {
+  initSDK,
+  createInstance,
+  SepoliaConfig,
+} from '@zama-fhe/relayer-sdk/bundle';
+
+const init = async () => {
+  await initSDK(); // Load FHE
+  const config = { ...SepoliaConfig, network: window.ethereum };
+  return createInstance(config);
+};
+
+init().then((instance) => {
+  console.log(instance);
+});
+```
+
+You can now use your instance to [encrypt parameters](https://docs.zama.org/protocol/relayer-sdk-guides/fhevm-relayer/input), perform [user decryptions](https://docs.zama.org/protocol/relayer-sdk-guides/fhevm-relayer/decryption/user-decryption) or [public decryptions](https://docs.zama.org/protocol/relayer-sdk-guides/fhevm-relayer/decryption/public-decryption).
+
+
+# Debugging
+
+This document provides solutions for common Webpack errors encountered during the development process. Follow the steps below to resolve each issue.
+
+## Can't resolve 'tfhe\_bg.wasm'
+
+**Error message:** `Module not found: Error: Can't resolve 'tfhe_bg.wasm'`
+
+**Cause:** In the codebase, there is a `new URL('tfhe_bg.wasm')` which triggers a resolve by Webpack.
+
+**Possible solutions:** You can add a fallback for this file by adding a resolve configuration in your `webpack.config.js`:
+
+```javascript
+resolve: {
+  fallback: {
+    'tfhe_bg.wasm': require.resolve('tfhe/tfhe_bg.wasm'),
+  },
+},
+```
+
+## Buffer not defined
+
+**Error message:** `ReferenceError: Buffer is not defined`
+
+**Cause:** This error occurs when the Node.js `Buffer` object is used in a browser environment where it is not natively available.
+
+**Possible solutions:** To resolve this issue, you need to provide browser-compatible fallbacks for Node.js core modules. Install the necessary browserified npm packages and configure Webpack to use these fallbacks.
+
+```javascript
+resolve: {
+  fallback: {
+    buffer: require.resolve('buffer/'),
+    crypto: require.resolve('crypto-browserify'),
+    stream: require.resolve('stream-browserify'),
+    path: require.resolve('path-browserify'),
+  },
+},
+```
+
+## Issue with importing ESM version
+
+**Error message:** Issues with importing ESM version
+
+**Cause:** With a bundler such as Webpack or Rollup, imports will be replaced with the version mentioned in the `"browser"` field of the `package.json`. This can cause issues with typing.
+
+**Possible solutions:**
+
+* If you encounter issues with typing, you can use the tsconfig.json using TypeScript 5 located in the [fhevm-react-template](https://github.com/zama-ai/fhevm-react-template) repository.
+* If you encounter any other issue, you can force import of the browser package.
+
+## Use bundled version
+
+**Error message:** Issues with bundling the library, especially with SSR frameworks.
+
+**Cause:** The library may not bundle correctly with certain frameworks, leading to errors during the build or runtime process.
+
+**Possible solutions:** Use the [prebundled version available](https://docs.zama.org/protocol/relayer-sdk-guides/development-guide/webapp) with `@zama-fhe/relayer-sdk/bundle`. Embed the library with a `<script>` tag and initialize it as shown below:
+
+```javascript
+const start = async () => {
+  await window.fhevm.initSDK(); // load wasm needed
+  const config = { ...SepoliaConfig, network: window.ethereum };
+  config.network = window.ethereum;
+  const instance = window.fhevm.createInstance(config).then((instance) => {
+    console.log(instance);
+  });
+};
+```
+
+
+
+# CLI
+
+The `fhevm` Command-Line Interface (CLI) tool provides a simple and efficient way to encrypt data for use with the blockchain's Fully Homomorphic Encryption (FHE) system. This guide explains how to install and use the CLI to encrypt integers and booleans for confidential smart contracts.
+
+## Installation
+
+Ensure you have [Node.js](https://nodejs.org/) installed on your system before proceeding. Then, globally install the `@zama-fhe/relayer-sdk` package to enable the CLI tool:
+
+```bash
+npm install -g @zama-fhe/relayer-sdk
+```
+
+Once installed, you can access the CLI using the `relayer` command. Verify the installation and explore available commands using:
+
+```bash
+relayer help
+```
+
+## Encrypting Data
+
+The CLI allows you to encrypt integers and booleans for use in smart contracts. Encryption is performed using the blockchain's FHE public key, ensuring the confidentiality of your data.
+
+### Syntax
+
+```bash
+relayer encrypt --node <NODE_URL> <CONTRACT_ADDRESS> <USER_ADDRESS> <DATA:TYPE>...
+```
+
+* **`--node`**: Specifies the RPC URL of the blockchain node (e.g., `http://localhost:8545`).
+* **`<CONTRACT_ADDRESS>`**: The address of the contract interacting with the encrypted data.
+* **`<USER_ADDRESS>`**: The address of the user associated with the encrypted data.
+* **`<DATA:TYPE>`**: The data to encrypt, followed by its type:
+  * `:64` for 64-bit integers
+  * `:1` for booleans
+
+### Example Usage
+
+Encrypt the integer `71721075` (64-bit) and the boolean `1` for the contract at `0x8Fdb26641d14a80FCCBE87BF455338Dd9C539a50` and the user at `0xa5e1defb98EFe38EBb2D958CEe052410247F4c80`:
+
+```bash
+relayer encrypt 0x8Fdb26641d14a80FCCBE87BF455338Dd9C539a50 0xa5e1defb98EFe38EBb2D958CEe052410247F4c80 71721075:64 1:1
+```

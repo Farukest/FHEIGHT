@@ -1,0 +1,726 @@
+# Hardhat plugin
+
+This section will guide you through writing and testing FHEVM smart contracts in Solidity using [Hardhat](https://hardhat.org).
+
+### The FHEVM Hardhat Plugin
+
+To write FHEVM smart contracts using Hardhat, you need to install the [FHEVM Hardhat Plugin](https://www.npmjs.com/package/@fhevm/hardhat-plugin) in your Hardhat project.
+
+This plugin enables you to develop, test, and interact with FHEVM contracts right out of the box.
+
+It extends Hardhat’s functionality with a complete FHEVM API that allows you:
+
+* Encrypt data
+* Decrypt data
+* Run tests using various FHEVM execution modes
+* Write FHEVM-enabled Hardhat Tasks
+
+### Where to go next
+
+🟨 Go to [**Setup Hardhat**](https://docs.zama.ai/protocol/solidity-guides/getting-started/setup) to initialize your FHEVM Hardhat project.
+
+🟨 Go to [**Write FHEVM Tests in Hardhat**](https://docs.zama.org/protocol/solidity-guides/development-guide/hardhat/write_test) for details on writing tests of FHEVM smart contracts using Hardhat.
+
+🟨 Go to [**Run FHEVM Tests in Hardhat**](https://docs.zama.org/protocol/solidity-guides/development-guide/hardhat/run_test) to learn how to execute those tests in different FHEVM environments.
+
+🟨 Go to [**Write FHEVM Hardhat Task**](https://docs.zama.org/protocol/solidity-guides/development-guide/hardhat/write_task) to learn how to write your own custom FHEVM Hardhat task.
+
+
+# Set up Hardhat
+
+In this section, you’ll learn how to set up a FHEVM Hardhat development environment using the **FHEVM Hardhat template** as a starting point for building and testing fully homomorphic encrypted smart contracts.
+
+## Create a local Hardhat Project
+
+{% stepper %}
+{% step %}
+
+#### Install a Node.js TLS version
+
+Ensure that Node.js is installed on your machine.
+
+* Download and install the recommended LTS (Long-Term Support) version from the [official website](https://nodejs.org/en).
+* Use an **even-numbered** version (e.g., `v18.x`, `v20.x`)
+
+{% hint style="warning" %}
+**Hardhat** does not support odd-numbered Node.js versions. If you’re using one (e.g., v21.x, v23.x), Hardhat will display a persistent warning message and may behave unexpectedly.
+{% endhint %}
+
+To verify your installation:
+
+```sh
+node -v
+npm -v
+```
+
+{% endstep %}
+
+{% step %}
+
+#### Create a new GitHub repository from the FHEVM Hardhat template.
+
+1. On GitHub, navigate to the main page of the [FHEVM Hardhat template](https://github.com/zama-ai/fhevm-hardhat-template) repository.
+2. Above the file list, click the green **Use this template** button.
+3. Follow the instructions to create a new repository from the FHEVM Hardhat template.
+
+{% hint style="info" %}
+See Github doc: [Creating a repository from a template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template#creating-a-repository-from-a-template)
+{% endhint %}
+{% endstep %}
+
+{% step %}
+
+#### Clone your newly created GitHub repository locally
+
+Now that your GitHub repository has been created, you can clone it to your local machine:
+
+```sh
+cd <your-preferred-location>
+git clone <url-to-your-new-repo>
+
+# Navigate to the root of your new FHEVM Hardhat project
+cd <your-new-repo-name>
+```
+
+Next, let’s install your local Hardhat development environment.
+{% endstep %}
+
+{% step %}
+
+#### Install your FHEVM Hardhat project dependencies
+
+From the project root directory, run:
+
+```sh
+npm install
+```
+
+This will install all required dependencies defined in your `package.json`, setting up your local FHEVM Hardhat development environment.
+{% endstep %}
+
+{% step %}
+
+#### Set up the Hardhat configuration variables (optional)
+
+If you do plan to deploy to the Sepolia Ethereum Testnet, you'll need to set up the following [Hardhat Configuration variables](https://hardhat.org/hardhat-runner/docs/guides/configuration-variables).
+
+`MNEMONIC`
+
+A mnemonic is a 12-word seed phrase used to generate your Ethereum wallet keys.
+
+1. Get one by creating a wallet with [MetaMask](https://metamask.io/), or using any trusted mnemonic generator.
+2. Set it up in your Hardhat project:
+
+```sh
+npx hardhat vars set MNEMONIC
+```
+
+`INFURA_API_KEY`
+
+The INFURA project key allows you to connect to Ethereum testnets like Sepolia.
+
+1. Obtain one by following the[ Infura + MetaMask](https://docs.metamask.io/services/get-started/infura/) setup guide.
+2. Configure it in your project:
+
+```sh
+npx hardhat vars set INFURA_API_KEY
+```
+
+**Default Values**
+
+If you skip this step, Hardhat will fall back to these defaults:
+
+* `MNEMONIC` = "test test test test test test test test test test test junk"
+* `INFURA_API_KEY` = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+
+{% hint style="warning" %}
+These defaults are not suitable for real deployments.
+{% endhint %}
+
+{% hint style="warning" %}
+
+#### Missing variable error:
+
+If any of the requested Hardhat Configuration Variables is missing, you'll get an error message like this one:`Error HH1201: Cannot find a value for the configuration variable 'MNEMONIC'. Use 'npx hardhat vars set MNEMONIC' to set it or 'npx hardhat var setup' to list all the configuration variables used by this project.`
+{% endhint %}
+{% endstep %}
+{% endstepper %}
+
+Congratulations! You're all set to start building your confidential dApp.
+
+## Optional settings
+
+### Install VSCode extensions
+
+If you're using Visual Studio Code, there are some extensions available to improve you your development experience:
+
+* [Prettier - Code formatter by prettier.io](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) — ID:`esbenp.prettier-vscode`,
+* [ESLint by Microsoft](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) — ID:`dbaeumer.vscode-eslint`
+
+Solidity support (pick one only):
+
+* [Solidity by Juan Blanco](https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity) — ID:`juanblanco.solidity`
+* [Solidity by Nomic Foundation](https://marketplace.visualstudio.com/items?itemName=NomicFoundation.hardhat-solidity) — ID:`nomicfoundation.hardhat-solidity`
+
+### Reset the Hardhat project
+
+If you'd like to start from a clean slate, you can reset your FHEVM Hardhat project by removing all example code and generated files.
+
+```sh
+# Navigate to the root of your new FHEVM Hardhat project
+cd <your-new-repo-name>
+```
+
+Then run:
+
+```sh
+rm -rf test/* src/* tasks/* deploy ./fhevmTemp ./artifacts ./cache ./coverage ./types ./coverage.json ./dist
+```
+
+
+# Write FHEVM tests in Hardhat
+
+In this section, you'll find everything you need to set up a new [Hardhat](https://hardhat.org) project and start developing FHEVM smart contracts from scratch using the [FHEVM Hardhat Plugin](https://www.npmjs.com/package/@fhevm/hardhat-plugin)
+
+### Enabling the FHEVM Hardhat Plugin in your Hardhat project
+
+Like any Hardhat plugin, the [FHEVM Hardhat Plugin](https://www.npmjs.com/package/@fhevm/hardhat-plugin) must be enabled by adding the following `import` statement to your `hardhat.config.ts` file:
+
+```typescript
+import "@fhevm/hardhat-plugin";
+```
+
+{% hint style="warning" %}
+Without this import, the Hardhat FHEVM API will **not** be available in your Hardhat runtime environment (HRE).
+{% endhint %}
+
+### Accessing the Hardhat FHEVM API
+
+The plugin extends the standard [Hardhat Runtime Environment](https://hardhat.org/hardhat-runner/docs/advanced/hardhat-runtime-environment) (or `hre` in short) with the new `fhevm` Hardhat module.
+
+You can access it in either of the following ways:
+
+```typescript
+import { fhevm } from "hardhat";
+```
+
+or
+
+```typescript
+import * as hre from "hardhat";
+
+// Then access: hre.fhevm
+```
+
+### Encrypting Values Using the Hardhat FHEVM API
+
+Suppose the FHEVM smart contract you want to test has a function called `foo` that takes an encrypted `uint32` value as input. The Solidity function `foo` should be declared as follows:
+
+```solidity
+function foo(externalEunit32 value, bytes calldata memory inputProof);
+```
+
+Where:
+
+* `externalEunit32 value` : is a `bytes32` representing the encrypted `uint32`
+* `bytes calldata memory inputProof` : is a `bytes` array representing the zero-knowledge proof of knowledge that validates the encryption
+
+To compute these arguments in TypeScript, you need:
+
+* The **address of the target smart contract**
+* The **signer’s address** (i.e., the account sending the transaction)
+
+{% stepper %}
+{% step %}
+**Create a new encryted input**
+
+```ts
+// use the `fhevm` API module from the Hardhat Runtime Environment
+const input = fhevm.createEncryptedInput(contractAddress, signers.alice.address);
+```
+
+{% endstep %}
+
+{% step %}
+**Add the value you want to encrypt.**
+
+```ts
+input.add32(12345);
+```
+
+{% endstep %}
+
+{% step %}
+**Perform local encryption.**
+
+```ts
+const encryptedInputs = await input.encrypt();
+```
+
+{% endstep %}
+
+{% step %}
+**Call the Solidity function**
+
+```ts
+const externalUint32Value = encryptedInputs.handles[0];
+const inputProof = encryptedInputs.proof;
+
+const tx = await input.foo(externalUint32Value, inputProof);
+await tx.wait();
+```
+
+{% endstep %}
+{% endstepper %}
+
+#### Encryption examples
+
+* [Basic encryption examples](https://docs.zama.ai/protocol/examples/basic/encryption)
+* [FHECounter](https://docs.zama.ai/protocol/examples#an-fhe-counter)
+
+### Decrypting values using the Hardhat FHEVM API
+
+Suppose user **Alice** wants to decrypt a `euint32` value that is stored in a smart contract exposing the following Solidity `view` function:
+
+```solidity
+function getEncryptedUint32Value() public view returns (euint32) { returns _encryptedUint32Value; }
+```
+
+{% hint style="warning" %}
+For simplicity, we assume that both Alice’s account and the target smart contract already have the necessary FHE permissions to decrypt this value. For a detailed explanation of how FHE permissions work, see the [`initializeUint32()`](https://docs.zama.ai/protocol/examples/basic/decryption/fhe-decrypt-single-value#tab-decryptsinglevalue.sol) function in [DecryptSingleValue.sol](https://docs.zama.ai/protocol/examples/basic/decryption/fhe-decrypt-single-value#tab-decryptsinglevalue.sol).
+{% endhint %}
+
+{% stepper %}
+{% step %}
+**Retrieve the encrypted value (a `bytes32` handle) from the smart contract:**
+
+```ts
+const encryptedUint32Value = await contract.getEncryptedUint32Value();
+```
+
+{% endstep %}
+
+{% step %}
+**Perform the decryption using the FHEVM API:**
+
+```ts
+const clearUint32Value = await fhevm.userDecryptEuint(
+  FhevmType.euint32, // Encrypted type (must match the Solidity type)
+  encryptedUint32Value, // bytes32 handle Alice wants to decrypt
+  contractAddress, // Target contract address
+  signers.alice, // Alice’s wallet
+);
+```
+
+{% hint style="warning" %}
+If either the target smart contract or the user does **NOT** have FHE permissions, then the decryption call will fail!
+{% endhint %}
+{% endstep %}
+{% endstepper %}
+
+#### Supported Decryption Types
+
+Use the appropriate function for each encrypted data type:
+
+| Type       | Function                         |
+| ---------- | -------------------------------- |
+| `euintXXX` | `fhevm.userDecryptEuint(...)`    |
+| `ebool`    | `fhevm.userDecryptEbool(...)`    |
+| `eaddress` | `fhevm.userDecryptEaddress(...)` |
+
+#### Decryption examples
+
+* [Basic decryption examples](https://docs.zama.ai/protocol/examples/basic/decryption)
+* [FHECounter](https://docs.zama.ai/protocol/examples#an-fhe-counter)
+
+
+# Deploy contracts and run tests
+
+In this section, you'll find everything you need to test your FHEVM smart contracts in your [Hardhat](https://hardhat.org) project.
+
+### FHEVM Runtime Modes
+
+The FHEVM Hardhat plugin provides three **FHEVM runtime modes** tailored for different stages of contract development and testing. Each mode offers a trade-off between speed, encryption, and persistence.
+
+1. The **Hardhat (In-Memory)** default network: 🧪 *Uses mock encryption.* Ideal for regular tests, CI test coverage, and fast feedback during early contract development. No real encryption is used.
+2. The **Hardhat Node (Local Server)** network: 🧪 *Uses mock encryption.* Ideal when you need persistent state - for example, when testing frontend interactions, simulating user flows, or validating deployments in a realistic local environment. Still uses mock encryption.
+3. The **Sepolia Testnet** network: 🔐 *Uses real encryption.* Use this mode once your contract logic is stable and validated locally. This is the only mode that runs on the full FHEVM stack with **real encrypted values**. It simulates real-world production conditions but is slower and requires Sepolia ETH.
+
+{% hint style="success" %}
+**Zama Testnet** is not a blockchain itself. It is a protocol that enables you to run confidential smart contracts on existing blockchains (such as Ethereum, Base, and others) with the support of encrypted types. See the [FHE on blockchain](https://docs.zama.ai/protocol/protocol/overview) guide to learn more about the protocol architecture.
+
+Currently, **Zama Protocol** is available on the **Sepolia Testnet**. Support for additional chains will be added in the future. [See the roadmap↗](https://docs.zama.ai/protocol/zama-protocol-litepaper#roadmap)
+{% endhint %}
+
+#### Summary
+
+| Mode              | Encryption         | Persistent | Chain     | Speed        | Usage                                             |
+| ----------------- | ------------------ | ---------- | --------- | ------------ | ------------------------------------------------- |
+| Hardhat (default) | 🧪 Mock            | ❌ No       | In-Memory | ⚡⚡ Very Fast | Fast local testing and coverage                   |
+| Hardhat Node      | 🧪 Mock            | ✅ Yes      | Server    | ⚡ Fast       | Frontend integration and local persistent testing |
+| Sepolia Testnet   | 🔐 Real Encryption | ✅ Yes      | Server    | 🐢 Slow      | Full-stack validation with real encrypted data    |
+
+### The FHEVM Hardhat Template
+
+To demonstrate the three available testing modes, we'll use the [fhevm-hardhat-template](https://github.com/zama-ai/fhevm-hardhat-template), which comes with the FHEVM Hardhat Plugin pre-installed, a basic `FHECounter` smart contract, and ready-to-use tasks for interacting with a deployed instance of this contract.
+
+### Run on Hardhat (default)
+
+To run your tests in-memory using FHEVM mock values, simply run the following:
+
+```sh
+npx hardhat test --network hardhat
+```
+
+### Run on Hardhat Node
+
+You can also run your tests against a local Hardhat node, allowing you to deploy contract instances and interact with them in a persistent environment.
+
+{% stepper %}
+{% step %}
+**Launch the Hardhat Node server:**
+
+* Open a new terminal window.
+* From the root project directory, run the following:
+
+```sh
+npx hardhat node
+```
+
+{% endstep %}
+
+{% step %}
+**Run your test suite (optional):**
+
+From the root project directory:
+
+```sh
+npx hardhat test --network localhost
+```
+
+{% endstep %}
+
+{% step %}
+**Deploy the `FHECounter` smart contract on Hardhat Node**
+
+From the root project directory:
+
+```sh
+npx hardhat deploy --network localhost
+```
+
+Check the deployed contract FHEVM configuration:
+
+```sh
+npx hardhat fhevm check-fhevm-compatibility --network localhost --address <deployed contract address>
+```
+
+{% endstep %}
+
+{% step %}
+**Interact with the deployed `FHECounter` smart contract**
+
+From the root project directory:
+
+1. Decrypt the current counter value:
+
+```sh
+npx hardhat --network localhost task:decrypt-count
+```
+
+2. Increment the counter by 1:
+
+```sh
+npx hardhat --network localhost task:increment --value 1
+```
+
+3. Decrypt the new counter value:
+
+```sh
+npx hardhat --network localhost task:decrypt-count
+```
+
+{% endstep %}
+{% endstepper %}
+
+### Run on Sepolia Ethereum Testnet
+
+To test your FHEVM smart contract using real encrypted values, you can run your tests on the Sepolia Testnet.
+
+{% stepper %}
+{% step %}
+**Rebuild the project for Sepolia**
+
+From the root project directory:
+
+```sh
+npx hardhat clean
+npx hardhat compile --network sepolia
+```
+
+{% endstep %}
+
+{% step %}
+**Deploy the `FHECounter` smart contract on Sepolia**
+
+```sh
+npx hardhat deploy --network sepolia
+```
+
+{% endstep %}
+
+{% step %}
+**Check the deployed `FHECounter` contract FHEVM configuration**
+
+From the root project directory:
+
+```sh
+npx hardhat fhevm check-fhevm-compatibility --network sepolia --address <deployed contract address>
+```
+
+If an internal exception is raised, it likely means the contract was not properly compiled for the Sepolia network.
+{% endstep %}
+
+{% step %}
+**Interact with the deployed `FHECounter` contract**
+
+From the root project directory:
+
+1. Decrypt the current counter value (⏳ wait...):
+
+```sh
+npx hardhat --network sepolia task:decrypt-count
+```
+
+2. Increment the counter by 1 (⏳ wait...):
+
+```sh
+npx hardhat --network sepolia task:increment --value 1
+```
+
+3. Decrypt the new counter value (⏳ wait...):
+
+```sh
+npx hardhat --network sepolia task:decrypt-count
+```
+
+{% endstep %}
+{% endstepper %}
+
+# Write FHEVM-enabled Hardhat Tasks
+
+In this section, you'll learn how to write a custom FHEVM Hardhat task.
+
+Writing tasks is a gas-efficient and flexible way to test your FHEVM smart contracts on the Sepolia network. Creating a custom task is straightforward.
+
+## Prerequisite
+
+* You should be familiar with Hardhat tasks. If you're new to them, refer to the [Hardhat Tasks official documentation](https://hardhat.org/hardhat-runner/docs/guides/tasks#writing-tasks).
+* You should have already **completed** the [FHEVM Tutorial](https://docs.zama.ai/protocol/solidity-guides/getting-started/setup).
+* This page provides a step-by-step walkthrough of the `task:decrypt-count` tasks included in the file [tasks/FHECounter.ts](https://github.com/zama-ai/fhevm-hardhat-template/blob/main/tasks/FHECounter.ts) file, located in the [fhevm-hardhat-template](https://github.com/zama-ai/fhevm-hardhat-template) repository.
+
+{% stepper %}
+{% step %}
+
+## A Basic Hardhat Task.
+
+Let’s start with a simple example: fetching the current counter value from a basic `Counter.sol` contract.
+
+If you're already familiar with Hardhat and custom tasks, the TypeScript code below should look familiar and be easy to follow:
+
+```ts
+task("task:get-count", "Calls the getCount() function of Counter Contract")
+  .addOptionalParam("address", "Optionally specify the Counter contract address")
+  .setAction(async function (taskArguments: TaskArguments, hre) {
+    const { ethers, deployments } = hre;
+
+    const CounterDeployement = taskArguments.address
+      ? { address: taskArguments.address }
+      : await deployments.get("Counter");
+    console.log(`Counter: ${CounterDeployement.address}`);
+
+    const counterContract = await ethers.getContractAt("Counter", CounterDeployement.address);
+
+    const clearCount = await counterContract.getCount();
+
+    console.log(`Clear count    : ${clearCount}`);
+});
+```
+
+Now, let’s modify this task to work with FHEVM encrypted values.
+{% endstep %}
+
+{% step %}
+
+## Comment Out Existing Logic and rename
+
+First, comment out the existing logic so we can incrementally add the necessary changes for FHEVM integration.
+
+```ts
+task("task:get-count", "Calls the getCount() function of Counter Contract")
+  .addOptionalParam("address", "Optionally specify the Counter contract address")
+  .setAction(async function (taskArguments: TaskArguments, hre) {
+    // const { ethers, deployments } = hre;
+
+    // const CounterDeployement = taskArguments.address
+    //   ? { address: taskArguments.address }
+    //   : await deployments.get("Counter");
+    // console.log(`Counter: ${CounterDeployement.address}`);
+
+    // const counterContract = await ethers.getContractAt("Counter", CounterDeployement.address);
+
+    // const clearCount = await counterContract.getCount();
+
+    // console.log(`Clear count    : ${clearCount}`);
+});
+```
+
+Next, rename the task by replacing:
+
+```ts
+task("task:get-count", "Calls the getCount() function of Counter Contract")
+```
+
+With:
+
+```ts
+task("task:decrypt-count", "Calls the getCount() function of Counter Contract")
+```
+
+This updates the task name from `task:get-count` to `task:decrypt-count`, reflecting that it now includes decryption logic for FHE-encrypted values.
+{% endstep %}
+
+{% step %}
+
+## Initialize FHEVM CLI API
+
+Replace the line:
+
+```ts
+    // const { ethers, deployments } = hre;
+```
+
+With:
+
+```ts
+    const { ethers, deployments, fhevm } = hre;
+
+    await fhevm.initializeCLIApi();
+```
+
+{% hint style="warning" %}
+Calling `initializeCLIApi()` is essential. Unlike built-in Hardhat tasks like `test` or `compile`, which automatically initialize the FHEVM runtime environment, custom tasks require you to call this function explicitly. **Make sure to call it at the very beginning of your task** to ensure the environment is properly set up.
+{% endhint %}
+{% endstep %}
+
+{% step %}
+
+## Call the view function `getCount` from the FHECounter contract
+
+Replace the following commented-out lines:
+
+```ts
+    // const CounterDeployement = taskArguments.address
+    //   ? { address: taskArguments.address }
+    //   : await deployments.get("Counter");
+    // console.log(`Counter: ${CounterDeployement.address}`);
+
+    // const counterContract = await ethers.getContractAt("Counter", CounterDeployement.address);
+
+    // const clearCount = await counterContract.getCount();
+```
+
+With the FHEVM equivalent:
+
+```ts
+    const FHECounterDeployement = taskArguments.address
+      ? { address: taskArguments.address }
+      : await deployments.get("FHECounter");
+    console.log(`FHECounter: ${FHECounterDeployement.address}`);
+
+    const fheCounterContract = await ethers.getContractAt("FHECounter", FHECounterDeployement.address);
+
+    const encryptedCount = await fheCounterContract.getCount();
+    if (encryptedCount === ethers.ZeroHash) {
+      console.log(`encrypted count: ${encryptedCount}`);
+      console.log("clear count    : 0");
+      return;
+    }
+```
+
+Here, `encryptedCount` is an FHE-encrypted `euint32` primitive. To retrieve the actual value, we need to decrypt it in the next step.
+{% endstep %}
+
+{% step %}
+
+## Decrypt the encrypted count value.
+
+Now replace the following commented-out line:
+
+```ts
+    // console.log(`Clear count    : ${clearCount}`);
+```
+
+With the decryption logic:
+
+```ts
+    const signers = await ethers.getSigners();
+    const clearCount = await fhevm.userDecryptEuint(
+      FhevmType.euint32,
+      encryptedCount,
+      FHECounterDeployement.address,
+      signers[0],
+    );
+    console.log(`Encrypted count: ${encryptedCount}`);
+    console.log(`Clear count    : ${clearCount}`);
+```
+
+At this point, your custom Hardhat task is fully configured to work with FHE-encrypted values and ready to run!
+{% endstep %}
+
+{% step %}
+
+## Step 6: Run your custom task using Hardhat Node
+
+**Start the Local Hardhat Node:**
+
+* Open a new terminal window.
+* From the root project directory, run the following:
+
+```sh
+npx hardhat node
+```
+
+**Deploy the FHECounter smart contract on the local Hardhat Node**
+
+```sh
+npx hardhat deploy --network localhost
+```
+
+**Run your custom task**
+
+```sh
+npx hardhat task:decrypt-count --network localhost
+```
+
+{% endstep %}
+
+{% step %}
+
+## Step 7: Run your custom task using Sepolia
+
+**Deploy the FHECounter smart contract on Sepolia Testnet (if not already deployed)**
+
+```sh
+npx hardhat deploy --network sepolia
+```
+
+**Execute your custom task**
+
+```sh
+npx hardhat task:decrypt-count --network sepolia
+```
+
+{% endstep %}
+{% endstepper %}
+

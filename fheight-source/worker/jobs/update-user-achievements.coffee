@@ -2,11 +2,11 @@
 Job - Update User Ranking
 ###
 config = require '../../config/config.js'
-AchievementsModule = require '../../server/lib/data_access/achievements.coffee'
-FheightFirebase = require '../../server/lib/fheight_firebase_module.coffee'
-Logger = require '../../app/common/logger.coffee'
+AchievementsModule = require '../../server/lib/data_access/achievements'
+FheightFirebase = require '../../server/lib/fheight_firebase_module'
+Logger = require '../../app/common/logger'
 {GameManager} = require '../../server/redis/'
-FirebasePromises = require '../../server/lib/firebase_promises.coffee'
+FirebasePromises = require '../../server/lib/firebase_promises'
 Promise = require 'bluebird'
 
 

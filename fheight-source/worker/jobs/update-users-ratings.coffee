@@ -3,7 +3,7 @@ Job - Update two Users Ratings after playing a Rank 0 match
 ###
 config = require '../../config/config.js'
 RankModule = require '../../server/lib/data_access/rank'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 
 ###*
 # Job - 'update-users-ratings'

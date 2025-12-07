@@ -3,7 +3,7 @@ Job - Update User Ranking
 ###
 config = require '../../config/config.js'
 QuestsModule = require '../../server/lib/data_access/quests'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 {GameManager} = require '../../server/redis/'
 
 ###*

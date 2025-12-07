@@ -29,7 +29,7 @@ t = require 'tcomb-validation'
 validators = require '../../../validators'
 createSinglePlayerGame = require '../../../lib/create_single_player_game'
 validatorTypes = require '../../../validators/types'
-UtilsGameSession = require '../../../../app/common/utils/utils_game_session.coffee'
+UtilsGameSession = require '../../../../app/common/utils/utils_game_session'
 
 RankDivisionLookup = require('../../../../app/sdk/rank/rankDivisionLookup')
 RankFactory = require('../../../../app/sdk/rank/rankFactory')

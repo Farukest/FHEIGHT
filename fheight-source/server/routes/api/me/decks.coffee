@@ -3,7 +3,7 @@ _ = require 'underscore'
 knex = require '../../../lib/data_access/knex'
 DecksModule = require '../../../lib/data_access/decks'
 DataAccessHelpers = require '../../../lib/data_access/helpers'
-Logger = require '../../../../app/common/logger.coffee'
+Logger = require '../../../../app/common/logger'
 t = require 'tcomb-validation'
 validators = require '../../../validators'
 

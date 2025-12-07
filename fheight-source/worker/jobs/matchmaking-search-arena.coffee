@@ -4,8 +4,8 @@ Job - Search for Matches
 _ = require 'underscore'
 util = require 'util'
 Promise = require 'bluebird'
-Errors = require '../../server/lib/custom_errors.coffee'
-Logger = require '../../app/common/logger.coffee'
+Errors = require '../../server/lib/custom_errors'
+Logger = require '../../app/common/logger'
 config = require '../../config/config.js'
 Consul = require '../../server/lib/consul'
 env = config.get('env')

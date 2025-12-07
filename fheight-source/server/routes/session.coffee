@@ -342,4 +342,85 @@ Invalidates current session used by user
 router.get "/session/logout", isSignedIn, (req, res) ->
   return res.status(200).json({authenticated: false})
 
+###
+POST handler for wallet-based authentication
+Authenticates users via wallet signature
+###
+router.post "/session/wallet-connect", (req, res, next) ->
+  walletAddress = req.body.walletAddress?.toLowerCase()
+  signature = req.body.signature
+  message = req.body.message
+
+  # Validate required fields
+  if not walletAddress or not signature or not message
+    return res.status(400).json({message: 'Missing required fields'})
+
+  # Verify signature using ethers
+  ethers = require 'ethers'
+
+  try
+    # Recover the address from the signature
+    recoveredAddress = ethers.verifyMessage(message, signature)?.toLowerCase()
+
+    if recoveredAddress != walletAddress
+      return res.status(401).json({message: 'Invalid signature'})
+  catch e
+    Logger.module("Session").error "Wallet signature verification failed: #{e.message}"
+    return res.status(401).json({message: 'Signature verification failed'})
+
+  # Find or create user by wallet address
+  UsersModule.userIdForWalletAddress(walletAddress)
+  .bind {}
+  .then (existingUserId) ->
+    if existingUserId
+      @id = existingUserId
+      return UsersModule.userDataForId(existingUserId)
+    else
+      # Create new user with wallet address
+      return UsersModule.createNewWalletUser(walletAddress)
+      .then (newUserId) =>
+        @id = newUserId
+        return UsersModule.userDataForId(newUserId)
+  .then (userData) ->
+    if not userData
+      throw new Errors.NotFoundError()
+
+    if userData.is_suspended
+      throw new Errors.AccountDisabled("This account has been suspended. Reason: #{userData.suspended_memo}")
+
+    @userRow = userData
+
+    # Generate JWT token
+    payload =
+      d:
+        id: @id
+        username: userData.username || walletAddress.slice(0, 10)
+        walletAddress: walletAddress
+      v: 0
+      iat: Math.floor(new Date().getTime() / 1000)
+
+    options =
+      expiresIn: config.get('jwt.tokenExpiration')
+      algorithm: 'HS256'
+
+    @token = jwt.sign(payload, config.get('firebase.legacyToken'), options)
+    @analyticsData = analyticsDataFromUserData(userData)
+
+    return UsersModule.bumpSessionCountAndSyncDataIfNeeded(@id, userData)
+  .then () ->
+    return UsersModule.createDaysSeenOnJob(@id)
+  .then () ->
+    return res.status(200).json({
+      token: @token
+      analytics_data: @analyticsData
+      walletAddress: walletAddress
+    })
+  .catch Errors.AccountDisabled, (e) ->
+    return res.status(401).json({message: e.message})
+  .catch Errors.NotFoundError, (e) ->
+    return res.status(401).json({message: 'User not found'})
+  .catch (e) ->
+    Logger.module("Session").error "Wallet connect error: #{e.message}"
+    next(e)
+
 module.exports = router

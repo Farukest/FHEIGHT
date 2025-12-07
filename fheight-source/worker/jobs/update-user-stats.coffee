@@ -3,7 +3,7 @@ Job - Update User Stats
 ###
 config = require '../../config/config.js'
 UsersModule = require '../../server/lib/data_access/users'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 {GameManager} = require '../../server/redis/'
 
 ###*

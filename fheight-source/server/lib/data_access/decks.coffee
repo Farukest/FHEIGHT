@@ -1,7 +1,7 @@
 Promise = require 'bluebird'
 _ = require 'underscore'
 util = require 'util'
-Logger = require '../../../app/common/logger.coffee'
+Logger = require '../../../app/common/logger'
 colors = require 'colors'
 moment = require 'moment'
 knex = require("../data_access/knex")
@@ -12,7 +12,7 @@ crypto = require('crypto')
 
 # SDK imports
 SDK = require '../../../app/sdk'
-UtilsGameSession = require '../../../app/common/utils/utils_game_session.coffee'
+UtilsGameSession = require '../../../app/common/utils/utils_game_session'
 
 class DecksModule
   ###*

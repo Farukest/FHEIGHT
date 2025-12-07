@@ -1,5 +1,5 @@
 kue = require 'kue'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 config = require '../../config/config.js'
 env = config.get('env')
 

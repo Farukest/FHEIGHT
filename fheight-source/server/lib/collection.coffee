@@ -2,10 +2,10 @@ _ = require 'underscore'
 Promise = require 'bluebird'
 
 CONFIG = require '../../app/common/config'
-Logger = require '../../app/common/logger.coffee'
-SDK = require '../../app/sdk.coffee'
-InventoryModule = require './data_access/inventory.coffee'
-knex = require './data_access/knex.coffee'
+Logger = require '../../app/common/logger'
+SDK = require '../../app/sdk'
+InventoryModule = require './data_access/inventory'
+knex = require './data_access/knex'
 
 # Helper function to grant a full card collection to users.
 # This code is nearly identical to the /api/me/qa/inventory/fill_collection handler.

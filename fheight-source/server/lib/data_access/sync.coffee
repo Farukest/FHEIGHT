@@ -8,7 +8,7 @@ _ = require 'underscore'
 FirebasePromises = require '../firebase_promises'
 FHEIGHTFirebase = require '../fheight_firebase_module'
 fbUtil = require '../../../app/common/utils/utils_firebase.js'
-Logger = require '../../../app/common/logger.coffee'
+Logger = require '../../../app/common/logger'
 CONFIG = require '../../../app/common/config.js'
 Errors = require '../custom_errors'
 knex = require("../data_access/knex")
@@ -20,7 +20,7 @@ DataAccessHelpers = require('./helpers')
 SDK = require '../../../app/sdk'
 QuestFactory = require '../../../app/sdk/quests/questFactory'
 QuestType = require '../../../app/sdk/quests/questTypeLookup'
-UtilsGameSession = require '../../../app/common/utils/utils_game_session.coffee'
+UtilsGameSession = require '../../../app/common/utils/utils_game_session'
 CosmeticsLookup = require '../../../app/sdk/cosmetics/cosmeticsLookup'
 
 # redis

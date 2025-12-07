@@ -4,7 +4,7 @@ glicko2 = require 'glicko2'
 
 FirebasePromises = require '../firebase_promises'
 FHEIGHTFirebase = require '../fheight_firebase_module'
-Logger = require '../../../app/common/logger.coffee'
+Logger = require '../../../app/common/logger'
 colors = require 'colors'
 moment = require 'moment'
 _ = require 'underscore'
@@ -23,10 +23,10 @@ generatePushId = require '../../../app/common/generate_push_id'
 SDK = require '../../../app/sdk'
 Cards = require '../../../app/sdk/cards/cardsLookupComplete'
 RankFactory = require '../../../app/sdk/rank/rankFactory'
-GameSession = require '../../../app/sdk/gameSession.coffee'
-UtilsGameSession = require '../../../app/common/utils/utils_game_session.coffee'
-CardFactory = require '../../../app/sdk/cards/cardFactory.coffee'
-Rarity = require '../../../app/sdk/cards/rarityLookup.coffee'
+GameSession = require '../../../app/sdk/gameSession'
+UtilsGameSession = require '../../../app/common/utils/utils_game_session'
+CardFactory = require '../../../app/sdk/cards/cardFactory'
+Rarity = require '../../../app/sdk/cards/rarityLookup'
 
 class RankModule
 

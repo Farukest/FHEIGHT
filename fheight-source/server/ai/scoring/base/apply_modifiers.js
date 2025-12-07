@@ -1,4 +1,4 @@
-const SDK = require('app/sdk.coffee');
+const SDK = require('app/sdk');
 const Entity = require('app/sdk/entities/entity');
 const ModifierAirdrop = require('app/sdk/modifiers/modifierAirdrop');
 const ModifierProvoked = require('app/sdk/modifiers/modifierProvoked');

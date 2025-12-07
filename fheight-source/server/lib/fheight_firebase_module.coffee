@@ -6,7 +6,7 @@ util = require 'util'
 _ = require 'underscore'
 url = require 'url'
 
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 config = require '../../config/config.js'
 defaultFirebaseUrl = config.get('firebase.url')
 firebaseLoggingEnabled = config.get('firebase.loggingEnabled')

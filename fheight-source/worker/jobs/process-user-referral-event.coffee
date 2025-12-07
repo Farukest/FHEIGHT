@@ -3,7 +3,7 @@ Job - Update User Ranking
 ###
 config = require '../../config/config.js'
 ReferralsModule = require '../../server/lib/data_access/referrals'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 
 ###*
 # @param  {Object} job    Kue job

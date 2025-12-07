@@ -1,0 +1,20 @@
+{
+	"dialog_title": "Connect Wallet",
+	"step_connect": "Connect",
+	"step_sign": "Sign",
+	"connect_description": "Connect your wallet to login to FHEIGHT. We support MetaMask and other Web3 wallets.",
+	"sign_description": "Sign a message to verify ownership of your wallet. This is free and does not cost any gas.",
+	"sign_info": "Signing is free and will not trigger a blockchain transaction.",
+	"connected_as": "Connected as:",
+	"wallet_address": "Wallet:",
+	"button_connect": "Connect Wallet",
+	"button_continue": "Continue",
+	"button_sign": "Sign Message",
+	"error_no_provider": "No wallet detected. Please install MetaMask or another Web3 wallet.",
+	"error_connect_failed": "Failed to connect wallet. Please try again.",
+	"error_sign_failed": "Failed to sign message. Please try again.",
+	"error_auth_failed": "Authentication failed. Please try again.",
+	"loading_connecting": "Connecting wallet...",
+	"loading_signing": "Waiting for signature...",
+	"loading_authenticating": "Authenticating..."
+}

@@ -3,11 +3,11 @@ express = require 'express'
 router = express.Router()
 expressJwt = require 'express-jwt'
 util = require 'util'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 CONFIG = require '../../app/common/config'
 Promise = require 'bluebird'
 moment = require 'moment'
-CustomError = require '../lib/custom_errors.coffee'
+CustomError = require '../lib/custom_errors'
 isSignedIn = require '../middleware/signed_in'
 t = require 'tcomb-validation'
 validators = require '../validators'
@@ -33,8 +33,8 @@ CosmeticsFactory = require '../../app/sdk/cosmetics/cosmeticsFactory'
 
 createSinglePlayerGame = require '../lib/create_single_player_game'
 
-isMatchmakingActiveAsync = require '../../worker/get_matchmaking_status.coffee'
-getGameServerAsync = require '../../worker/get_gameserver.coffee'
+isMatchmakingActiveAsync = require '../../worker/get_matchmaking_status'
+getGameServerAsync = require '../../worker/get_gameserver'
 
 # redis
 Redis = require '../redis/'

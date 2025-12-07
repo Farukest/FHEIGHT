@@ -2,7 +2,7 @@
 # Responds to /health endpoint with status 200
 # Otherwise responds with status 404
 
-Logger     = require '../app/common/logger.coffee'
+Logger     = require '../app/common/logger'
 http     = require 'http'
 url     = require 'url'
 os = require 'os'

@@ -5,7 +5,7 @@ url = require 'url'
 zlib = require 'zlib'
 { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3")
 
-Logger = require '../app/common/logger.coffee'
+Logger = require '../app/common/logger'
 config = require '../config/config.js'
 
 Promise.promisifyAll(zlib)

@@ -1,9 +1,9 @@
 ###
 Job - Rotate Boss Battles
 ###
-FheightFirebase = require '../../server/lib/fheight_firebase_module.coffee'
-Logger = require '../../app/common/logger.coffee'
-Cards = require '../../app/sdk/cards/cardsLookup.coffee'
+FheightFirebase = require '../../server/lib/fheight_firebase_module'
+Logger = require '../../app/common/logger'
+Cards = require '../../app/sdk/cards/cardsLookup'
 moment = require 'moment'
 
 # Collect valid boss IDs.

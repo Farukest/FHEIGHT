@@ -3,7 +3,7 @@ Job - Update a users charge log with data sent in wallet_update
 ###
 config = require '../../config/config.js'
 ShopModule = require '../../server/lib/data_access/shop'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 generatePushId = require '../../app/common/generate_push_id'
 moment = require 'moment'
 knex = require 'server/lib/data_access/knex'

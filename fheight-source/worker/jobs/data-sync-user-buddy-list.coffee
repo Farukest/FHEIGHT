@@ -3,7 +3,7 @@ Job - Update User Ranking
 ###
 config = require '../../config/config.js'
 SyncModule = require '../../server/lib/data_access/sync'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 
 ###*
 # Job to sync user's buddy list to SQL.

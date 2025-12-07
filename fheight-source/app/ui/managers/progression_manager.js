@@ -252,11 +252,14 @@ var ProgressionManager = Manager.extend({
       var challengePreviouslyCompleted = this.hasCompletedChallengeOfType(challengeType);
 
       var processQuests = false;
-      QuestsManager.getInstance().dailyQuestsCollection.each(function (questModel) {
-        if (SDK.QuestFactory.questForIdentifier(questModel.get('quest_type_id')) instanceof QuestBeginnerCompleteSoloChallenges) {
-          processQuests = true;
-        }
-      });
+      var dailyQuestsCollection = QuestsManager.getInstance().dailyQuestsCollection;
+      if (dailyQuestsCollection) {
+        dailyQuestsCollection.each(function (questModel) {
+          if (SDK.QuestFactory.questForIdentifier(questModel.get('quest_type_id')) instanceof QuestBeginnerCompleteSoloChallenges) {
+            processQuests = true;
+          }
+        });
+      }
 
       var request = $.ajax({
         data: JSON.stringify({ completed_at: moment().utc().valueOf(), process_quests: processQuests }),

@@ -4,9 +4,9 @@ moment = require 'moment'
 crypto = require 'crypto'
 uuid = require 'node-uuid'
 warlock = require '@counterplay/warlock'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 config = require '../../config/config.js'
-GameType = require '../../app/sdk/gameType.coffee'
+GameType = require '../../app/sdk/gameType'
 env = config.get("env")
 
 # Returns the Redis key prefix used

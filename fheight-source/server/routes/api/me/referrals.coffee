@@ -4,7 +4,7 @@ knex = require '../../../lib/data_access/knex'
 DataAccessHelpers = require '../../../lib/data_access/helpers'
 ReferralsModule = require '../../../lib/data_access/referrals'
 Errors = require '../../../lib/custom_errors'
-Logger = require '../../../../app/common/logger.coffee'
+Logger = require '../../../../app/common/logger'
 
 router = express.Router()
 

@@ -3,7 +3,7 @@ util = require 'util'
 QuestsModule = require '../../../lib/data_access/quests'
 knex = require '../../../lib/data_access/knex'
 DataAccessHelpers = require '../../../lib/data_access/helpers'
-Logger = require '../../../../app/common/logger.coffee'
+Logger = require '../../../../app/common/logger'
 Errors = require '../../../lib/custom_errors'
 t = require 'tcomb-validation'
 

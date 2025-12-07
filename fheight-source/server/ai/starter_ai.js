@@ -6,7 +6,7 @@ const Logger = require('app/common/logger');
 Logger.module('AI').log('Initializing AI...');
 const UtilsJavascript = require('app/common/utils/utils_javascript');
 const UtilsPosition = require('app/common/utils/utils_position');
-const SDK = require('app/sdk.coffee');
+const SDK = require('app/sdk');
 const CONFIG = require('app/common/config');
 const ModifierDyingWishReSpawnEntityAnywhere = require('app/sdk/modifiers/modifierDyingWishReSpawnEntityAnywhere');
 const ModifierDyingWishSpawnEntityInCorner = require('app/sdk/modifiers/modifierDyingWishSpawnEntityInCorner');

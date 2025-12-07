@@ -3,7 +3,7 @@ Job - Update User Progression
 ###
 _ = require 'underscore'
 config = require '../../config/config.js'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 Promise = require 'bluebird'
 colors = require 'colors'
 util = require 'util'

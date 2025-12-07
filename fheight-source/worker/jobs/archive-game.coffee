@@ -1,13 +1,13 @@
 ###
 Job - Archive Game
 ###
-GamesModule = require '../../server/lib/data_access/games.coffee'
+GamesModule = require '../../server/lib/data_access/games'
 uploadGameToS3 = require '../upload_game_to_s3'
 config = require '../../config/config.js'
 env = config.get('env')
 {GameManager} = require '../../server/redis/'
 Promise = require 'bluebird'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 
 ###*
 # Job - 'archive-game'

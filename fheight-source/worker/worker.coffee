@@ -1,6 +1,6 @@
 fs = require 'fs'
 os = require 'os'
-Logger = require '../app/common/logger.coffee'
+Logger = require '../app/common/logger'
 config = require '../config/config.js'
 Promise = require 'bluebird'
 { Jobs } = require '../server/redis'
@@ -52,20 +52,20 @@ process.on "SIGABRT", cleanShutdown
 ###
 Setup Jobs
 ###
-archiveGame = require './jobs/archive-game.coffee'
-updateUserPostGame = require './jobs/update-user-post-game.coffee'
-updateUserAchievements = require './jobs/update-user-achievements.coffee'
-updateUserChargeLog = require './jobs/update-user-charge-log.coffee'
-matchmakingSetupGame = require './jobs/matchmaking-setupgame.coffee'
-matchmakingSearchRanked = require './jobs/matchmaking-search-ranked.coffee'
-matchmakingSearchCasual = require './jobs/matchmaking-search-casual.coffee'
-matchmakingSearchArena = require './jobs/matchmaking-search-arena.coffee'
-matchmakingSearchRift = require './jobs/matchmaking-search-rift.coffee'
-dataSyncUserBuddyList = require './jobs/data-sync-user-buddy-list.coffee'
-processUserReferralEvent = require './jobs/process-user-referral-event.coffee'
-updateUsersRatings = require './jobs/update-users-ratings.coffee'
-updateUserSeenOn = require './jobs/update-user-seen-on.coffee'
-rotateBosses = require './jobs/rotate-bosses.coffee'
+archiveGame = require './jobs/archive-game'
+updateUserPostGame = require './jobs/update-user-post-game'
+updateUserAchievements = require './jobs/update-user-achievements'
+updateUserChargeLog = require './jobs/update-user-charge-log'
+matchmakingSetupGame = require './jobs/matchmaking-setupgame'
+matchmakingSearchRanked = require './jobs/matchmaking-search-ranked'
+matchmakingSearchCasual = require './jobs/matchmaking-search-casual'
+matchmakingSearchArena = require './jobs/matchmaking-search-arena'
+matchmakingSearchRift = require './jobs/matchmaking-search-rift'
+dataSyncUserBuddyList = require './jobs/data-sync-user-buddy-list'
+processUserReferralEvent = require './jobs/process-user-referral-event'
+updateUsersRatings = require './jobs/update-users-ratings'
+updateUserSeenOn = require './jobs/update-user-seen-on'
+rotateBosses = require './jobs/rotate-bosses'
 
 worker.process('archive-game', 1, archiveGame)
 worker.process('update-user-post-game', 2, updateUserPostGame)

@@ -8,6 +8,12 @@
 		"ttl": 3600,
 		"password": ""
 	},
+	"firebase": {
+		"url": "https://zama-e9173-default-rtdb.firebaseio.com/",
+		"legacyToken": "HLZhMRgVEElaIS9B5qxc7CjeilX8WBuyEwnWB3ts",
+		"projectId": "zama-e9173",
+		"clientEmail": "firebase-adminsdk-fbsvc@zama-e9173.iam.gserviceaccount.com"
+	},
 	"inviteCodesActive": false,
 	"datGuiEditorEnabled": true,
 	"aiToolsEnabled": true,

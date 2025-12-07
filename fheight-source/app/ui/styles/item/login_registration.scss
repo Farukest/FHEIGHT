@@ -267,3 +267,250 @@
 		}
 	}
 }
+
+/* ---------- WALLET CONNECT STYLES ---------- */
+
+#app-login {
+	.wallet-connect-form {
+		.wallet-status {
+			display: flex;
+			align-items: center;
+			gap: 0.8rem;
+			margin-bottom: 1rem;
+			color: rgba(255, 255, 255, 0.7);
+
+			.wallet-icon {
+				svg {
+					fill: currentColor;
+				}
+			}
+
+			.wallet-address-display {
+				font-family: monospace;
+				font-size: 1.2rem;
+				color: #ffd208;
+				text-shadow: 0 0 10px rgba(255, 210, 8, 0.5);
+			}
+		}
+
+		.connect-wallet {
+			display: block;
+			margin-top: 1.5rem;
+			font-size: 1.4rem !important;
+		}
+
+		.sign-message {
+			display: none;
+			width: 22.0rem;
+			margin-top: 1rem;
+		}
+	}
+}
+
+/* ---------- WALLET CONNECT DIALOG ---------- */
+
+.wallet-modal {
+	.modal-dialog.wallet-connect-dialog {
+		width: auto;
+		min-width: 450px;
+		padding: 0 2rem;
+
+		.wallet-icon-large {
+			display: flex;
+			justify-content: center;
+			margin-bottom: 1rem;
+			color: #ffd208;
+
+			svg {
+				filter: drop-shadow(0 0 10px rgba(255, 210, 8, 0.5));
+			}
+		}
+
+		.wallet-steps {
+			display: flex;
+			align-items: flex-start;
+			justify-content: center;
+			margin-bottom: 1.5rem;
+			gap: 1rem;
+
+			.step {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 0.5rem;
+				opacity: 0.5;
+				transition: opacity 0.3s ease;
+
+				&.active {
+					opacity: 1;
+
+					.step-number {
+						background: #ffd208;
+						color: #000;
+						box-shadow: 0 0 15px rgba(255, 210, 8, 0.6);
+					}
+				}
+
+				&.completed {
+					opacity: 1;
+
+					.step-number {
+						background: #00d4aa;
+						color: transparent;
+						box-shadow: 0 0 15px rgba(0, 212, 170, 0.6);
+
+						&:after {
+							content: '✓';
+							position: absolute;
+							font-size: 1.6rem;
+							color: #000;
+						}
+					}
+				}
+
+				.step-number {
+					position: relative;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					width: 44px;
+					height: 44px;
+					border-radius: 50%;
+					background: #444;
+					color: #fff;
+					font-weight: bold;
+					font-size: 1.6rem;
+					transition: all 0.3s ease;
+				}
+
+				.step-label {
+					font-size: 1.2rem;
+					color: rgba(255, 255, 255, 0.8);
+					text-transform: uppercase;
+					font-weight: bold;
+				}
+			}
+
+			.step-line {
+				width: 60px;
+				height: 3px;
+				background: #444;
+				transition: background 0.3s ease;
+				margin-top: 20px; // Dairenin ortasına hizala (44px / 2 - 3px / 2)
+
+				&.active {
+					background: #ffd208;
+				}
+			}
+		}
+
+		.wallet-step-content {
+			text-align: center;
+			margin-bottom: 1rem;
+
+			&.hidden {
+				display: none;
+			}
+
+			.wallet-description {
+				color: rgba(255, 255, 255, 0.9);
+				font-size: 1.5rem;
+				margin-bottom: 1.5rem;
+				line-height: 1.4;
+			}
+
+			.wallet-address-display {
+				display: flex;
+				justify-content: center;
+				gap: 0.5rem;
+				padding: 0.8rem;
+				background: rgba(255, 210, 8, 0.1);
+				border: 1px solid rgba(255, 210, 8, 0.3);
+				border-radius: 4px;
+				margin-bottom: 1rem;
+
+				.address-label {
+					color: rgba(255, 255, 255, 0.6);
+				}
+
+				.address-value {
+					font-family: monospace;
+					color: #ffd208;
+				}
+			}
+
+			.sign-info {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.5rem;
+				font-size: 0.9rem;
+				color: rgba(255, 255, 255, 0.6);
+
+				svg {
+					color: #00d4aa;
+				}
+			}
+		}
+
+		.wallet-error {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5rem;
+			padding: 0.8rem;
+			background: rgba(255, 0, 60, 0.2);
+			border: 1px solid rgba(255, 0, 60, 0.5);
+			border-radius: 4px;
+			margin-bottom: 1rem;
+			color: #ff6b6b;
+
+			svg {
+				flex-shrink: 0;
+			}
+		}
+
+		.wallet-loading {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.8rem;
+			padding: 1rem;
+			color: rgba(255, 255, 255, 0.8);
+
+			.loading-spinner {
+				width: 20px;
+				height: 20px;
+				border: 2px solid rgba(255, 210, 8, 0.3);
+				border-top-color: #ffd208;
+				border-radius: 50%;
+				animation: spin 1s linear infinite;
+			}
+		}
+
+		// Use game's standard button styles (btn-clean-confirm, btn-clean-cancel)
+		.modal-footer {
+			padding: 1.5rem 2rem;
+			overflow: visible;
+
+			.btn-group {
+				display: flex;
+				justify-content: center;
+				gap: 1.5rem;
+				overflow: visible;
+			}
+		}
+
+		.disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+			pointer-events: none;
+		}
+	}
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

@@ -2,11 +2,11 @@
 Job - Setup Match
 ###
 Promise = require 'bluebird'
-getGameServerAsync = require '../get_gameserver.coffee'
-createGameAsync = require '../creategame.coffee'
-FheightFirebaseModule = require '../../server/lib/fheight_firebase_module.coffee'
-FirebasePromises = require '../../server/lib/firebase_promises.coffee'
-Logger = require '../../app/common/logger.coffee'
+getGameServerAsync = require '../get_gameserver'
+createGameAsync = require '../creategame'
+FheightFirebaseModule = require '../../server/lib/fheight_firebase_module'
+FirebasePromises = require '../../server/lib/firebase_promises'
+Logger = require '../../app/common/logger'
 
 ###*
 # Job - 'matchmaking-setupmatch'

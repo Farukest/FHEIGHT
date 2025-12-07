@@ -1,6 +1,6 @@
 colors = require 'colors'
 kue = require 'kue'
-Logger = require '../app/common/logger.coffee'
+Logger = require '../app/common/logger'
 worker = require '../server/redis/r-jobs'
 
 ###

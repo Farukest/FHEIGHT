@@ -23,4 +23,19 @@ export default defineConfig({
   build: {
     outDir: '../../dist-vite',
   },
+  optimizeDeps: {
+    exclude: ['fheight.js', 'vendor.js'],
+  },
+  plugins: [
+    {
+      name: 'skip-legacy-js',
+      enforce: 'pre',
+      transform(code, id) {
+        // Skip transformation for legacy browserify bundles
+        if (id.endsWith('fheight.js') || id.endsWith('vendor.js')) {
+          return { code, map: null };
+        }
+      },
+    },
+  ],
 });

@@ -2,7 +2,7 @@ Promise = require 'bluebird'
 util = require 'util'
 FirebasePromises = require '../firebase_promises'
 FHEIGHTFirebase = require '../fheight_firebase_module'
-Logger = require '../../../app/common/logger.coffee'
+Logger = require '../../../app/common/logger'
 colors = require 'colors'
 moment = require 'moment'
 _ = require 'underscore'
@@ -18,7 +18,7 @@ generatePushId = require '../../../app/common/generate_push_id'
 
 # SDK imports
 SDK = require '../../../app/sdk'
-UtilsGameSession = require '../../../app/common/utils/utils_game_session.coffee'
+UtilsGameSession = require '../../../app/common/utils/utils_game_session'
 
 class GauntletModule
 

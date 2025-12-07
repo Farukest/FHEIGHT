@@ -3,7 +3,7 @@ Promise = require 'bluebird'
 moment = require 'moment'
 crypto = require 'crypto'
 config = require '../../config/config.js'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 env = config.get("env")
 
 # Helper returns the Redis key prefix

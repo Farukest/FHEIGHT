@@ -1,15 +1,16 @@
 const t = require('tcomb');
 const validator = require('validator');
-const RankDivisionLookup = require('../../app/sdk/rank/rankDivisionLookup.coffee');
+const RankDivisionLookup = require('../../app/sdk/rank/rankDivisionLookup');
 const ShopData = require('../../app/data/shop.json');
-const CosmeticsFactory = require('../../app/sdk/cosmetics/cosmeticsFactory.coffee');
+const CosmeticsFactory = require('../../app/sdk/cosmetics/cosmeticsFactory');
 
 const Password = t.subtype(t.Str, (s) => s.length >= 6, 'Password');
 const NewPassword = t.subtype(t.Str, (s) => s.length >= 8, 'New Password');
 const UserId = t.subtype(t.Str, (s) => s.length === 20 && s.match(/^[A-Za-z0-9\-\_]+$/) !== null, 'UserId');
 
 const Username = t.subtype(t.Str, (s) => {
-  if (!validator.isAlphanumeric(s)) {
+  // Allow alphanumeric characters and underscores (for wallet-generated usernames like player_78c1e250)
+  if (!s.match(/^[A-Za-z0-9_]+$/)) {
     return false;
   }
   return s.length >= 3 && s.length <= 18;

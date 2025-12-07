@@ -3,7 +3,7 @@ UsersModule = require '../../../lib/data_access/users'
 QuestsModule = require '../../../lib/data_access/quests'
 knex = require '../../../lib/data_access/knex'
 DataAccessHelpers = require '../../../lib/data_access/helpers'
-Logger = require '../../../../app/common/logger.coffee'
+Logger = require '../../../../app/common/logger'
 t = require 'tcomb-validation'
 
 # sdk

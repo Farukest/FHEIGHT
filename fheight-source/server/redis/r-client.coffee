@@ -1,7 +1,7 @@
 Promise = require 'bluebird'
 redis = require 'redis'
 
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 config = require '../../config/config.js'
 
 Promise.promisifyAll(redis)

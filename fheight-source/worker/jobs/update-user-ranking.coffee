@@ -3,7 +3,7 @@ Job - Update User Ranking
 ###
 config = require '../../config/config.js'
 RankModule = require '../../server/lib/data_access/rank'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 
 # TODO: Can this be removed?
 

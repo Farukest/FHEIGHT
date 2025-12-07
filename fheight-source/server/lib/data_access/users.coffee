@@ -4,7 +4,7 @@ crypto = require 'crypto'
 FirebasePromises = require '../firebase_promises'
 FHEIGHTFirebase = require '../fheight_firebase_module'
 fbUtil = require '../../../app/common/utils/utils_firebase.js'
-Logger = require '../../../app/common/logger.coffee'
+Logger = require '../../../app/common/logger'
 colors = require 'colors'
 validator = require 'validator'
 uuid = require 'node-uuid'
@@ -24,10 +24,10 @@ knex = require("../data_access/knex")
 config = require '../../../config/config.js'
 generatePushId = require '../../../app/common/generate_push_id'
 DataAccessHelpers = require('./helpers')
-hashHelpers = require '../hash_helpers.coffee'
-AnalyticsUtil = require '../../../app/common/analyticsUtil.coffee'
+hashHelpers = require '../hash_helpers'
+AnalyticsUtil = require '../../../app/common/analyticsUtil'
 {version} = require '../../../version.json'
-grantFullCollection = require '../collection.coffee'
+grantFullCollection = require '../collection'
 
 # redis
 {Redis, Jobs, GameManager} = require '../../redis/'
@@ -42,7 +42,7 @@ QuestFactory = require '../../../app/sdk/quests/questFactory'
 QuestType = require '../../../app/sdk/quests/questTypeLookup'
 GameType = require '../../../app/sdk/gameType'
 GameFormat = require '../../../app/sdk/gameFormat'
-UtilsGameSession = require '../../../app/common/utils/utils_game_session.coffee'
+UtilsGameSession = require '../../../app/common/utils/utils_game_session'
 NewPlayerProgressionHelper = require '../../../app/sdk/progression/newPlayerProgressionHelper'
 NewPlayerProgressionStageEnum = require '../../../app/sdk/progression/newPlayerProgressionStageEnum'
 NewPlayerProgressionModuleLookup = require '../../../app/sdk/progression/newPlayerProgressionModuleLookup'
@@ -726,6 +726,92 @@ class UsersModule
         else
           return resolve(null)
       ).nodeify(callback)
+
+  ###*
+  # Get the user ID for the specified wallet address.
+  # @public
+  # @param  {String}  walletAddress  User's Ethereum wallet address
+  # @return  {Promise}  Promise that will return the userId on completion.
+  ###
+  @userIdForWalletAddress: (walletAddress, callback) ->
+    walletAddress = walletAddress?.toLowerCase()
+
+    return knex.first('id').from('users').where('wallet_address', walletAddress)
+    .then (userRow) ->
+      return new Promise( (resolve, reject) ->
+        if userRow
+          return resolve(userRow.id)
+        else
+          return resolve(null)
+      ).nodeify(callback)
+
+  ###*
+  # Create a new user with wallet address.
+  # @public
+  # @param  {String}  walletAddress  User's Ethereum wallet address
+  # @return  {Promise}  Promise that will return the new userId on completion.
+  ###
+  @createNewWalletUser: (walletAddress) ->
+    walletAddress = walletAddress?.toLowerCase()
+    MOMENT_NOW_UTC = moment().utc()
+    userId = generatePushId()
+
+    # Generate a default username from wallet address
+    defaultUsername = "player_#{walletAddress.slice(2, 10)}"
+
+    # Generate a random password for wallet users (they login with wallet, not password)
+    randomPassword = crypto.randomBytes(32).toString('hex')
+
+    return hashHelpers.generateHash(randomPassword)
+    .then (passwordHash) =>
+      return knex.transaction (tx) =>
+        userRecord =
+          id: userId
+          wallet_address: walletAddress
+          username: defaultUsername
+          password: passwordHash
+          created_at: MOMENT_NOW_UTC.toDate()
+
+        return knex("users").insert(userRecord).transacting(tx)
+        .then () -> return FHEIGHTFirebase.connect().getRootRef()
+        .then (rootRef) ->
+          # Setup Firebase data for new user
+          userData = {
+            id: userId
+            username: defaultUsername
+            created_at: MOMENT_NOW_UTC.valueOf()
+            presence: {
+              rank: 30
+              username: defaultUsername
+              status: "offline"
+            }
+            tx_counter: {
+              count: 0
+            }
+            hasAcceptedEula: false
+          }
+
+          allPromises = []
+          allPromises.push(FirebasePromises.set(rootRef.child('users').child(userId), userData))
+          allPromises.push(FirebasePromises.set(rootRef.child('username-index').child(defaultUsername), userId))
+          allPromises.push(FirebasePromises.set(rootRef.child('user-inventory').child(userId).child('wallet'), {
+            gold_amount: 0
+            spirit_amount: 0
+          }))
+
+          return Promise.all(allPromises)
+        .then tx.commit
+        .catch tx.rollback
+        return
+
+    .then () ->
+      # User has been created. Grant a full collection and return.
+      grantFullCollection(userId)
+      Logger.module("UsersModule").debug "Created new wallet user: #{userId} for #{walletAddress}"
+      return Promise.resolve(userId)
+    .catch (e) ->
+      Logger.module("UsersModule").error "createNewWalletUser ERROR: #{e.message}"
+      throw e
 
   ###*
   # Validate that a deck is valid and that the user is allowed to play it.

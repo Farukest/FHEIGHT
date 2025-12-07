@@ -3,7 +3,7 @@ Job - Update User Ranking
 ###
 config = require '../../config/config.js'
 GauntletModule = require '../../server/lib/data_access/gauntlet'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 
 ###*
 # Job - 'update-user-arena-run'

@@ -15,7 +15,7 @@ generatePushId = require '../../app/common/generate_push_id'
 
 # lib Modules
 isSignedIn = require '../middleware/signed_in'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 Errors = require '../lib/custom_errors'
 
 # Configuration object

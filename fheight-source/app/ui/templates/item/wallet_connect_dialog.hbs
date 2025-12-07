@@ -1,0 +1,81 @@
+<div class="modal-dialog wallet-connect-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<div class="wallet-icon-large">
+				<svg viewBox="0 0 24 24" width="48" height="48">
+					<path fill="currentColor" d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+				</svg>
+			</div>
+			<h4 class="modal-title">{{title}}</h4>
+		</div>
+		<div class="modal-body">
+			<!-- Step indicator -->
+			<div class="wallet-steps">
+				<div class="step step-1 {{#if isStep1}}active{{else}}{{#if isStep2}}completed{{/if}}{{/if}}">
+					<div class="step-number">1</div>
+					<div class="step-label">CONNECT</div>
+				</div>
+				<div class="step-line {{#if isStep2}}active{{/if}}"></div>
+				<div class="step step-2 {{#if isStep2}}active{{/if}}">
+					<div class="step-number">2</div>
+					<div class="step-label">SIGN</div>
+				</div>
+			</div>
+
+			<!-- Step 1: Connect Wallet -->
+			<div class="wallet-step-content step-1-content {{#unless isStep1}}hidden{{/unless}}">
+				<p class="wallet-description">Connect your Wallet to Sign Up / Sign In</p>
+				{{#if walletAddress}}
+					<div class="wallet-address-display connected">
+						<span class="address-label">Connected as:</span>
+						<span class="address-value">{{walletAddress}}</span>
+					</div>
+				{{/if}}
+			</div>
+
+			<!-- Step 2: Sign Message -->
+			<div class="wallet-step-content step-2-content {{#unless isStep2}}hidden{{/unless}}">
+				<p class="wallet-description">Sign the message to verify your wallet</p>
+				<div class="wallet-address-display connected">
+					<span class="address-label">Wallet:</span>
+					<span class="address-value">{{walletAddress}}</span>
+				</div>
+			</div>
+
+			<!-- Error message -->
+			{{#if errorMessage}}
+				<div class="wallet-error">
+					<svg viewBox="0 0 24 24" width="16" height="16">
+						<path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+					</svg>
+					<span>{{errorMessage}}</span>
+				</div>
+			{{/if}}
+
+			<!-- Loading state -->
+			{{#if isLoading}}
+				<div class="wallet-loading">
+					<div class="loading-spinner"></div>
+					<span>{{loadingMessage}}</span>
+				</div>
+			{{/if}}
+		</div>
+		<div class="modal-footer">
+			<div class="btn-group btn-group-centered">
+				<button class="btn btn-clean btn-clean-cancel cancel-dialog">CANCEL</button>
+				{{#if isStep1}}
+					<button class="btn btn-clean btn-clean-confirm connect-wallet-btn {{#if isLoading}}disabled{{/if}}">
+						{{#if walletAddress}}
+							CONTINUE
+						{{else}}
+							CONNECT
+						{{/if}}
+					</button>
+				{{/if}}
+				{{#if isStep2}}
+					<button class="btn btn-clean btn-clean-confirm sign-message-btn {{#if isLoading}}disabled{{/if}}">SIGN</button>
+				{{/if}}
+			</div>
+		</div>
+	</div>
+</div>

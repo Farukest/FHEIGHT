@@ -1,19 +1,19 @@
 express = require 'express'
 
 AchievementsModule = require '../../../lib/data_access/achievements'
-Logger = require '../../../../app/common/logger.coffee'
+Logger = require '../../../../app/common/logger'
 DataAccessHelpers = require '../../../lib/data_access/helpers'
 
 t = require 'tcomb-validation'
 moment = require 'moment'
 knex = require '../../../lib/data_access/knex'
 
-WartechGeneralFaction1Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction1Achievement.coffee'
-WartechGeneralFaction2Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction2Achievement.coffee'
-WartechGeneralFaction3Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction3Achievement.coffee'
-WartechGeneralFaction4Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction4Achievement.coffee'
-WartechGeneralFaction5Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction5Achievement.coffee'
-WartechGeneralFaction6Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction6Achievement.coffee'
+WartechGeneralFaction1Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction1Achievement'
+WartechGeneralFaction2Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction2Achievement'
+WartechGeneralFaction3Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction3Achievement'
+WartechGeneralFaction4Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction4Achievement'
+WartechGeneralFaction5Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction5Achievement'
+WartechGeneralFaction6Achievement = require '../../../../app/sdk/achievements/wartechAchievements/wartechGeneralFaction6Achievement'
 
 router = express.Router()
 

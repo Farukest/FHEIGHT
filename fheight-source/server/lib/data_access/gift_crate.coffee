@@ -2,7 +2,7 @@ util = require 'util'
 Promise = require 'bluebird'
 FirebasePromises = require '../firebase_promises'
 FHEIGHTFirebase = require '../fheight_firebase_module'
-Logger = require '../../../app/common/logger.coffee'
+Logger = require '../../../app/common/logger'
 colors = require 'colors'
 moment = require 'moment'
 _ = require 'underscore'
@@ -15,10 +15,10 @@ generatePushId = require '../../../app/common/generate_push_id'
 
 # SDK imports
 SDK = require '../../../app/sdk'
-GiftCrateFactory = require '../../../app/sdk/giftCrates/giftCrateFactory.coffee'
+GiftCrateFactory = require '../../../app/sdk/giftCrates/giftCrateFactory'
 GiftCrateLookup = require("../../../app/sdk/giftCrates/giftCrateLookup")
-CosmeticsFactory = require '../../../app/sdk/cosmetics/cosmeticsFactory.coffee'
-CosmeticsLookup = require '../../../app/sdk/cosmetics/cosmeticsLookup.coffee'
+CosmeticsFactory = require '../../../app/sdk/cosmetics/cosmeticsFactory'
+CosmeticsLookup = require '../../../app/sdk/cosmetics/cosmeticsLookup'
 
 class GiftCrateModule
 

@@ -1,4 +1,6 @@
 {
+	"connect_wallet_button_label": "Connect Wallet",
+	"sign_message_button_label": "Sign Message",
 	"username_input_label": "Username",
 	"password_input_label": "Password",
 	"login_button_label": "Login",

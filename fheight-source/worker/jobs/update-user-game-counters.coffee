@@ -3,7 +3,7 @@ Job - Update User Progression
 ###
 config = require '../../config/config.js'
 UsersModule = require '../../server/lib/data_access/users'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 Promise = require 'bluebird'
 colors = require 'colors'
 

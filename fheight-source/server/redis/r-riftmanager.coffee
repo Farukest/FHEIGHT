@@ -1,6 +1,6 @@
 Promise = require 'bluebird'
 moment = require 'moment'
-Logger = require '../../app/common/logger.coffee'
+Logger = require '../../app/common/logger'
 config = require '../../config/config.js'
 env = config.get("env")
 ttl = config.get("redis.ttl")

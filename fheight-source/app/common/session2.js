@@ -174,6 +174,43 @@ class Session extends EventEmitter {
     return this.emit('logout');
   }
 
+  walletConnect(walletAddress, signature, message) {
+    debug(`walletConnect: ${walletAddress}`);
+
+    return Promise.resolve(
+      fetch(`${this.url}/session/wallet-connect`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          walletAddress,
+          signature,
+          message
+        })
+      })
+    )
+    .bind(this)
+    .timeout(15000)
+    .catch(this._networkError)
+    .then((this._checkResponse))
+    .then(res => {
+      this.analyticsData = res.analytics_data;
+      this.token = res.token;
+      return this._authFirebase(this.token);
+    }).then(res => {
+      debug(res);
+      this.userId = res.auth.id;
+      this.username = res.auth.username;
+      this.expires = res.expires;
+
+      const data = {token: this.token, userId: this.userId, analyticsData: this.analyticsData, walletAddress};
+      this.emit('login', data);
+      return data;
+    });
+  }
+
   register(opts) {
     debug(`register ${JSON.stringify(opts)}`);
 

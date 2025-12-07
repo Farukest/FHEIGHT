@@ -3,8 +3,8 @@ const _ = require('underscore');
 const moment = require('moment');
 const Promise = require('bluebird');
 
-// var FirebasePromises = require('../lib/firebase_promises.coffee')
-// var FHEIGHTFirebase = require('../lib/fheight_firebase_module.coffee')
+// var FirebasePromises = require('../lib/firebase_promises')
+// var FHEIGHTFirebase = require('../lib/fheight_firebase_module')
 
 exports.up = function (knex) {
   return Promise.all([

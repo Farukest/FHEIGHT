@@ -1,7 +1,7 @@
 express = require 'express'
 knex = require '../../../lib/data_access/knex'
 DataAccessHelpers = require '../../../lib/data_access/helpers'
-Logger = require '../../../../app/common/logger.coffee'
+Logger = require '../../../../app/common/logger'
 t = require 'tcomb-validation'
 
 router = express.Router()

@@ -75,6 +75,7 @@ const MainMagaariEmberHighlandsLayer = require('app/view/layers/start/MainMagaar
 const MainFrostfireLayer = require('app/view/layers/start/MainFrostfireLayer');
 const MainVetruvianLayer = require('app/view/layers/start/MainVetruvianLayer');
 const MainShimzarLayer = require('app/view/layers/start/MainShimzarLayer');
+const MainBlueForestLayer = require('app/view/layers/start/MainBlueForestLayer');
 const MatchmakingLayer = require('app/view/layers/pregame/MatchmakingLayer');
 const GameLayer = require('app/view/layers/game/GameLayer');
 
@@ -410,8 +411,11 @@ var _Scene = cc.Scene.extend({
       this._mainLayerClass = MainVetruvianLayer;
     } else if (selectedSceneId === SDK.CosmeticsLookup.Scene.Shimzar) {
       this._mainLayerClass = MainShimzarLayer;
+    } else if (selectedSceneId === SDK.CosmeticsLookup.Scene.BlueForest) {
+      this._mainLayerClass = MainBlueForestLayer;
     } else {
-      throw new Error(`Scene.showMain -> Invalid selected scene: ${CONFIG.selectedScene}`);
+      // Default to BlueForest if no valid scene selected
+      this._mainLayerClass = MainBlueForestLayer;
     }
 
     return this.showContentByClass(this._mainLayerClass, true);

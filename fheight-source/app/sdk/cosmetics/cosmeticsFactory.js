@@ -192,7 +192,7 @@ class CosmeticsFactory {
   }
 
   static getDefaultSceneIdentifier() {
-    return CosmeticsLookup.Scene.Frostfire;
+    return CosmeticsLookup.Scene.BlueForest;
   }
   static cardSkinsForCard(cardId) {
     return this._cachedCardSkinsForCardId[cardId] || [];
@@ -547,6 +547,22 @@ cos[Scene.Shimzar] = {
   pkgId: "ShimzarMainMenu",
   img: null, // TODO
   rsx: null, // TODO
+  unlockable: false,
+  purchasable: false
+};
+
+cos[Scene.BlueForest] = {
+  id: Scene.BlueForest,
+  typeId: CosmeticsTypeLookup.Scene,
+  name: "Blue Forest",
+  shopDescription: "A mystical blue forest parallax scene",
+  enabled: true,
+  alwaysVisible: true,
+  order: ORDER_SCENES,
+  rarityId: Rarity.Fixed,
+  pkgId: "BlueForestMainMenu",
+  img: null,
+  rsx: null,
   unlockable: false,
   purchasable: false
 };

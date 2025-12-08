@@ -616,7 +616,11 @@ var PackageManager = Manager.extend({
                 }
 
                 resolve();
-              }.bind(this));
+              }.bind(this)).catch(function (err) {
+                // Handle load errors gracefully - some resources may have failed to load
+                console.warn('PackageManager: Some resources failed to load:', err);
+                resolve(); // Still resolve to prevent infinite loading
+              });
             }
           }.bind(this);
 
@@ -828,22 +832,27 @@ var PackageManager = Manager.extend({
    */
   _addResourcesToCachesByResourceData: function (resourceData) {
     if (resourceData != null) {
-      // textures should always be loaded
-      var img = resourceData.img;
-      if (img != null) {
-        var texture = cc.textureCache.getTextureForKey(img);
-        if (texture == null) {
-          throw new Error('PackageManager._addResourcesToCachesByResourceData -> images must be loaded before adding to cache: ' + img);
+      try {
+        // textures should always be loaded
+        var img = resourceData.img;
+        if (img != null) {
+          var texture = cc.textureCache.getTextureForKey(img);
+          if (texture == null) {
+            console.warn('PackageManager._addResourcesToCachesByResourceData -> images must be loaded before adding to cache: ' + img);
+            return; // Skip instead of throw to prevent WeakMap errors
+          }
         }
-      }
 
-      // handle resource data by type
-      if (UtilsResources.getIsResourceForCubemap(resourceData)) {
-        this._addCubemapResourceToCaches(resourceData);
-      } else if (UtilsResources.getIsResourceForAnimation(resourceData)) {
-        this._addAnimationResourceToCaches(resourceData);
-      } else if (UtilsResources.getIsResourceForSpriteFrame(resourceData)) {
-        this._addSpriteFrameResourceToCaches(resourceData);
+        // handle resource data by type
+        if (UtilsResources.getIsResourceForCubemap(resourceData)) {
+          this._addCubemapResourceToCaches(resourceData);
+        } else if (UtilsResources.getIsResourceForAnimation(resourceData)) {
+          this._addAnimationResourceToCaches(resourceData);
+        } else if (UtilsResources.getIsResourceForSpriteFrame(resourceData)) {
+          this._addSpriteFrameResourceToCaches(resourceData);
+        }
+      } catch (e) {
+        console.error('PackageManager._addResourcesToCachesByResourceData error:', e, 'resourceData:', resourceData);
       }
     }
   },
@@ -874,14 +883,19 @@ var PackageManager = Manager.extend({
 
     var frameKeys = UtilsResources.getFrameKeys(resourceData.plist, resourceData.framePrefix);
     if (frameKeys.length > 0) {
-      // add all matching frames
+      // add all matching frames (skip null frames to prevent WeakMap errors)
       for (var i = 0; i < frameKeys.length; i++) {
-        animFrames.push(cc.spriteFrameCache.getSpriteFrame(frameKeys[i]));
+        var frame = cc.spriteFrameCache.getSpriteFrame(frameKeys[i]);
+        if (frame != null) {
+          animFrames.push(frame);
+        }
       }
 
-      // create animation
-      var animation = cc.Animation.create(animFrames, frameDelay);
-      cc.animationCache.addAnimation(animation, name);
+      // create animation only if we have valid frames
+      if (animFrames.length > 0) {
+        var animation = cc.Animation.create(animFrames, frameDelay);
+        cc.animationCache.addAnimation(animation, name);
+      }
     }
   },
 

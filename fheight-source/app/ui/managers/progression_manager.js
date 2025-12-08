@@ -383,7 +383,7 @@ var ProgressionManager = Manager.extend({
     var challengesInCategory = SDK.ChallengeFactory.getChallengesForCategoryType(challengeCategory);
     return _.reduce(challengesInCategory, function (memo, challenge) {
       return memo && this.hasAttemptedChallengeOfType(challenge.type);
-    }, true, this);
+    }.bind(this), true);
   },
 
   hasCompletedChallengeOfType: function (challengeType) {

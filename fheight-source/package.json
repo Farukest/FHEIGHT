@@ -210,7 +210,7 @@
     "test:unit:session": "mocha -t 1000 --recursive test/unit/session",
     "tsc": "tsc",
     "tsc:chroma-js": "tsc -p ./packages/chroma-js/tsconfig.json",
-    "watch": "node --max_old_space_size=2048 --stack-size=100000 node_modules/gulp/bin/gulp.js build"
+    "watch": "node -r dotenv/config --max_old_space_size=2048 --stack-size=100000 node_modules/gulp/bin/gulp.js build -w"
   },
   "packageManager": "yarn@4.9.2"
 }

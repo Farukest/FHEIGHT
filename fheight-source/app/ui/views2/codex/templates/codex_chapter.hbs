@@ -1,4 +1,13 @@
 <div class="chapter-content">
+    <div class="audio-controls">
+        <button class="audio-play" title="Play"><i class="fa fa-play"></i></button>
+        <button class="audio-pause" title="Pause"><i class="fa fa-pause"></i></button>
+        <button class="audio-stop" title="Stop"><i class="fa fa-stop"></i></button>
+        <span class="audio-elapsed">00:00</span>
+        <input type="range" class="audio-seek-range" min="0" max="1" step="0.01" value="0">
+        <i class="fa fa-volume-up"></i>
+        <input type="range" class="audio-volume-range" min="0" max="1" step="0.01" value="1">
+    </div>
     <h1 class="chapter-name">{{name}}</h1>
     <p class="chapter-description">{{{description}}}</p>
     <hr class="shine">

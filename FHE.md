@@ -933,9 +933,10 @@ Oyunda toplam **65 farkli action** bulunmaktadir.
 | DrawStartingHandAction | drawStartingHandAction.js | Baslangic eli cek (5 kart) | euint8[5] |
 | ReplaceCardFromHandAction | replaceCardFromHandAction.js | Karti deste ile degistir | euint8 |
 | PutCardInHandAction | putCardInHandAction.js | Ele kart ekle | euint8 |
-| BurnCardAction | burnCardAction.js | Kart yak (el dolu) | euint8 |
 
 **ACL:** `FHE.allowThis()` + `FHE.allow(player)` - Sadece kart sahibi gorebilir
+
+**NOT:** BurnCardAction FHE GEREKTIRMEZ - Deterministik, random yok (el dolu olunca otomatik yanar)
 
 ### B. ACIK HAMLELER (PUBLIC - Herkes Gorur)
 
@@ -950,14 +951,26 @@ Oyunda toplam **65 farkli action** bulunmaktadir.
 | TeleportAction | teleportAction.js | Isinla |
 | ApplyModifierAction | applyModifierAction.js | Buff/debuff uygula |
 | SwapUnitsAction | swapUnitsAction.js | Birimler yer degistir |
+| BurnCardAction | burnCardAction.js | Kart yak (el dolu) - Deterministik |
+| GenerateSignatureCardAction | generateSignatureCardAction.js | Signature card - General'e gore sabit |
 
 ### C. HIBRIT HAMLELER (Gizli -> Acik)
 
 | Hamle | Baslangic | Sonuc |
 |-------|-----------|-------|
 | PlayCardFromHandAction | El'deki kart GIZLI | Board'a koyunca ACIK |
-| GenerateSignatureCardAction | Secim GIZLI | Oynaninca ACIK |
+| Random Spell Effects | Secim GIZLI | Sonuc ACIK (spawn edilen unit gorunur) |
 | RevealHiddenCardAction | GIZLI | Public DECRYPT ile ACIK |
+
+### D. RANDOM SPELL/MODIFIER EFEKTLERI (PARTIAL FHE)
+
+| Modifier | Dosya | Aciklama | FHE? |
+|----------|-------|----------|------|
+| RandomDemonSpawn | modifierDeathWatchSpawnRandomDemon.js | Rastgele demon spawn | Sonuc acik, secim gizli olabilir |
+| RandomTeleport | teleportAction.js | Rastgele lokasyona isinla | Sonuc acik |
+| RandomBuff | modifiers/*.js | Rastgele buff/debuff | Sonuc acik |
+
+**Kaynak:** `getRandomIntegerForExecution()` fonksiyonu - server-side Math.random()
 
 ---
 
@@ -1272,11 +1285,41 @@ Her hamle icin MetaMask popup = Oynanamaz
 
 | Sistem | FHE | Oncelik | Aciklama |
 |--------|-----|---------|----------|
-| Spirit Orbs | EVET | YUKSEK | Provably fair loot box - kart icerigi encrypted |
-| Daily Claims | HAYIR | - | Deterministik, gizlenecek bilgi yok |
-| Mystery Crates | BELKI | DUSUK | Randomness eklenirse gerekir |
-| Gold | HAYIR | - | Seffaf olmali, ERC20 olabilir |
-| Gauntlet Draft | BELKI | ORTA | Kart havuzu gizliligi icin |
+| Spirit Orbs | EVET | KRITIK | Provably fair loot box - PARA ILE SATILIYOR |
+| Draw/Replace Cards | EVET | YUKSEK | Oyun adaleti - deck manipulation engeli |
+| Deck Shuffle | EVET | YUKSEK | Kart cekme sirasi encrypted |
+| Gauntlet Draft | EVET | ORTA | Draft havuzu randomness - inceleme gerekli |
+| Gift Crates | HAYIR | - | Cogu static reward, bazi optional random |
+| Daily Claims | HAYIR | - | Deterministik, fixed reward |
+| Cosmetic Chests | OPSIYONEL | DUSUK | Sadece skin/emote, gameplay etkisi yok |
+| Gold/Spirit | HAYIR | - | Seffaf olmali, ERC20 |
+| Quests | HAYIR | - | Fixed reward tablosu |
+
+### Spirit Orb Rarity Oranlari (Mevcut Sistem)
+
+**Kaynak:** `server/lib/data_access/inventory.coffee` lines 1318-1336
+
+```
+CORE SET:
+Slot 1-4 (Normal):
+  - Common:    %73
+  - Rare:      %15
+  - Epic:      %10
+  - Legendary: %2
+
+Slot 5 (Guaranteed Rare+):
+  - Rare:      %70
+  - Epic:      %12
+  - Legendary: %18
+
+PRISMATIC (Parlak) Sansi:
+  - Common:    %4
+  - Rare:      %5
+  - Epic:      %6
+  - Legendary: %8
+```
+
+**Mevcut Kod:** `Math.random()` - server-side, dogrulanamaz!
 
 ### Decryption ve Wallet Onaylari
 
@@ -1391,6 +1434,11 @@ contract SpiritOrb is ERC721 {
 - [x] 730 kart JSON formatinda cikarildi
 - [x] Decaffeinate bug fix'leri yapildi
 - [x] FHE Ekonomi Analizi tamamlandi
+- [x] Kod analizi ile FHE gereksinimleri dogrulandi (2025-12-08)
+  - BurnCardAction: FHE GEREKSIZ (deterministik, el dolu ise burn)
+  - GenerateSignatureCardAction: FHE GEREKSIZ (kart onceden belirlenmis)
+  - Random spell/modifier efektleri: FHE GEREKLI (sunucu tarafli Math.random)
+  - Spirit Orb rarity oranlari koddan cikarildi
 
 ### Yapilacak
 - [ ] Smart Contract'lar yazilacak (SpiritOrb.sol, CardNFT.sol, GameGold.sol)
@@ -1398,6 +1446,7 @@ contract SpiritOrb is ERC721 {
 - [ ] Local Hardhat test
 - [ ] Sepolia deploy
 - [ ] Frontend entegrasyonu
+- [ ] Gauntlet draft sistemi detayli analiz
 
 ---
 
@@ -1551,4 +1600,4 @@ FHEIGHT/
 
 ---
 
-*Son guncelleme: 2025-12-08 - FHE Ekonomi Analizi eklendi*
+*Son guncelleme: 2025-12-08 - FHE gereksinimleri kod analizi ile dogrulandi*

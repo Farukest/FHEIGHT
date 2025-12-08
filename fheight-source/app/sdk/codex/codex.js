@@ -97,7 +97,7 @@ c[CodexChapters.Chapter1] = {
   description: "0 AE",
   img: RSX.chapter1_preview.img,
   background: RSX.chapter1_background.img,
-  //audio: RSX.chapter1_audio.audio,
+  audio: RSX.chapter1_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 0,
   text: [
@@ -118,7 +118,7 @@ c[CodexChapters.Chapter2] = {
   description: "10,000 AE",
   img: RSX.chapter2_preview.img,
   background: RSX.chapter2_background.img,
-  //audio: RSX.chapter2_audio.audio,
+  audio: RSX.chapter2_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 0,
   text: [
@@ -136,7 +136,7 @@ c[CodexChapters.Chapter3] = {
   description: "10,000 - 20,000 AE",
   img: RSX.chapter3_preview.img,
   background: RSX.chapter3_background.img,
-  //audio: RSX.chapter3_audio.audio,
+  audio: RSX.chapter3_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 0,
   text: [
@@ -154,7 +154,7 @@ c[CodexChapters.Chapter4] = {
   description: "20,000 - 22,000 AE",
   img: RSX.chapter4_preview.img,
   background: RSX.chapter4_background.img,
-  //audio: RSX.chapter4_audio.audio,
+  audio: RSX.chapter4_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 0,
   text: [
@@ -170,7 +170,7 @@ c[CodexChapters.Chapter5] = {
   description: "20,000 - 22,000 AE",
   img: RSX.chapter5_preview.img,
   background: RSX.chapter5_background.img,
-  //audio: RSX.chapter5_audio.audio,
+  audio: RSX.chapter5_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 0,
   text: [
@@ -187,7 +187,7 @@ c[CodexChapters.Chapter6] = {
   description: "22,000 - 22,300 AE",
   img: RSX.chapter6_preview.img,
   background: RSX.chapter6_background.img,
-  //audio: RSX.chapter6_audio.audio,
+  audio: RSX.chapter6_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 1,
   text: [
@@ -210,7 +210,7 @@ c[CodexChapters.Chapter7] = {
   description: "22,000 - 22,300 AE",
   img: RSX.chapter7_preview.img,
   background: RSX.chapter7_background.img,
-  //audio: RSX.chapter7_audio.audio,
+  audio: RSX.chapter7_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 2,
   text: [
@@ -228,7 +228,7 @@ c[CodexChapters.Chapter8] = {
   description: "22,300 - 22,400 AE",
   img: RSX.chapter8_preview.img,
   background: RSX.chapter8_background.img,
-  //audio: RSX.chapter8_audio.audio,
+  audio: RSX.chapter8_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 3,
   text: [
@@ -245,7 +245,7 @@ c[CodexChapters.Chapter9] = {
   description: "22,300 - 22,400 AE",
   img: RSX.chapter9_preview.img,
   background: RSX.chapter9_background.img,
-  //audio: RSX.chapter9_audio.audio,
+  audio: RSX.chapter9_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 4,
   text: [
@@ -266,7 +266,7 @@ c[CodexChapters.Chapter10] = {
   description: "22,402 AE",
   img: RSX.chapter10_preview.img,
   background: RSX.chapter10_background.img,
-  //audio: RSX.chapter10_audio.audio,
+  audio: RSX.chapter10_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 5,
   text: [
@@ -283,7 +283,7 @@ c[CodexChapters.Chapter11] = {
   description: "22,402 AE",
   img: RSX.chapter11_preview.img,
   background: RSX.chapter11_background.img,
-  //audio: RSX.chapter11_audio.audio,
+  audio: RSX.chapter11_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 6,
   text: [
@@ -301,7 +301,7 @@ c[CodexChapters.Chapter12] = {
   description: "22,402 - 22,610 AE",
   img: RSX.chapter12_preview.img,
   background: RSX.chapter12_background.img,
-  //audio: RSX.chapter12_audio.audio,
+  audio: RSX.chapter12_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 7,
   text: [
@@ -320,7 +320,7 @@ c[CodexChapters.Chapter13] = {
   description: "22,610 - 22,640 AE",
   img: RSX.chapter13_preview.img,
   background: RSX.chapter13_background.img,
-  //audio: RSX.chapter13_audio.audio,
+  audio: RSX.chapter13_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 8,
   text: [
@@ -339,7 +339,7 @@ c[CodexChapters.Chapter14] = {
   description: "22,640 - 22,670 AE",
   img: RSX.chapter14_preview.img,
   background: RSX.chapter14_background.img,
-  //audio: RSX.chapter14_audio.audio,
+  audio: RSX.chapter14_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 9,
   text: [
@@ -359,7 +359,7 @@ c[CodexChapters.Chapter15] = {
   description: "22,640 - 22,700 AE",
   img: RSX.chapter15_preview.img,
   background: RSX.chapter15_background.img,
-  //audio: RSX.chapter15_audio.audio,
+  audio: RSX.chapter15_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 10,
   text: [
@@ -379,7 +379,7 @@ c[CodexChapters.Chapter16] = {
   description: "22,403 - 22,765 AE",
   img: RSX.chapter16_preview.img,
   background: RSX.chapter16_background.img,
-  //audio: RSX.chapter16_audio.audio,
+  audio: RSX.chapter16_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 12,
   text: [
@@ -398,7 +398,7 @@ c[CodexChapters.Chapter17] = {
   description: "22,465 - 22,745 AE",
   img: RSX.chapter17_preview.img,
   background: RSX.chapter17_background.img,
-  //audio: RSX.chapter17_audio.audio,
+  audio: RSX.chapter17_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 14,
   text: [
@@ -420,7 +420,7 @@ c[CodexChapters.Chapter18] = {
   description: "22,745 - 22,870 AE",
   img: RSX.chapter18_preview.img,
   background: RSX.chapter18_background.img,
-  //audio: RSX.chapter18_audio.audio,
+  audio: RSX.chapter18_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 16,
   text: [
@@ -440,7 +440,7 @@ c[CodexChapters.Chapter19] = {
   description: "22,765 AE",
   img: RSX.chapter19_preview.img,
   background: RSX.chapter19_background.img,
-  //audio: RSX.chapter19_audio.audio,
+  audio: RSX.chapter19_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 18,
   text: [
@@ -460,7 +460,7 @@ c[CodexChapters.Chapter20] = {
   description: "22,745 - 22,870 AE",
   img: RSX.chapter20_preview.img,
   background: RSX.chapter20_background.img,
-  //audio: RSX.chapter20_audio.audio,
+  audio: RSX.chapter20_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 20,
   text: [
@@ -478,7 +478,7 @@ c[CodexChapters.Chapter21] = {
   description: "22,885 - 22,905 AE",
   img: RSX.chapter21_preview.img,
   background: RSX.chapter21_background.img,
-  //audio: RSX.chapter21_audio.audio,
+  audio: RSX.chapter21_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 22,
   text: [
@@ -498,7 +498,7 @@ c[CodexChapters.Chapter22] = {
   description: "22,905 - 22,915 AE",
   img: RSX.chapter22_preview.img,
   background: RSX.chapter22_background.img,
-  //audio: RSX.chapter22_audio.audio,
+  audio: RSX.chapter22_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 24,
   text: [
@@ -516,7 +516,7 @@ c[CodexChapters.Chapter23] = {
   description: "22,905 - 22,915 AE",
   img: RSX.chapter23_preview.img,
   background: RSX.chapter23_background.img,
-  //audio: RSX.chapter23_audio.audio,
+  audio: RSX.chapter23_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 26,
   text: [
@@ -535,7 +535,7 @@ c[CodexChapters.Chapter24] = {
   description: "22,916 AE",
   img: RSX.chapter24_preview.img,
   background: RSX.chapter24_background.img,
-  //audio: RSX.chapter24_audio.audio,
+  audio: RSX.chapter24_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 28,
   text: [
@@ -554,7 +554,7 @@ c[CodexChapters.Chapter25] = {
   description: "AE 22,916 - 23,055",
   img: RSX.chapter25_preview.img,
   background: RSX.chapter25_background.img,
-  //audio: RSX.chapter25_audio.audio,
+  audio: RSX.chapter25_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 30,
   text: [
@@ -571,7 +571,7 @@ c[CodexChapters.Chapter26] = {
   description: "AE 23,055 - 23,090",
   img: RSX.chapter26_preview.img,
   background: RSX.chapter26_background.img,
-  //audio: RSX.chapter26_audio.audio,
+  audio: RSX.chapter26_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 32,
   text: [
@@ -589,7 +589,7 @@ c[CodexChapters.Chapter27] = {
   description: "23,085 AE",
   img: RSX.chapter27_preview.img,
   background: RSX.chapter27_background.img,
-  //audio: RSX.chapter27_audio.audio,
+  audio: RSX.chapter27_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 34,
   text: [
@@ -605,7 +605,7 @@ c[CodexChapters.Chapter28] = {
   description: "AE 23,090 - 23,092",
   img: RSX.chapter28_preview.img,
   background: RSX.chapter28_background.img,
-  //audio: RSX.chapter28_audio.audio,
+  audio: RSX.chapter28_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 36,
   text: [
@@ -621,7 +621,7 @@ c[CodexChapters.Chapter29] = {
   description: "AE 23,092 - 23,105",
   img: RSX.chapter29_preview.img,
   background: RSX.chapter29_background.img,
-  //audio: RSX.chapter29_audio.audio,
+  audio: RSX.chapter29_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 38,
   text: [
@@ -637,7 +637,7 @@ c[CodexChapters.Chapter30] = {
   description: "AE 23,092 - 23,105",
   img: RSX.chapter30_preview.img,
   background: RSX.chapter30_background.img,
-  //audio: RSX.chapter30_audio.audio,
+  audio: RSX.chapter30_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 40,
   text: [
@@ -655,7 +655,7 @@ c[CodexChapters.Chapter31] = {
   "“Consular Draug!” Cassyva called out as he was about to disappear into the ship. He paused at the sight of five distant beauties in resplendent gowns approaching the blocked walkway. There was no time for Cassyva to use the Star Crystals, to consult with her sisters, or even to think things through. There was only time to act. In a single motion she pulled five blades hidden in her sleeves and cast them with as much magical force as she could summon. They spiraled and sliced through the air with deadly accuracy toward Draug...but at the last moment ricocheted harmlessly off an invisible magical barrier surrounding him. As it was, he watched impassively as the magically siphoned blades instead skewered his elite Defenders as they crumpled into the water with unceremonious splashes. Draug smiled and said, “Kill them.” Then he was gone.": "“Consular Draug!” Cassyva called out as he was about to disappear into the ship. He paused at the sight of five distant beauties in resplendent gowns approaching the blocked walkway. There was no time for Cassyva to use the Star Crystals, to consult with her sisters, or even to think things through. There was only time to act. In a single motion she pulled five blades hidden in her sleeves and cast them with as much magical force as she could summon. They spiraled and sliced through the air with deadly accuracy toward Draug...but at the last moment ricocheted harmlessly off an invisible magical barrier surrounding him. As it was, he watched impassively as the magically siphoned blades instead skewered his elite Defenders as they crumpled into the water with unceremonious splashes. Draug smiled and said, “Kill them.” Then he was gone.",
   img: RSX.chapter31_preview.img,
   background: RSX.chapter31_background.img,
-  //audio: RSX.chapter31_audio.audio,
+  audio: RSX.chapter31_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 42,
   text: [
@@ -670,7 +670,7 @@ c[CodexChapters.Chapter32] = {
   description: "AE 23,105",
   img: RSX.chapter32_preview.img,
   background: RSX.chapter32_background.img,
-  //audio: RSX.chapter32_audio.audio,
+  audio: RSX.chapter32_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 44,
   text: [
@@ -687,7 +687,7 @@ c[CodexChapters.Chapter33] = {
   description: "AE 23,105",
   img: RSX.chapter33_preview.img,
   background: RSX.chapter33_background.img,
-  //audio: RSX.chapter33_audio.audio,
+  audio: RSX.chapter33_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 46,
   text: [
@@ -704,7 +704,7 @@ c[CodexChapters.Chapter34] = {
   description: "AE 23,105 - 23,203",
   img: RSX.chapter34_preview.img,
   background: RSX.chapter34_background.img,
-  //audio: RSX.chapter34_audio.audio,
+  audio: RSX.chapter34_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 48,
   text: [
@@ -720,7 +720,7 @@ c[CodexChapters.Chapter35] = {
   description: "AE 23,203 - 23,205",
   img: RSX.chapter35_preview.img,
   background: RSX.chapter35_background.img,
-  //audio: RSX.chapter35_audio.audio,
+  audio: RSX.chapter35_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 50,
   text: [
@@ -736,7 +736,7 @@ c[CodexChapters.Chapter36] = {
   description: "AE 23,205",
   img: RSX.chapter36_preview.img,
   background: RSX.chapter36_background.img,
-  //audio: RSX.chapter36_audio.audio,
+  audio: RSX.chapter36_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 52,
   text: [
@@ -753,7 +753,7 @@ c[CodexChapters.Chapter37] = {
   description: "AE 23,205",
   img: RSX.chapter37_preview.img,
   background: RSX.chapter37_background.img,
-  //audio: RSX.chapter37_audio.audio,
+  audio: RSX.chapter37_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 54,
   text: [
@@ -770,7 +770,7 @@ c[CodexChapters.Chapter38] = {
   description: "AE 23,205",
   img: RSX.chapter38_preview.img,
   background: RSX.chapter38_background.img,
-  //audio: RSX.chapter38_audio.audio,
+  audio: RSX.chapter38_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 56,
   text: [
@@ -787,7 +787,7 @@ c[CodexChapters.Chapter39] = {
   description: "AE 23,205 - 23,380",
   img: RSX.chapter39_preview.img,
   background: RSX.chapter39_background.img,
-  //audio: RSX.chapter39_audio.audio,
+  audio: RSX.chapter39_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 58,
   text: [
@@ -804,7 +804,7 @@ c[CodexChapters.Chapter40] = {
   description: "AE 23,380 - 23,401",
   img: RSX.chapter40_preview.img,
   background: RSX.chapter40_background.img,
-  //audio: RSX.chapter40_audio.audio,
+  audio: RSX.chapter40_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 60,
   text: [
@@ -820,7 +820,7 @@ c[CodexChapters.Chapter41] = {
   description: "AE 23,401",
   img: RSX.chapter41_preview.img,
   background: RSX.chapter41_background.img,
-  //audio: RSX.chapter41_audio.audio,
+  audio: RSX.chapter41_audio.audio,
   enabled: true,
   gamesRequiredToUnlock: 62,
   text: [

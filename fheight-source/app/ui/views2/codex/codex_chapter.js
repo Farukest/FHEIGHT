@@ -29,7 +29,7 @@ var CodexChapterItemView = Backbone.Marionette.ItemView.extend({
 
   ui: {
     $chapterText: '.chapter-text',
-    $audio: '.audio',
+    $audio: '.audio-controls',
     $audioElapsed: '.audio-elapsed',
     $audioVolumeRange: '.audio-volume-range',
     $audioSeekRange: '.audio-seek-range',

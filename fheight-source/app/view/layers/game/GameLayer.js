@@ -2916,6 +2916,10 @@ var GameLayer = FXCompositeLayer.extend({
 
     // ensure if first action is play card from hand that next action is root of new sequence
     const firstActionInterface = actionInterfaceSequence[0];
+    if (firstActionInterface == null) {
+      sdkStepInterface.actionInterfaceSequence = actionInterfaceSequence;
+      return;
+    }
     const firstAction = firstActionInterface.getSdkAction();
     if (firstAction instanceof SDK.PlayCardFromHandAction || firstAction instanceof SDK.PlaySignatureCardAction) {
       const secondActionInterface = actionInterfaceSequence[1];

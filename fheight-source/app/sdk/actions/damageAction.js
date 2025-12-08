@@ -23,7 +23,7 @@ class DamageAction extends Action {
 
   constructor(gameSession) {
     super(gameSession);
-    if (this.type == null) { this.type = DamageAction.type; }
+    this.type = DamageAction.type;
   }
 
   getPrivateDefaults(gameSession) {

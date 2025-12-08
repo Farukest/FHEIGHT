@@ -19,7 +19,7 @@ class PlaySignatureCardAction extends PlayCardAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = PlaySignatureCardAction.type; }
+    this.type = PlaySignatureCardAction.type;
   }
 
   getManaCost() {

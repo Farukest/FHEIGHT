@@ -22,7 +22,7 @@ class PlayCardSilentlyAction extends ApplyCardToBoardAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = PlayCardSilentlyAction.type; }
+    this.type = PlayCardSilentlyAction.type;
   }
 
   getCard() {

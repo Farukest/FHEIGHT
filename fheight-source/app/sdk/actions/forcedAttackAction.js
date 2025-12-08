@@ -20,7 +20,7 @@ class ForcedAttackAction extends AttackAction {
 
   constructor(gameSession) {
     super(gameSession);
-    if (this.type == null) { this.type = ForcedAttackAction.type; }
+    this.type = ForcedAttackAction.type;
   }
 }
 ForcedAttackAction.initClass();

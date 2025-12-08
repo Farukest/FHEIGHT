@@ -16,7 +16,7 @@ class EndFollowupAction extends StopBufferingEventsAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = EndFollowupAction.type; }
+    this.type = EndFollowupAction.type;
   }
 
   isRemovableDuringScrubbing() {

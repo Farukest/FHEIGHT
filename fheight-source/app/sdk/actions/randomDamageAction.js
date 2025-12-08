@@ -23,7 +23,7 @@ class RandomDamageAction extends DamageAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = RandomDamageAction.type; }
+    this.type = RandomDamageAction.type;
   }
 
   _modifyForExecution() {

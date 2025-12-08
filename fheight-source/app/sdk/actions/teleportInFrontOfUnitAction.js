@@ -18,7 +18,7 @@ class TeleportInFrontOfUnitAction extends TeleportAction {
 
   constructor(gameSession, inFrontOfUnit, targetUnit) {
     super(gameSession);
-    if (this.type == null) { this.type = TeleportInFrontOfUnitAction.type; }
+    this.type = TeleportInFrontOfUnitAction.type;
     this._private.inFrontOfUnit = inFrontOfUnit;
     this.setSource(targetUnit);
   }

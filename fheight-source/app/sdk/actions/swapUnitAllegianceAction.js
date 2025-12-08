@@ -21,7 +21,7 @@ class SwapUnitAllegianceAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = SwapUnitAllegianceAction.type; }
+    this.type = SwapUnitAllegianceAction.type;
   }
 
   _execute() {

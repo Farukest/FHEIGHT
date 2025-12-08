@@ -23,7 +23,7 @@ class SwapGeneralAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = SwapGeneralAction.type; }
+    this.type = SwapGeneralAction.type;
   }
 
   _execute() {

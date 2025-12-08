@@ -21,7 +21,7 @@ class PlayCardAsTransformAction extends PlayCardSilentlyAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = PlayCardAsTransformAction.type; }
+    this.type = PlayCardAsTransformAction.type;
   }
 }
 PlayCardAsTransformAction.initClass();

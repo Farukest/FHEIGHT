@@ -20,7 +20,7 @@ class CloneEntityAction extends PlayCardSilentlyAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = CloneEntityAction.type; }
+    this.type = CloneEntityAction.type;
   }
 
   getCard() {

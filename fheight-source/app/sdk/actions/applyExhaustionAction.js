@@ -17,7 +17,7 @@ class ApplyExhaustionAction extends Action {
 
   constructor(gameSession) {
     super(...arguments);
-    if (this.type == null) { this.type = ApplyExhaustionAction.type; }
+    this.type = ApplyExhaustionAction.type;
   }
 
   _execute() {

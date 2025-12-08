@@ -18,7 +18,7 @@ class EndTurnAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = EndTurnAction.type; }
+    this.type = EndTurnAction.type;
   }
 
   isRemovableDuringScrubbing() {

@@ -22,7 +22,7 @@ class DrawToXCardsAction extends Action {
 
   constructor(gameSession,ownerId) {
     super(gameSession);
-    if (this.type == null) { this.type = DrawToXCardsAction.type; }
+    this.type = DrawToXCardsAction.type;
 
     // has to be done after super()
     this.ownerId = ownerId + "";

@@ -17,7 +17,7 @@ class StopBufferingEventsAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = StopBufferingEventsAction.type; }
+    this.type = StopBufferingEventsAction.type;
   }
 
   isRemovableDuringScrubbing() {

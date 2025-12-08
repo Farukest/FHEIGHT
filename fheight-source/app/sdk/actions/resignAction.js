@@ -19,7 +19,7 @@ class ResignAction extends DieAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = ResignAction.type; }
+    this.type = ResignAction.type;
   }
 
   isRemovableDuringScrubbing() {

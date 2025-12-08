@@ -25,7 +25,7 @@ class ReplaceCardFromHandAction extends PutCardInHandAction {
 
   constructor(gameSession, ownerId, indexOfCardInHand) {
     super(gameSession, ownerId, null, indexOfCardInHand);
-    if (this.type == null) { this.type = ReplaceCardFromHandAction.type; }
+    this.type = ReplaceCardFromHandAction.type;
   }
 
   _execute() {

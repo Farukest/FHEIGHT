@@ -19,7 +19,7 @@ class RestoreChargeToAllArtifactsAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = RestoreChargeToAllArtifactsAction.type; }
+    this.type = RestoreChargeToAllArtifactsAction.type;
   }
 
   _execute() {

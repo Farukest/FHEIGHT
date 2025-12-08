@@ -28,7 +28,7 @@ class ApplyModifierAction extends Action {
 
   constructor(gameSession, modifierContextObject, card, parentModifier=null, auraModifierId=null) {
     super(gameSession);
-    if (this.type == null) { this.type = ApplyModifierAction.type; }
+    this.type = ApplyModifierAction.type;
     this.setModifierContextObject(modifierContextObject);
     this.setTarget(card);
     this.setParentModifier(parentModifier);

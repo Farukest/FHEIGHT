@@ -18,7 +18,7 @@ class DieAction extends RemoveAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = DieAction.type; }
+    this.type = DieAction.type;
   }
 }
 DieAction.initClass();

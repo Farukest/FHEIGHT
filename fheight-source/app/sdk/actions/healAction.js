@@ -21,7 +21,7 @@ class HealAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = HealAction.type; }
+    this.type = HealAction.type;
   }
 
   getPrivateDefaults(gameSession) {

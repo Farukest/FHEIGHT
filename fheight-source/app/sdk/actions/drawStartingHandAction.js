@@ -28,7 +28,9 @@ class DrawStartingHandAction extends Action {
 
   constructor(gameSession, ownerId, mulliganIndices) {
     super(gameSession);
-    if (this.type == null) { this.type = DrawStartingHandAction.type; }
+    // Fix: Always set type after super() - the if check doesn't work in ES6
+    // because Action constructor already sets this.type = "Action"
+    this.type = DrawStartingHandAction.type;
     this.mulliganIndices = mulliganIndices || [];
     this.mulliganedHandCardsData = [];
     this.newHandCardsData = [];

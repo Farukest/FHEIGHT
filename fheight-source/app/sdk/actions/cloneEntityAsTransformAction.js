@@ -23,7 +23,7 @@ class CloneEntityAsTransformAction extends CloneEntityAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = CloneEntityAsTransformAction.type; }
+    this.type = CloneEntityAsTransformAction.type;
   }
 }
 CloneEntityAsTransformAction.initClass();

@@ -21,7 +21,7 @@ class HurtingDamageAction extends TrueDamageAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = HurtingDamageAction.type; }
+    this.type = HurtingDamageAction.type;
   }
 }
 HurtingDamageAction.initClass();

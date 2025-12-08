@@ -20,7 +20,7 @@ class RefreshArtifactChargesAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = RefreshArtifactChargesAction.type; }
+    this.type = RefreshArtifactChargesAction.type;
   }
 
   _execute() {

@@ -21,7 +21,7 @@ class RestoreManaAction extends Action {
 
   constructor(gameSession) {
     super(gameSession);
-    if (this.type == null) { this.type = RestoreManaAction.type; }
+    this.type = RestoreManaAction.type;
   }
 
   setManaAmount(manaToRestore) {

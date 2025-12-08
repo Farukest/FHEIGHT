@@ -22,7 +22,7 @@ class MoveAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = MoveAction.type; }
+    this.type = MoveAction.type;
   }
 
   getPrivateDefaults(gameSession) {

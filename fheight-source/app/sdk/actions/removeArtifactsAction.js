@@ -18,7 +18,7 @@ class RemoveArtifactsAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = RemoveArtifactsAction.type; }
+    this.type = RemoveArtifactsAction.type;
   }
 
   _execute() {

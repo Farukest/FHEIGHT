@@ -17,7 +17,7 @@ class RemoveAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = RemoveAction.type; }
+    this.type = RemoveAction.type;
   }
 
   _execute() {

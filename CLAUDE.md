@@ -919,6 +919,329 @@ Board State:  [public, public, public, ...]           - Herkes gorur
 Oyuncu B Eli: [encrypted, encrypted, encrypted, ...]  - Sadece B gorebilir
 ```
 
+---
+
+## TUM OYUN HAMLELERI VE FHE GEREKSINIMLERI
+
+Oyunda toplam **65 farkli action** bulunmaktadir.
+
+### A. GIZLI KALMASI GEREKEN HAMLELER (USER DECRYPT)
+
+| Hamle | Dosya | Aciklama | FHE Tipi |
+|-------|-------|----------|----------|
+| DrawCardAction | drawCardAction.js | Desteden kart cek | euint8 (kart ID) |
+| DrawStartingHandAction | drawStartingHandAction.js | Baslangic eli cek (5 kart) | euint8[5] |
+| ReplaceCardFromHandAction | replaceCardFromHandAction.js | Karti deste ile degistir | euint8 |
+| PutCardInHandAction | putCardInHandAction.js | Ele kart ekle | euint8 |
+| BurnCardAction | burnCardAction.js | Kart yak (el dolu) | euint8 |
+
+**ACL:** `FHE.allowThis()` + `FHE.allow(player)` - Sadece kart sahibi gorebilir
+
+### B. ACIK HAMLELER (PUBLIC - Herkes Gorur)
+
+| Hamle | Dosya | Aciklama |
+|-------|-------|----------|
+| MoveAction | moveAction.js | Birim hareket |
+| AttackAction | attackAction.js | Saldir |
+| DamageAction | damageAction.js | Hasar ver |
+| HealAction | healAction.js | Iyilestir |
+| DieAction | dieAction.js | Birim olur |
+| PlayCardFromHandAction | playCardFromHandAction.js | Kart oyna (board'a koyunca ACIK) |
+| TeleportAction | teleportAction.js | Isinla |
+| ApplyModifierAction | applyModifierAction.js | Buff/debuff uygula |
+| SwapUnitsAction | swapUnitsAction.js | Birimler yer degistir |
+
+### C. HIBRIT HAMLELER (Gizli -> Acik)
+
+| Hamle | Baslangic | Sonuc |
+|-------|-----------|-------|
+| PlayCardFromHandAction | El'deki kart GIZLI | Board'a koyunca ACIK |
+| GenerateSignatureCardAction | Secim GIZLI | Oynaninca ACIK |
+| RevealHiddenCardAction | GIZLI | Public DECRYPT ile ACIK |
+
+---
+
+## OYUN AKISI (Turn Structure)
+
+```
+OYUN BASI (SETUP)
+1. DrawStartingHandAction (her oyuncu 5 kart - GIZLI)
+2. Mulligan secenegi (3 kart degistir - GIZLI)
+3. Player 2 baslar (Player 1'den 1 mana fazla)
+
+HER TUR (MAX 9 MANA)
+START TURN PHASE:
+  - StartTurnAction calisir
+  - RefreshExhaustionAction (birimler hareket edebilir)
+  - Mana yenilenir (max +1, max 9) - ACIK
+  - 1 kart cekilir (DrawCardAction) - GIZLI
+
+ACTION PHASE:
+  - PlayCardFromHandAction (mana harcama) - GIZLI->ACIK
+  - MoveAction (birim hareket) - ACIK
+  - AttackAction (saldiri) - ACIK
+  - ReplaceCardFromHandAction (kart degistir) - GIZLI
+  - ApplyModifierAction (buff/debuff) - ACIK
+
+END TURN PHASE:
+  - EndTurnAction calisir
+  - Diger oyuncuya gecilir
+
+OYUN SONU
+  - General HP <= 0 -> DieAction -> Oyun biter
+  - ResignAction (oyuncu teslim eder)
+```
+
+---
+
+## FHE DECRYPT AKISLARI
+
+### 1. Kendi Elini Gorme (USER DECRYPT)
+```
+Oyuncu A elini gormek istiyor:
+1. Frontend: const handles = await game.getHand(gameId);
+2. Frontend: for each handle -> userDecryptEuint()
+3. Frontend: kartlari goster
+
+ACL Gereksinim:
+- FHE.allowThis(hand[i])     // Contract icin
+- FHE.allow(hand[i], player) // Oyuncu icin
+```
+
+### 2. Kart Oynama (GIZLI -> ACIK)
+```
+Oyuncu A kart oynamak istiyor:
+1. Frontend: eldeki karti sec (index 2 mesela)
+2. Contract: publicDecrypt ile karti aciga cikar
+3. Contract: decryptedCard'i board'a yerlestir
+4. Broadcast: Rakip artik karti gorebilir
+
+Solidity:
+function playCard(uint8 handSlot, uint8 x, uint8 y) {
+    FHE.makePubliclyDecryptable(playerHand[msg.sender][handSlot]);
+    // KMS decrypt sonrasi board'a ekle
+}
+```
+
+### 3. Kart Cekme (GIZLI KALIR)
+```
+Oyuncu A kart cekiyor:
+1. Contract: deck[nextIndex] -> hand'e kopyala
+2. Contract: FHE.allowThis() ve FHE.allow(player)
+3. Frontend: yeni karti userDecrypt ile gor
+4. Rakip: sadece "1 kart cekildi" gorur, icerigi bilmez
+```
+
+### 4. Replace (GIZLI -> GIZLI)
+```
+Oyuncu eldeki karti degistiriyor:
+1. Contract: hand[slot] -> deck'e geri koy
+2. Contract: deck'ten yeni kart cek (FHE.randEuint8)
+3. Contract: yeni kart hand[slot]'a ekle
+4. ACL: sadece oyuncuya izin ver
+```
+
+---
+
+## SOLIDITY CONTRACT TASARIMI
+
+```solidity
+// SPDX-License-Identifier: BSD-3-Clause-Clear
+pragma solidity ^0.8.24;
+
+import { FHE, euint8 } from "@fhevm/solidity/lib/FHE.sol";
+import { ZamaEthereumConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+
+contract GameSession is ZamaEthereumConfig {
+
+    // === GIZLI VERI ===
+    mapping(address => euint8[6]) private playerHand;  // Sifreli el
+    mapping(address => uint8) public handSize;          // El boyutu (ACIK)
+    mapping(address => euint8[40]) private deckOrder;   // Sifreli deste sirasi
+    mapping(address => uint8) public deckRemaining;     // Kalan kart (ACIK)
+
+    // === ACIK VERI ===
+    struct BoardUnit {
+        uint32 cardId;
+        address owner;
+        uint8 x;
+        uint8 y;
+        uint8 hp;
+        uint8 atk;
+        bool exhausted;
+    }
+    BoardUnit[] public board;
+
+    struct PlayerMana {
+        uint8 current;
+        uint8 maximum;
+    }
+    mapping(address => PlayerMana) public playerMana;
+
+    // === KART CEK (GIZLI) ===
+    function drawCard() external {
+        require(deckRemaining[msg.sender] > 0, "No cards");
+        require(handSize[msg.sender] < 6, "Hand full");
+
+        uint8 idx = 40 - deckRemaining[msg.sender];
+        euint8 drawnCard = deckOrder[msg.sender][idx];
+
+        // Ele ekle
+        playerHand[msg.sender][handSize[msg.sender]] = drawnCard;
+
+        // ACL - sadece oyuncu gorebilir
+        FHE.allowThis(drawnCard);
+        FHE.allow(drawnCard, msg.sender);
+
+        handSize[msg.sender]++;
+        deckRemaining[msg.sender]--;
+    }
+
+    // === KART OYNA (GIZLI -> ACIK) ===
+    function playCard(
+        uint8 handSlot,
+        uint8 x,
+        uint8 y,
+        bytes calldata decryptedCardId,
+        bytes calldata proof
+    ) external {
+        // KMS proof dogrula
+        bytes32[] memory cts = new bytes32[](1);
+        cts[0] = FHE.toBytes32(playerHand[msg.sender][handSlot]);
+        FHE.checkSignatures(cts, decryptedCardId, proof);
+
+        uint32 cardId = abi.decode(decryptedCardId, (uint32));
+
+        // Board'a ekle (ACIK)
+        board.push(BoardUnit({
+            cardId: cardId,
+            owner: msg.sender,
+            x: x,
+            y: y,
+            hp: getCardHp(cardId),
+            atk: getCardAtk(cardId),
+            exhausted: true
+        }));
+
+        // Elden cikar
+        _removeFromHand(msg.sender, handSlot);
+    }
+
+    // === HAREKET (ACIK) ===
+    function moveUnit(uint256 unitIdx, uint8 newX, uint8 newY) external {
+        BoardUnit storage unit = board[unitIdx];
+        require(unit.owner == msg.sender, "Not owner");
+        require(!unit.exhausted, "Exhausted");
+
+        unit.x = newX;
+        unit.y = newY;
+        unit.exhausted = true;
+    }
+
+    // === SALDIR (ACIK) ===
+    function attack(uint256 attackerIdx, uint256 targetIdx) external {
+        BoardUnit storage attacker = board[attackerIdx];
+        BoardUnit storage target = board[targetIdx];
+
+        require(attacker.owner == msg.sender, "Not owner");
+        require(!attacker.exhausted, "Exhausted");
+        require(target.owner != msg.sender, "Own unit");
+
+        // Hasar ver
+        if (target.hp <= attacker.atk) {
+            _removeUnit(targetIdx);
+        } else {
+            target.hp -= attacker.atk;
+        }
+
+        // Karsi saldir
+        if (attacker.hp <= target.atk) {
+            _removeUnit(attackerIdx);
+        } else {
+            attacker.hp -= target.atk;
+        }
+
+        attacker.exhausted = true;
+    }
+
+    // === REPLACE (GIZLI -> GIZLI) ===
+    function replaceCard(uint8 handSlot) external {
+        require(deckRemaining[msg.sender] > 0, "No cards");
+
+        // Eski karti desteye koy (basitlesmis)
+        // Yeni kart cek
+        uint8 idx = 40 - deckRemaining[msg.sender];
+        euint8 newCard = deckOrder[msg.sender][idx];
+
+        playerHand[msg.sender][handSlot] = newCard;
+
+        FHE.allowThis(newCard);
+        FHE.allow(newCard, msg.sender);
+
+        deckRemaining[msg.sender]--;
+    }
+
+    // === EL KARTLARINI GOR (USER DECRYPT) ===
+    function getHand() external view returns (euint8[6] memory) {
+        return playerHand[msg.sender];
+    }
+}
+```
+
+---
+
+## TYPESCRIPT FRONTEND ORNEGI
+
+```typescript
+import { ethers, fhevm } from "hardhat";
+import { FhevmType } from "@fhevm/hardhat-plugin";
+
+// Kendi elini gor
+async function viewHand(gameSession, player) {
+    const handles = await gameSession.connect(player).getHand();
+
+    const hand = [];
+    for (let i = 0; i < 6; i++) {
+        if (handles[i] != 0) {
+            const cardId = await fhevm.userDecryptEuint(
+                FhevmType.euint8,
+                handles[i],
+                gameSession.address,
+                player
+            );
+            hand.push(cardId);
+        }
+    }
+    return hand;
+}
+
+// Kart oyna
+async function playCard(gameSession, player, handSlot, x, y) {
+    // Oncelikle karti decrypt et
+    const handles = await gameSession.connect(player).getHand();
+    const result = await fhevm.publicDecrypt([handles[handSlot]]);
+
+    // Contract'a gonder
+    await gameSession.connect(player).playCard(
+        handSlot,
+        x,
+        y,
+        result.abiEncodedClearValues,
+        result.decryptionProof
+    );
+}
+
+// Board'u gor (herkes gorebilir)
+async function viewBoard(gameSession) {
+    const boardLength = await gameSession.getBoardLength();
+    const units = [];
+    for (let i = 0; i < boardLength; i++) {
+        units.push(await gameSession.board(i));
+    }
+    return units;
+}
+```
+
 ## SESSION KEY COZUMU (UX)
 
 ### Problem
@@ -943,6 +1266,120 @@ Her hamle icin MetaMask popup = Oynanamaz
 
 ---
 
+## FHE EKONOMI ANALIZI
+
+### Hangi Sistemde FHE Kullanilacak?
+
+| Sistem | FHE | Oncelik | Aciklama |
+|--------|-----|---------|----------|
+| Spirit Orbs | EVET | YUKSEK | Provably fair loot box - kart icerigi encrypted |
+| Daily Claims | HAYIR | - | Deterministik, gizlenecek bilgi yok |
+| Mystery Crates | BELKI | DUSUK | Randomness eklenirse gerekir |
+| Gold | HAYIR | - | Seffaf olmali, ERC20 olabilir |
+| Gauntlet Draft | BELKI | ORTA | Kart havuzu gizliligi icin |
+
+### Decryption ve Wallet Onaylari
+
+```
+PUBLIC VERILER (Decrypt Gerekmez, Popup Yok):
+- Gold bakiyesi
+- Spirit bakiyesi
+- Kac orb'un var
+- Kart koleksiyonun
+- Deck'lerin
+
+ENCRYPTED VERILER (FHE ile):
+- Orb ICINDEKI kartlar (acilana kadar)
+- Shuffle sirasi
+- Gauntlet draft havuzu
+```
+
+### Wallet Popup Gereken Islemler
+
+| Islem | Popup? | Aciklama |
+|-------|--------|----------|
+| Gold bakiye gorme | HAYIR | Public read |
+| Orb satin alma | EVET | 1x transfer tx |
+| Orb acma | EVET | 1x tx (veya session key ile 0) |
+| Kartlari gorme (acilmis) | HAYIR | Public read |
+| Oyun oynama | HAYIR | Session key ile |
+
+### FHE Ne Zaman Devreye Girer?
+
+```
+ORB LIFECYCLE:
+
+1. SATIN ALMA (FHE YOK)
+   -> Kullanici Gold oder
+   -> "unopenedOrbs" sayaci +1 olur
+   -> Henuz kart belirlenmedi!
+
+2. ORB ACMA (FHE BASLAR)
+   -> Kullanici "Open Orb" tiklar
+   -> Contract FHE.randEuint8() ile 5 kart belirler
+   -> Kartlar ENCRYPTED olarak saklanir
+
+3. KART REVEAL (PUBLIC DECRYPT)
+   -> Her kart icin publicDecrypt cagrilir
+   -> KMS imzasi ile dogrulanir
+   -> Kartlar koleksiyona eklenir (artik public)
+```
+
+### Tokenization Stratejisi
+
+| Varlik | Token Tipi | FHE? | Trade? |
+|--------|------------|------|--------|
+| Gold | ERC20 | HAYIR | EVET |
+| Spirit | ERC20 | HAYIR | EVET |
+| Kartlar | ERC721 (NFT) | HAYIR | EVET |
+| Unopened Orb | ERC721 (NFT) | EVET* | EVET |
+
+*Orb NFT'si trade edilebilir, ama icindeki kartlar hala encrypted - yeni sahibi acinca reveal olur
+
+### FHE Kullanim Amaclari
+
+1. **PROVABLE FAIRNESS** - "Bu orb'dan legendary cikma sansi %2 idi" kanitlanabilir
+2. **HIDDEN INFORMATION** - Orb icerigi ACILANA kadar kimse bilmez
+3. **TRUSTLESS RANDOMNESS** - Sunucu manipulasyon yapamaz, Math.random() yerine FHE.randEuint8()
+4. **GELECEK: OYUN ICI GIZLILIK** - El kartlari encrypted, deste sirasi encrypted
+
+### Spirit Orb Contract Ornegi
+
+```solidity
+contract SpiritOrb is ERC721 {
+    // Acilmamis orb'larin encrypted icerigi
+    mapping(uint256 => euint8[5]) private _encryptedCards;
+
+    // Orb ac - FHE ile kart belirle
+    function openOrb(uint256 orbId) external {
+        require(ownerOf(orbId) == msg.sender);
+
+        // 5 kart icin random (encrypted)
+        for (uint i = 0; i < 5; i++) {
+            _encryptedCards[orbId][i] = FHE.randEuint8();
+        }
+
+        // Public decrypt icin isaretle
+        for (uint i = 0; i < 5; i++) {
+            FHE.makePubliclyDecryptable(_encryptedCards[orbId][i]);
+        }
+    }
+
+    // Kartlari reveal et (frontend cagirir)
+    function revealCards(
+        uint256 orbId,
+        bytes calldata clearValues,
+        bytes calldata proof
+    ) external {
+        // KMS imzasi dogrula
+        // Kartlari mint et (NFT olarak)
+        // Orb'u burn et
+    }
+}
+```
+
+---
+
 ## PROJE DURUMU
 
 ### Tamamlanan
@@ -950,32 +1387,17 @@ Her hamle icin MetaMask popup = Oynanamaz
 - [x] Duelyst yapisi analiz edildi
 - [x] Gizlilik stratejisi belirlendi
 - [x] Session key cozumu tasarlandi
-- [x] Duelyst repo klonlandi
-- [x] Asset'ler cikarildi (180MB - units, tiles, generals, UI, FX)
+- [x] Asset'ler cikarildi (180MB)
 - [x] 730 kart JSON formatinda cikarildi
-- [x] Localization entegrasyonu yapildi
-- [x] Faz 1: Hardhat + FHEVM Kurulum
-- [x] Faz 2: Smart Contracts tamamlandi
-- [x] Deploy scriptleri yazildi
-- [x] Tum testler gecti (12/12)
-- [x] Local Hardhat'a deploy edildi
-- [x] Sepolia Testnet Deploy & Verify
+- [x] Decaffeinate bug fix'leri yapildi
+- [x] FHE Ekonomi Analizi tamamlandi
 
-### Sepolia Testnet Deploy Adresleri (Verified)
-```
-CardRegistry:        0x143AC4264fa68b0203eb54705BF102f4eFEF9f3b
-GameSession:         0xA82161613062c726Fe4b52C9651B581e028BEF57
-SessionKeyManager:   0x0ce34ecab16CE5b1d395d4C13a3f5F3e54d89215
-GameSessionWithKeys: 0xf2FEC4EDf6edb1f32D4D366e0068BF911AA6e7d0
-
-Deployer: 0x78c1e25054E8a3F1BC7f9d16f4E5dAC0BA415CF9
-```
-
-### Etherscan Links
-- [CardRegistry](https://sepolia.etherscan.io/address/0x143AC4264fa68b0203eb54705BF102f4eFEF9f3b#code)
-- [GameSession](https://sepolia.etherscan.io/address/0xA82161613062c726Fe4b52C9651B581e028BEF57#code)
-- [SessionKeyManager](https://sepolia.etherscan.io/address/0x0ce34ecab16CE5b1d395d4C13a3f5F3e54d89215#code)
-- [GameSessionWithKeys](https://sepolia.etherscan.io/address/0xf2FEC4EDf6edb1f32D4D366e0068BF911AA6e7d0#code)
+### Yapilacak
+- [ ] Smart Contract'lar yazilacak (SpiritOrb.sol, CardNFT.sol, GameGold.sol)
+- [ ] Hardhat + FHEVM kurulumu
+- [ ] Local Hardhat test
+- [ ] Sepolia deploy
+- [ ] Frontend entegrasyonu
 
 ---
 
@@ -1129,4 +1551,4 @@ FHEIGHT/
 
 ---
 
-*Son guncelleme: 2025-12-08*
+*Son guncelleme: 2025-12-08 - FHE Ekonomi Analizi eklendi*

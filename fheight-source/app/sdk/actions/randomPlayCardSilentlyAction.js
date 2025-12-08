@@ -23,7 +23,7 @@ class RandomPlayCardSilentlyAction extends PlayCardSilentlyAction {
 
   constructor(gameSession, ownerId, cardDataOrIndex, cardOwnedByGamesession) {
     super(gameSession, ownerId, -1, -1, cardDataOrIndex, cardOwnedByGamesession);
-    if (this.type == null) { this.type = RandomPlayCardSilentlyAction.type; }
+    this.type = RandomPlayCardSilentlyAction.type;
   }
 
   getPrivateDefaults(gameSession) {

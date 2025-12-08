@@ -20,7 +20,7 @@ class DamageAsAttackAction extends DamageAction {
 
   constructor(gameSession) {
     super(gameSession);
-    if (this.type == null) { this.type = DamageAsAttackAction.type; }
+    this.type = DamageAsAttackAction.type;
   }
 
   getDamageAmount() {

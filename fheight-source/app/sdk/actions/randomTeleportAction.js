@@ -24,7 +24,7 @@ class RandomTeleportAction extends TeleportAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = RandomTeleportAction.type; }
+    this.type = RandomTeleportAction.type;
   }
 
   getPrivateDefaults(gameSession) {

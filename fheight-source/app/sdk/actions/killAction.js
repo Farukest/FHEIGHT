@@ -20,7 +20,7 @@ class KillAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = KillAction.type; }
+    this.type = KillAction.type;
   }
 
   _execute() {

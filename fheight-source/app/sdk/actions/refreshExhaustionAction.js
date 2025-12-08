@@ -17,7 +17,7 @@ class RefreshExhaustionAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = RefreshExhaustionAction.type; }
+    this.type = RefreshExhaustionAction.type;
   }
 
   _execute() {

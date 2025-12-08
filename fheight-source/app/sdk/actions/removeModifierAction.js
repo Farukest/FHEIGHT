@@ -24,7 +24,7 @@ class RemoveModifierAction extends Action {
 
   constructor(gameSession, modifier) {
     super(gameSession);
-    if (this.type == null) { this.type = RemoveModifierAction.type; }
+    this.type = RemoveModifierAction.type;
     this.setModifier(modifier);
   }
 

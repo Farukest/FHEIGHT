@@ -22,7 +22,7 @@ class DrawCardAction extends PutCardInHandAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = DrawCardAction.type; }
+    this.type = DrawCardAction.type;
   }
 
   _execute() {

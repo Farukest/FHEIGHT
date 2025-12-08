@@ -84,7 +84,7 @@ var NetworkManager = (function() {
           const host = (gameServerAddress != null) ? gameServerAddress : window.location.hostname;
   
           // Determine which WebSocket port to use.
-          // SP modes use port 8000; MP modes use port 8001.
+          // SP (single player) modes use port 8000; MP (multiplayer) modes use port 8001.
           const port = GameType.isSinglePlayerGameType(gameType) ? 8000 : 8001;
   
           // Format the WebSocket URL.

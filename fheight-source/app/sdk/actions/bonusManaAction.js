@@ -24,7 +24,7 @@ class BonusManaAction extends Action {
 
   constructor(gameSession) {
     super(gameSession);
-    if (this.type == null) { this.type = BonusManaAction.type; }
+    this.type = BonusManaAction.type;
   }
 
   getBonusMana() {

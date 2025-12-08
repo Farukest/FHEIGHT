@@ -28,7 +28,7 @@ class PutCardInDeckAction extends Action {
   constructor(gameSession, targetPlayerId, cardDataOrIndex) {
     super(gameSession);
 
-    if (this.type == null) { this.type = PutCardInDeckAction.type; }
+    this.type = PutCardInDeckAction.type;
     this.targetPlayerId = targetPlayerId;
 
     if (cardDataOrIndex != null) {

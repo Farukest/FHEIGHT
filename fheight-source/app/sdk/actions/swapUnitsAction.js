@@ -19,7 +19,7 @@ class SwapUnitsAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = SwapUnitsAction.type; }
+    this.type = SwapUnitsAction.type;
   }
 
   _execute() {

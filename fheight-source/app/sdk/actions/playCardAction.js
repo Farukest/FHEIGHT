@@ -23,7 +23,7 @@ class PlayCardAction extends ApplyCardToBoardAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = PlayCardAction.type; }
+    this.type = PlayCardAction.type;
   }
 }
 PlayCardAction.initClass();

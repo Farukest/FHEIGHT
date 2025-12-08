@@ -19,7 +19,7 @@ class TrueDamageAction extends DamageAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = TrueDamageAction.type; }
+    this.type = TrueDamageAction.type;
   }
 
   getTotalDamageAmount() {

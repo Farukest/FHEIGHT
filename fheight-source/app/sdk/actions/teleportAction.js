@@ -19,7 +19,7 @@ class TeleportAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = TeleportAction.type; }
+    this.type = TeleportAction.type;
   }
 
   /*

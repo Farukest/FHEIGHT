@@ -34,7 +34,7 @@ class ApplyCardToBoardAction extends Action {
     super(gameSession);
 
     if (cardOwnedByGameSession == null) { cardOwnedByGameSession = false; }
-    if (this.type == null) { this.type = ApplyCardToBoardAction.type; }
+    this.type = ApplyCardToBoardAction.type;
     this.targetPosition = {x,y};
 
     if (cardDataOrIndex != null) {

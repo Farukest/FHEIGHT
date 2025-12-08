@@ -24,7 +24,7 @@ class PlayCardFromHandAction extends PlayCardAction {
 
   constructor(gameSession, ownerId, x, y, handIndex) {
     super(gameSession, ownerId, x, y);
-    if (this.type == null) { this.type = PlayCardFromHandAction.type; }
+    this.type = PlayCardFromHandAction.type;
 
     this.indexOfCardInHand = handIndex;
   }

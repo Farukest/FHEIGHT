@@ -19,7 +19,7 @@ class TakeAnotherTurnAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = TakeAnotherTurnAction.type; }
+    this.type = TakeAnotherTurnAction.type;
   }
 
   _execute() {

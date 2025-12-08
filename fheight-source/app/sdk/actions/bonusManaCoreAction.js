@@ -20,7 +20,7 @@ class BonusManaCoreAction extends Action {
 
   constructor(gameSession) {
     super(gameSession);
-    if (this.type == null) { this.type = BonusManaCoreAction.type; }
+    this.type = BonusManaCoreAction.type;
   }
 
   _execute() {

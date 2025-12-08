@@ -30,7 +30,7 @@ class RevealHiddenCardAction extends Action {
   constructor(gameSession, ownerId, cardData) {
     super(gameSession);
 
-    if (this.type == null) { this.type = RevealHiddenCardAction.type; }
+    this.type = RevealHiddenCardAction.type;
 
     if (cardData != null) {
       // copy data so we don't modify anything unintentionally

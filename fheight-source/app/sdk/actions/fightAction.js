@@ -17,7 +17,7 @@ class FightAction extends Action {
 
   constructor(gameSession) {
     super(gameSession);
-    if (this.type == null) { this.type = FightAction.type; }
+    this.type = FightAction.type;
   }
 
   _execute() {

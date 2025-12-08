@@ -18,7 +18,7 @@ class StartTurnAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = StartTurnAction.type; }
+    this.type = StartTurnAction.type;
   }
 
   isRemovableDuringScrubbing() {

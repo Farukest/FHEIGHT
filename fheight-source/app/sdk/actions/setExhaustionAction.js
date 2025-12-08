@@ -20,7 +20,7 @@ class SetExhaustionAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = SetExhaustionAction.type; }
+    this.type = SetExhaustionAction.type;
   }
 
   setExhausted(val) {

@@ -24,7 +24,7 @@ class UpdateSignatureCardAction extends Action {
 
   constructor(gameSession, targetPlayerId) {
     super(gameSession);
-    if (this.type == null) { this.type = UpdateSignatureCardAction.type; }
+    this.type = UpdateSignatureCardAction.type;
     if (targetPlayerId != null) {
       this.targetPlayerId = targetPlayerId;
     } else {

@@ -17,7 +17,7 @@ class BurnCardAction extends DrawCardAction {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = BurnCardAction.type; }
+    this.type = BurnCardAction.type;
   }
 }
 BurnCardAction.initClass();

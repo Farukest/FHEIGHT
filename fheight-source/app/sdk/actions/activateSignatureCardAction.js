@@ -22,7 +22,7 @@ class ActivateSignatureCardAction extends Action {
 
   constructor(gameSession, targetPlayerId) {
     super(gameSession);
-    if (this.type == null) { this.type = ActivateSignatureCardAction.type; }
+    this.type = ActivateSignatureCardAction.type;
     if (targetPlayerId != null) {
       this.targetPlayerId = targetPlayerId;
     } else {

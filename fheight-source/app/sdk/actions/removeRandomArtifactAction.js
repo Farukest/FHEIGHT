@@ -19,7 +19,7 @@ class RemoveRandomArtifactAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = RemoveRandomArtifactAction.type; }
+    this.type = RemoveRandomArtifactAction.type;
   }
 
   _execute() {

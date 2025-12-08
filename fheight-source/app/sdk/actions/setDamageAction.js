@@ -18,7 +18,7 @@ class SetDamageAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = SetDamageAction.type; }
+    this.type = SetDamageAction.type;
   }
 
   _execute() {

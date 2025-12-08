@@ -19,7 +19,7 @@ class RemoveCardFromDeckAction extends Action {
 
   constructor(gameSession, cardIndex, targetPlayerId) {
     super(gameSession);
-    if (this.type == null) { this.type = RemoveCardFromDeckAction.type; }
+    this.type = RemoveCardFromDeckAction.type;
 
     this.cardIndex = cardIndex;
     this.targetPlayerId = targetPlayerId;

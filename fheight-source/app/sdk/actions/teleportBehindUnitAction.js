@@ -17,7 +17,7 @@ class TeleportBehindUnitAction extends TeleportAction {
 
   constructor(gameSession, behindUnit, targetUnit) {
     super(gameSession);
-    if (this.type == null) { this.type = TeleportBehindUnitAction.type; }
+    this.type = TeleportBehindUnitAction.type;
     this._private.behindUnit = behindUnit;
     this.setSource(targetUnit);
   }

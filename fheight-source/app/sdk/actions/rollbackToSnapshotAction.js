@@ -21,7 +21,7 @@ class RollbackToSnapshotAction extends Action {
 
   constructor() {
     super(...arguments);
-    if (this.type == null) { this.type = RollbackToSnapshotAction.type; }
+    this.type = RollbackToSnapshotAction.type;
   }
 
   _execute() {

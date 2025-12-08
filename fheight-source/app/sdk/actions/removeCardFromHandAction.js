@@ -21,7 +21,7 @@ class RemoveCardFromHandAction extends Action {
 
   constructor(gameSession, indexOfCardInHand, targetPlayerId) {
     super(gameSession);
-    if (this.type == null) { this.type = RemoveCardFromHandAction.type; }
+    this.type = RemoveCardFromHandAction.type;
 
     this.indexOfCardInHand = indexOfCardInHand;
     this.targetPlayerId = targetPlayerId;

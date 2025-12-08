@@ -1,23 +1,23 @@
-çöz# FHEIGHT Project - ZAMA FHEVM Protocol Reference
+# FHEIGHT Project - ZAMA FHEVM Protocol Reference
 
-Bu dosya Claude'un kalıcı hafızasıdır. Proje bilgileri ve FHEVM dökümantasyonu burada saklanır.
+Bu dosya Claude'un kalici hafizasidir. Proje bilgileri ve FHEVM dokumantasyonu burada saklanir.
 
 ---
 
-## ⚠️ ÖNEMLİ: SUNUCU BAŞLATMA
+## ONEMLI: SUNUCU BASLATMA
 
-**FIREBASE_PRIVATE_KEY'i environment variable olarak geçmiyorum. Sunucuyu .env dosyasını okuyarak başlatmam lazım.**
+**FIREBASE_PRIVATE_KEY'i environment variable olarak gecmiyorum. Sunucuyu .env dosyasini okuyarak baslatmam lazim.**
 
 ```bash
-# DOĞRU - .env dosyasını otomatik yükler
+# DOGRU - .env dosyasini otomatik yukler
 cd fheight-source
 node -r dotenv/config ./bin/api
 
-# YANLIŞ - .env dosyasını okumaz, Firebase başarısız olur!
+# YANLIS - .env dosyasini okumaz, Firebase basarisiz olur!
 npx cross-env NODE_ENV=development ... npm run api
 ```
 
-`.env` dosyasında şunlar olmalı:
+`.env` dosyasinda sunlar olmali:
 ```
 FIREBASE_URL=https://zama-e9173-default-rtdb.firebaseio.com/
 FIREBASE_PROJECT_ID=zama-e9173
@@ -30,20 +30,20 @@ REDIS_HOST=localhost
 
 ---
 
-## 1. M0MAR0 B0LE^ENLER
+## 1. MIMARI BILESENLER
 
-| Bile_en | A�1klama |
+| Bilesen | Aciklama |
 |---------|----------|
-| **FHEVM Library** | Solidity'de _ifreli veri tipleri ve FHE operasyonlar1 |
-| **Host Contracts** | EVM zincirlerinde ACL y�netimi (Ethereum, Sepolia) |
+| **FHEVM Library** | Solidity'de sifreli veri tipleri ve FHE operasyonlari |
+| **Host Contracts** | EVM zincirlerinde ACL yonetimi (Ethereum, Sepolia) |
 | **Coprocessors** | Off-chain FHE hesaplama servisleri |
-| **Gateway** | Arbitrum L3 orkestrat�r (Chain ID: 10901) |
-| **KMS** | MPC tabanl1 anahtar y�netimi (13 node, 7/13 threshold) |
-| **Relayer** | Off-chain k�pr� servisi, SDK ile etkile_im |
+| **Gateway** | Arbitrum L3 orkestrator (Chain ID: 10901) |
+| **KMS** | MPC tabanli anahtar yonetimi (13 node, 7/13 threshold) |
+| **Relayer** | Off-chain kopru servisi, SDK ile etkilesim |
 
 ---
 
-## 2. ^0FREL0 VER0 T0PLER0
+## 2. SIFRELI VERI TIPLERI
 
 ```solidity
 // Unsigned integers
@@ -61,21 +61,21 @@ externalEbool, externalEuint8, externalEuint16, externalEuint32, externalEuint64
 
 ---
 
-## 3. FHE OPERASYONLAR0
+## 3. FHE OPERASYONLARI
 
 ### Aritmetik
 ```solidity
 FHE.add(a, b)      // Toplama
-FHE.sub(a, b)      // �1karma
-FHE.mul(a, b)      // �arpma
-FHE.div(a, b)      // B�lme
+FHE.sub(a, b)      // Cikarma
+FHE.mul(a, b)      // Carpma
+FHE.div(a, b)      // Bolme
 FHE.rem(a, b)      // Mod
 FHE.neg(a)         // Negatif
 FHE.min(a, b)      // Minimum
 FHE.max(a, b)      // Maximum
 ```
 
-### Mant1ksal
+### Mantiksal
 ```solidity
 FHE.and(a, b)      // AND
 FHE.or(a, b)       // OR
@@ -83,7 +83,7 @@ FHE.xor(a, b)      // XOR
 FHE.not(a)         // NOT
 ```
 
-### Kar_1la_t1rma (ebool d�ner)
+### Karsilastirma (ebool doner)
 ```solidity
 FHE.eq(a, b)       // a == b
 FHE.ne(a, b)       // a != b
@@ -93,40 +93,40 @@ FHE.le(a, b)       // a <= b
 FHE.ge(a, b)       // a >= b
 ```
 
-### Bit Manip�lasyonu
+### Bit Manipulasyonu
 ```solidity
-FHE.shl(a, shift)  // Sola kayd1r
-FHE.shr(a, shift)  // Saa kayd1r
+FHE.shl(a, shift)  // Sola kaydir
+FHE.shr(a, shift)  // Saga kaydir
 FHE.rotl(a, n)     // Sola rotate
-FHE.rotr(a, n)     // Saa rotate
+FHE.rotr(a, n)     // Saga rotate
 ```
 
-### Se�im (Ternary)
+### Secim (Ternary)
 ```solidity
 FHE.select(condition, ifTrue, ifFalse)  // condition ? ifTrue : ifFalse
 ```
 
-### Random Say1 �retimi
+### Random Sayi Uretimi
 ```solidity
 FHE.randEbool()
 FHE.randEuint8()
 FHE.randEuint16()
 FHE.randEuint32()
 FHE.randEuint64()
-FHE.randEuint8(upperBound)    // 0 ile upperBound-1 aras1 (bounded)
+FHE.randEuint8(upperBound)    // 0 ile upperBound-1 arasi (bounded)
 FHE.randEuint16(upperBound)
 FHE.randEuint32(upperBound)
 FHE.randEuint64(upperBound)
 ```
 
-### Tip D�n�_�mleri
+### Tip Donusumleri
 ```solidity
 FHE.asEbool(value)
 FHE.asEuint8(value)
 FHE.asEuint32(value)
 FHE.asEuint64(value)
 FHE.asEaddress(value)
-FHE.toBytes32(handle)    // Handle'1 bytes32'ye �evir
+FHE.toBytes32(handle)    // Handle'i bytes32'ye cevir
 ```
 
 ---
@@ -134,58 +134,58 @@ FHE.toBytes32(handle)    // Handle'1 bytes32'ye �evir
 ## 4. ACL (Access Control List)
 
 ```solidity
-// Kal1c1 eri_im izni
+// Kalici erisim izni
 FHE.allow(handle, address)
 
-// Ge�ici eri_im (sadece bu tx i�in)
+// Gecici erisim (sadece bu tx icin)
 FHE.allowTransient(handle, address)
 
-// Contract'1n kendisine eri_im
+// Contract'in kendisine erisim
 FHE.allowThis(handle)
 
-// Public decrypt i�in izin
+// Public decrypt icin izin
 FHE.makePubliclyDecryptable(handle)
 
-// Eri_im kontrol�
+// Erisim kontrolu
 FHE.isAllowed(handle, address)
 FHE.isSenderAllowed(handle)
 ```
 
-### ACL Kurallar1
-- User decrypt i�in HEM contract HEM user'a allow verilmeli
-- `FHE.allowThis()` unutulursa user decrypt BA^ARISIZ olur
+### ACL Kurallari
+- User decrypt icin HEM contract HEM user'a allow verilmeli
+- `FHE.allowThis()` unutulursa user decrypt BASARISIZ olur
 - Ephemeral permission tx sonunda silinir
 
 ---
 
 ## 5. INPUT HANDLING (Encryption)
 
-### Contract Taraf1
+### Contract Tarafi
 ```solidity
 function myFunction(externalEuint32 encryptedInput, bytes calldata inputProof) external {
-    // Off-chain'den gelen _ifreli input'u dorula ve d�n�_t�r
+    // Off-chain'den gelen sifreli input'u dogrula ve donustur
     euint32 value = FHE.fromExternal(encryptedInput, inputProof);
 
-    // 0zinleri ayarla
+    // Izinleri ayarla
     FHE.allowThis(value);
     FHE.allow(value, msg.sender);
 }
 ```
 
-### TypeScript/Frontend Taraf1 - TEK DEER
+### TypeScript/Frontend Tarafi - TEK DEGER
 ```typescript
 import { fhevm } from "hardhat";
 
-// ^ifreli input olu_tur
+// Sifreli input olustur
 const input = fhevm.createEncryptedInput(contractAddress, userAddress);
-input.add32(12345);  // uint32 deer ekle
+input.add32(12345);  // uint32 deger ekle
 const encrypted = await input.encrypt();
 
-// Contract'a g�nder
+// Contract'a gonder
 await contract.myFunction(encrypted.handles[0], encrypted.inputProof);
 ```
 
-### �OKLU INPUT ^0FRELEME
+### COKLU INPUT SIFRELEME
 ```typescript
 const input = fhevm.createEncryptedInput(contractAddress, userAddress);
 input.addBool(true);      // handles[0] = ebool
@@ -196,7 +196,7 @@ input.add64(9999999999n); // handles[4] = euint64
 input.addAddress("0x..."); // handles[5] = eaddress
 const encrypted = await input.encrypt();
 
-// Tek proof hepsi i�in kullan1l1r!
+// Tek proof hepsi icin kullanilir!
 await contract.multiInput(
     encrypted.handles[0],
     encrypted.handles[1],
@@ -212,7 +212,7 @@ await contract.multiInput(
 
 ## 6. USER DECRYPTION (Off-chain Decrypt)
 
-### TEK DEER USER DECRYPT
+### TEK DEGER USER DECRYPT
 ```typescript
 import { FhevmType } from "@fhevm/hardhat-plugin";
 
@@ -222,22 +222,22 @@ const encryptedHandle = await contract.getValue();
 // User decrypt - sadece izinli user yapabilir
 const clearValue = await fhevm.userDecryptEuint(
     FhevmType.euint32,    // Tip
-    encryptedHandle,       // Contract'tan al1nan handle
+    encryptedHandle,       // Contract'tan alinan handle
     contractAddress,       // Contract adresi
-    userSigner             // 0zinli user'1n signer'1
+    userSigner             // Izinli user'in signer'i
 );
 
 console.log("Decrypted value:", clearValue);
 ```
 
-### �OKLU DEER USER DECRYPT
+### COKLU DEGER USER DECRYPT
 ```typescript
 import { FhevmType } from "@fhevm/hardhat-plugin";
 
 // Contract'tan birden fazla handle al
 const [handleA, handleB, handleMax] = await contract.getValues();
 
-// �oklu decrypt - ayn1 contract ve user i�in
+// Coklu decrypt - ayni contract ve user icin
 const clearValues = await fhevm.userDecrypt(
     [
         { type: FhevmType.euint32, handle: handleA, contractAddress, signer: alice },
@@ -251,9 +251,9 @@ console.log("B:", clearValues[1]);
 console.log("Max:", clearValues[2]);
 ```
 
-### USER DECRYPT 0�0N GEREKL0 0Z0NLER (Contract'ta)
+### USER DECRYPT ICIN GEREKLI IZINLER (Contract'ta)
 ```solidity
-// HER 0K0 0Z0N DE GEREKL0!
+// HER IKI IZIN DE GEREKLI!
 FHE.allowThis(_value);           // 1. Contract'a izin
 FHE.allow(_value, msg.sender);   // 2. User'a izin
 ```
@@ -262,57 +262,57 @@ FHE.allow(_value, msg.sender);   // 2. User'a izin
 
 ## 7. PUBLIC DECRYPTION (On-chain Verifiable)
 
-### CONTRACT TARAFI - Public Decrypt 0stei
+### CONTRACT TARAFI - Public Decrypt Istegi
 ```solidity
-// 1. ^ifreli deeri olu_tur
+// 1. Sifreli degeri olustur
 euint32 private _encryptedResult;
 
 function computeResult() external {
     _encryptedResult = FHE.add(a, b);
 
-    // Public decrypt i�in i_aretle
+    // Public decrypt icin isaretle
     FHE.makePubliclyDecryptable(_encryptedResult);
 }
 
-// 2. Decrypt sonucunu dorula ve kaydet
+// 2. Decrypt sonucunu dogrula ve kaydet
 function recordResult(bytes calldata abiEncodedClearValue, bytes calldata decryptionProof) external {
-    // Dorulama i�in handle'lar1 haz1rla
+    // Dogrulama icin handle'lari hazirla
     bytes32[] memory cts = new bytes32[](1);
     cts[0] = FHE.toBytes32(_encryptedResult);
 
-    // KMS imzas1n1 dorula
+    // KMS imzasini dogrula
     FHE.checkSignatures(cts, abiEncodedClearValue, decryptionProof);
 
-    // Art1k clear deeri kullanabiliriz
+    // Artik clear degeri kullanabiliriz
     uint32 clearResult = abi.decode(abiEncodedClearValue, (uint32));
-    // ... i_lem yap
+    // ... islem yap
 }
 ```
 
-### FRONTEND TARAFI - Public Decrypt �ar1s1
+### FRONTEND TARAFI - Public Decrypt Carisi
 ```typescript
-// 1. Contract'tan _ifreli handle'1 al
+// 1. Contract'tan sifreli handle'i al
 const encryptedHandle = await contract.getEncryptedResult();
 
 // 2. Relayer'dan decrypt iste
 const publicDecryptResults = await fhevm.publicDecrypt([encryptedHandle]);
 
-// 3. Sonu�lar1 contract'a g�nder
+// 3. Sonuclari contract'a gonder
 await contract.recordResult(
     publicDecryptResults.abiEncodedClearValues,
     publicDecryptResults.decryptionProof
 );
 ```
 
-### �OKLU PUBLIC DECRYPT
+### COKLU PUBLIC DECRYPT
 ```typescript
-// Birden fazla handle i�in
+// Birden fazla handle icin
 const [handle1, handle2, handle3] = await contract.getMultipleHandles();
 
 const results = await fhevm.publicDecrypt([handle1, handle2, handle3]);
 
 // results.clearValues = [value1, value2, value3]
-// results.abiEncodedClearValues = t�m� i�in encoded
+// results.abiEncodedClearValues = tumu icin encoded
 // results.decryptionProof = tek proof
 
 await contract.recordMultipleResults(
@@ -321,7 +321,7 @@ await contract.recordMultipleResults(
 );
 ```
 
-### SOLIDITY'DE �OKLU DEER DECODE
+### SOLIDITY'DE COKLU DEGER DECODE
 ```solidity
 function recordMultipleResults(
     bytes calldata abiEncodedClearValues,
@@ -334,7 +334,7 @@ function recordMultipleResults(
 
     FHE.checkSignatures(cts, abiEncodedClearValues, decryptionProof);
 
-    // �oklu decode
+    // Coklu decode
     (uint32 val1, uint64 val2, bool val3) = abi.decode(
         abiEncodedClearValues,
         (uint32, uint64, bool)
@@ -344,7 +344,7 @@ function recordMultipleResults(
 
 ---
 
-## 8. SEPOLIA TESTNET ADRESLER0
+## 8. SEPOLIA TESTNET ADRESLERI
 
 ```
 ACL_CONTRACT:     0xf0Ffdc93b7E186bC2f8CB3dAA75D86d1930A433D
@@ -366,19 +366,19 @@ cd my-project
 npm install
 ```
 
-### Dosya Yap1s1
+### Dosya Yapisi
 ```
-contracts/          # .sol dosyalar1
-test/              # .ts test dosyalar1
+contracts/          # .sol dosyalari
+test/              # .ts test dosyalari
 deploy/            # deployment scripts
 ```
 
 ### Komutlar
 ```bash
 npx hardhat compile                    # Derleme
-npx hardhat test --network hardhat     # Mock test (h1zl1, ger�ek FHE yok)
+npx hardhat test --network hardhat     # Mock test (hizli, gercek FHE yok)
 npx hardhat test --network localhost   # Local Hardhat node
-npx hardhat test --network sepolia     # Ger�ek FHE testnet
+npx hardhat test --network sepolia     # Gercek FHE testnet
 npx hardhat deploy --network sepolia   # Deploy
 ```
 
@@ -391,7 +391,7 @@ ETHERSCAN_API_KEY="your-etherscan-key"
 
 ---
 
-## 10. TEMEL CONTRACT ^ABLONU
+## 10. TEMEL CONTRACT SABLONU
 
 ```solidity
 // SPDX-License-Identifier: BSD-3-Clause-Clear
@@ -403,17 +403,17 @@ import { ZamaEthereumConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
 contract MyContract is ZamaEthereumConfig {
     euint32 private _secretValue;
 
-    // ^ifreli deer set et
+    // Sifreli deger set et
     function setValue(externalEuint32 input, bytes calldata inputProof) external {
         euint32 value = FHE.fromExternal(input, inputProof);
         _secretValue = value;
 
-        // 0Z0NLER �NEML0!
-        FHE.allowThis(_secretValue);        // Contract eri_imi
-        FHE.allow(_secretValue, msg.sender); // User decrypt i�in
+        // IZINLER ONEMLI!
+        FHE.allowThis(_secretValue);        // Contract erisimi
+        FHE.allow(_secretValue, msg.sender); // User decrypt icin
     }
 
-    // ^ifreli hesaplama
+    // Sifreli hesaplama
     function addToValue(externalEuint32 input, bytes calldata inputProof) external {
         euint32 addend = FHE.fromExternal(input, inputProof);
         _secretValue = FHE.add(_secretValue, addend);
@@ -422,7 +422,7 @@ contract MyContract is ZamaEthereumConfig {
         FHE.allow(_secretValue, msg.sender);
     }
 
-    // Handle d�nd�r (user decrypt i�in)
+    // Handle dondur (user decrypt icin)
     function getValue() external view returns (euint32) {
         return _secretValue;
     }
@@ -431,7 +431,7 @@ contract MyContract is ZamaEthereumConfig {
 
 ---
 
-## 11. COUNTER �RNE0 (Tam)
+## 11. COUNTER ORNEGI (Tam)
 
 ### Contract
 ```solidity
@@ -487,7 +487,7 @@ describe("FHECounter", function () {
 
 ---
 
-## 12. IF-THEN-ELSE �RNE0 (Max Bulma)
+## 12. IF-THEN-ELSE ORNEGI (Max Bulma)
 
 ### Contract
 ```solidity
@@ -509,10 +509,10 @@ contract IfThenElse is ZamaEthereumConfig {
     }
 
     function computeMax() external {
-        // ^ifreli kar_1la_t1rma
+        // Sifreli karsilastirma
         ebool aGreaterOrEqual = FHE.ge(_a, _b);
 
-        // ^ifreli select (if-then-else)
+        // Sifreli select (if-then-else)
         _max = FHE.select(aGreaterOrEqual, _a, _b);
 
         FHE.allowThis(_max);
@@ -527,7 +527,7 @@ contract IfThenElse is ZamaEthereumConfig {
 
 ---
 
-## 13. HEADS OR TAILS �RNE0 (Public Decrypt)
+## 13. HEADS OR TAILS ORNEGI (Public Decrypt)
 
 ### Contract
 ```solidity
@@ -546,7 +546,7 @@ contract HeadsOrTails is ZamaEthereumConfig {
     function startGame(address headsPlayer, address tailsPlayer) external returns (uint256) {
         uint256 gameId = gameCounter++;
 
-        // Rastgele _ifreli sonu�
+        // Rastgele sifreli sonuc
         ebool result = FHE.randEbool();
 
         games[gameId] = Game({
@@ -557,7 +557,7 @@ contract HeadsOrTails is ZamaEthereumConfig {
             isSettled: false
         });
 
-        // Public decrypt i�in i_aretle
+        // Public decrypt icin isaretle
         FHE.makePubliclyDecryptable(result);
 
         return gameId;
@@ -575,12 +575,12 @@ contract HeadsOrTails is ZamaEthereumConfig {
         Game storage game = games[gameId];
         require(!game.isSettled, "Already settled");
 
-        // KMS imzas1n1 dorula
+        // KMS imzasini dogrula
         bytes32[] memory cts = new bytes32[](1);
         cts[0] = FHE.toBytes32(game.encryptedResult);
         FHE.checkSignatures(cts, abiEncodedResult, decryptionProof);
 
-        // Kazanan1 belirle
+        // Kazanani belirle
         bool headsWon = abi.decode(abiEncodedResult, (bool));
         game.winner = headsWon ? game.headsPlayer : game.tailsPlayer;
         game.isSettled = true;
@@ -590,25 +590,25 @@ contract HeadsOrTails is ZamaEthereumConfig {
 
 ### Frontend
 ```typescript
-// 1. Oyun ba_lat
+// 1. Oyun baslat
 const tx = await contract.startGame(headsPlayer.address, tailsPlayer.address);
 const receipt = await tx.wait();
 const gameId = 0; // Event'ten al
 
-// 2. ^ifreli sonucu al
+// 2. Sifreli sonucu al
 const encryptedResult = await contract.getEncryptedResult(gameId);
 
 // 3. Public decrypt
 const decryptResult = await fhevm.publicDecrypt([encryptedResult]);
 
-// 4. Kazanan1 kaydet
+// 4. Kazanani kaydet
 await contract.recordWinner(
     gameId,
     decryptResult.abiEncodedClearValues,
     decryptResult.decryptionProof
 );
 
-// 5. Kazanan1 kontrol et
+// 5. Kazanani kontrol et
 const game = await contract.games(gameId);
 console.log("Winner:", game.winner);
 ```
@@ -644,7 +644,7 @@ contract MyConfidentialToken is ZamaEthereumConfig, ERC7984, Ownable2Step {
         _mint(owner, encrypted);
     }
 
-    // Owner i�in mint
+    // Owner icin mint
     function mint(address to, uint64 amount) external onlyOwner {
         euint64 encrypted = FHE.asEuint64(amount);
         _mint(to, encrypted);
@@ -654,7 +654,7 @@ contract MyConfidentialToken is ZamaEthereumConfig, ERC7984, Ownable2Step {
 
 ### Confidential Transfer
 ```typescript
-// ^ifreli transfer miktar1 olu_tur
+// Sifreli transfer miktari olustur
 const input = await fhevm
     .createEncryptedInput(tokenAddress, sender.address)
     .add64(transferAmount)
@@ -670,10 +670,10 @@ await token.connect(sender)['confidentialTransfer(address,bytes32,bytes)'](
 
 ### Balance Sorgulama
 ```typescript
-// ^ifreli balance handle'1 al
+// Sifreli balance handle'i al
 const balanceHandle = await token.confidentialBalanceOf(user.address);
 
-// User decrypt ile balance �ren
+// User decrypt ile balance ogren
 const balance = await fhevm.userDecryptEuint(
     FhevmType.euint64,
     balanceHandle,
@@ -691,23 +691,23 @@ const balance = await fhevm.userDecryptEuint(
 npm install @zama-fhe/relayer-sdk ethers
 ```
 
-### Instance Olu_turma
+### Instance Olusturma
 ```typescript
 import { createInstance, SepoliaConfig } from '@zama-fhe/relayer-sdk';
 
-// Sepolia i�in instance
+// Sepolia icin instance
 const instance = await createInstance(SepoliaConfig);
 ```
 
-### ^ifreli Input Olu_turma
+### Sifreli Input Olusturma
 ```typescript
-// Contract ve user adresleri ile input olu_tur
+// Contract ve user adresleri ile input olustur
 const input = instance.createEncryptedInput(contractAddress, userAddress);
 input.add32(42);
 input.add64(1000000n);
 const encrypted = await input.encrypt();
 
-// Contract �ar1s1
+// Contract carisi
 await contract.someFunction(
     encrypted.handles[0],
     encrypted.handles[1],
@@ -717,18 +717,18 @@ await contract.someFunction(
 
 ### User Decryption
 ```typescript
-// 1. Keypair olu_tur
+// 1. Keypair olustur
 const keypair = instance.generateKeypair();
 
-// 2. EIP-712 imza istei olu_tur
+// 2. EIP-712 imza istegi olustur
 const eip712 = instance.createEIP712(
     keypair.publicKey,
-    [contractAddress],  // 0zin verilen contract'lar
-    startTime,          // Ge�erlilik ba_lang1c1
-    days                // Ge�erlilik s�resi (g�n)
+    [contractAddress],  // Izin verilen contract'lar
+    startTime,          // Gecerlilik baslangici
+    days                // Gecerlilik suresi (gun)
 );
 
-// 3. Kullan1c1dan imza al
+// 3. Kullanicidan imza al
 const signature = await signer.signTypedData(
     eip712.domain,
     eip712.types,
@@ -749,48 +749,48 @@ const decryptedValue = await instance.userDecrypt(
 
 ## 16. HCU (Homomorphic Complexity Unit)
 
-| Operasyon | Yakla_1k HCU |
+| Operasyon | Yaklasik HCU |
 |-----------|--------------|
-| add/sub | D�_�k |
+| add/sub | Dusuk |
 | mul | Orta |
-| div | Y�ksek |
+| div | Yuksek |
 | comparison | Orta |
-| random | Y�ksek |
+| random | Yuksek |
 
 - **TX Limit**: 20,000,000 HCU
 - **Depth Limit**: 5,000,000
 
 ---
 
-## 17. �NEML0 NOTLAR VE HATALAR
+## 17. ONEMLI NOTLAR VE HATALAR
 
 ### UNUTMA!
-1. **ACL Unutma**: `FHE.allowThis()` ve `FHE.allow()` olmadan decrypt �ALI^MAZ
-2. **Proof Tek**: �oklu input i�in tek `inputProof` kullan1l1r
-3. **Handle = bytes32**: ^ifreli deerler on-chain'de bytes32 handle olarak saklan1r
-4. **Mock vs Real**: Hardhat network mock kullan1r (h1zl1), Sepolia ger�ek FHE
-5. **Gas Maliyeti**: FHE operasyonlar1 pahal1, optimize et
-6. **Overflow Yok**: FHE operasyonlar1nda otomatik overflow korumas1 yok!
+1. **ACL Unutma**: `FHE.allowThis()` ve `FHE.allow()` olmadan decrypt CALISMAZ
+2. **Proof Tek**: Coklu input icin tek `inputProof` kullanilir
+3. **Handle = bytes32**: Sifreli degerler on-chain'de bytes32 handle olarak saklanir
+4. **Mock vs Real**: Hardhat network mock kullanir (hizli), Sepolia gercek FHE
+5. **Gas Maliyeti**: FHE operasyonlari pahali, optimize et
+6. **Overflow Yok**: FHE operasyonlarinda otomatik overflow korumasi yok!
 
-### YAYGN HATALAR
+### YAYGIN HATALAR
 ```solidity
-// YANLI^ - izin yok
+// YANLIS - izin yok
 function setValue(externalEuint32 input, bytes calldata proof) external {
     _value = FHE.fromExternal(input, proof);
-    // 0zin vermeden decrypt BA^ARISIZ olur!
+    // Izin vermeden decrypt BASARISIZ olur!
 }
 
-// DORU
+// DOGRU
 function setValue(externalEuint32 input, bytes calldata proof) external {
     _value = FHE.fromExternal(input, proof);
-    FHE.allowThis(_value);        // Contract i�in
-    FHE.allow(_value, msg.sender); // User i�in
+    FHE.allowThis(_value);        // Contract icin
+    FHE.allow(_value, msg.sender); // User icin
 }
 ```
 
 ---
 
-## 18. TEST ^ABLONU (TypeScript)
+## 18. TEST SABLONU (TypeScript)
 
 ```typescript
 import { expect } from "chai";
@@ -840,7 +840,7 @@ describe("MyContract", function () {
     });
 
     it("should test public decrypt", async function () {
-        // ^ifreli deer olu_tur
+        // Sifreli deger olustur
         await contract.createEncryptedValue();
 
         // Handle al
@@ -849,7 +849,7 @@ describe("MyContract", function () {
         // Public decrypt
         const result = await fhevm.publicDecrypt([handle]);
 
-        // Contract'a dorulama g�nder
+        // Contract'a dogrulama gonder
         await contract.verifyAndStore(
             result.abiEncodedClearValues,
             result.decryptionProof
@@ -866,79 +866,77 @@ describe("MyContract", function () {
 
 # PROJE: FHE FHEIGHT (Gizli Taktik Kart Oyunu)
 
-## KAYNAK: Open Fheight
-- Repo: https://github.com/open-fheight/fheight
-- Game Logic: `app/sdk/` (CoffeeScript - d�n�_t�r�lecek)
-- Assets: `app/resources/` (kullan1lacak)
+## KAYNAK: Open Duelyst
+- Repo: https://github.com/open-duelyst/duelyst
+- Game Logic: `app/sdk/` (CoffeeScript - donusturulecek)
+- Assets: `app/resources/` (kullanilacak)
 - Kart Data: `app/sdk/cards/`
 - Board Logic: `app/sdk/board.coffee`
 - Actions: `app/sdk/actions/`
 - Spells: `app/sdk/spells/`
 - Modifiers: `app/sdk/modifiers/`
 
-## FHEIGHT OYUN MEKAN0KLER0
+## FHEIGHT OYUN MEKANIKLERI
 ```
-                                                 
-  5x9 Grid Tabanl1 Taktik Kart Oyunu             
-                                                 
-  - Her oyuncunun 1 General'i (Hero) var         
-  - 40 kartl1k deste                             
-  - Ba_lang1� eli: 5 kart (mulligan var)         
-  - Her tur: +1 mana (max 9), +1 kart �ek        
-  - Kartlar: Minion, Spell, Artifact             
-  - Ama�: Rakip General'i �ld�r                  
-                                                 
-  Turn Yap1s1:                                   
-  1. Kart �ek                                    
-  2. Mana yenile                                 
-  3. Kart oyna / Birim hareket / Sald1r          
-  4. Turn bitir                                  
-                                                 
+  5x9 Grid Tabanli Taktik Kart Oyunu
+
+  - Her oyuncunun 1 General'i (Hero) var
+  - 40 kartlik deste
+  - Baslangic eli: 5 kart (mulligan var)
+  - Her tur: +1 mana (max 9), +1 kart cek
+  - Kartlar: Minion, Spell, Artifact
+  - Amac: Rakip General'i oldur
+
+  Turn Yapisi:
+  1. Kart cek
+  2. Mana yenile
+  3. Kart oyna / Birim hareket / Saldir
+  4. Turn bitir
 ```
 
-## G0ZL0L0K STRATEJ0S0 (FHEVM)
+## GIZLILIK STRATEJISI (FHEVM)
 
-### ^ifreli Olacaklar (Rakip G�remez)
-| Veri | Tip | A�1klama |
+### Sifreli Olacaklar (Rakip Goremez)
+| Veri | Tip | Aciklama |
 |------|-----|----------|
-| Oyuncu Eli | euint8[6] | Eldeki kart ID'leri _ifreli |
-| Deste S1ras1 | euint8[40] | �ekilecek kartlar1n s1ras1 |
-| Kart �ekimi | FHE.randEuint8Bounded() | Shuffle i�in random |
+| Oyuncu Eli | euint8[6] | Eldeki kart ID'leri sifreli |
+| Deste Sirasi | euint8[40] | Cekilecek kartlarin sirasi |
+| Kart Cekimi | FHE.randEuint8Bounded() | Shuffle icin random |
 
-### A�1k Olacaklar (Board State)
-| Veri | Neden A�1k |
+### Acik Olacaklar (Board State)
+| Veri | Neden Acik |
 |------|------------|
-| Board �zerindeki birimler | Oynanabilirlik - g�rmek laz1m |
-| Birim HP/ATK | Sava_ i�in gerekli |
+| Board uzerindeki birimler | Oynanabilirlik - gormek lazim |
+| Birim HP/ATK | Savas icin gerekli |
 | General HP | Oyun durumu |
-| Mana | Hamle planlamas1 |
-| Mezarl1k | Baz1 kartlar buna bakar |
+| Mana | Hamle planlamasi |
+| Mezarlik | Bazi kartlar buna bakar |
 
-### Hibrit Yakla_1m
+### Hibrit Yaklasim
 ```
-Oyuncu A Eli: [encrypted, encrypted, encrypted, ...]  � Sadece A g�rebilir
-Board State:  [public, public, public, ...]           � Herkes g�r�r
-Oyuncu B Eli: [encrypted, encrypted, encrypted, ...]  � Sadece B g�rebilir
+Oyuncu A Eli: [encrypted, encrypted, encrypted, ...]  - Sadece A gorebilir
+Board State:  [public, public, public, ...]           - Herkes gorur
+Oyuncu B Eli: [encrypted, encrypted, encrypted, ...]  - Sadece B gorebilir
 ```
 
-## SESSION KEY ��Z�M� (UX)
+## SESSION KEY COZUMU (UX)
 
 ### Problem
-Her hamle i�in MetaMask popup = Oynanamaz
+Her hamle icin MetaMask popup = Oynanamaz
 
-### ��z�m: Ephemeral Session Key
+### Cozum: Ephemeral Session Key
 ```
-1. Oyun ba_lang1c1:
-   - Taray1c1da yeni keypair olu_tur
-   - Ana c�zdandan bu key'e yetki ver (1 tx)
-   - Session key oyun contract'lar1na s1n1rl1
+1. Oyun baslangici:
+   - Tarayicida yeni keypair olustur
+   - Ana cuzdandan bu key'e yetki ver (1 tx)
+   - Session key oyun contract'larina sinirli
 
-2. Oyun s1ras1nda:
-   - T�m hamleler session key ile imzalan1r
-   - Kullan1c1 popup g�rmez
-   - Hamle an1nda g�nderilir
+2. Oyun sirasinda:
+   - Tum hamleler session key ile imzalanir
+   - Kullanici popup gormez
+   - Hamle aninda gonderilir
 
-3. Oyun biti_i:
+3. Oyun bitisi:
    - Session key otomatik expire
    - Veya manuel revoke
 ```
@@ -948,22 +946,22 @@ Her hamle i�in MetaMask popup = Oynanamaz
 ## PROJE DURUMU
 
 ### Tamamlanan
-- [x] FHEVM d�k�mantasyonu okundu ve haf1zaya al1nd1
-- [x] Fheight yap1s1 analiz edildi
+- [x] FHEVM dokumantasyonu okundu ve hafizaya alindi
+- [x] Duelyst yapisi analiz edildi
 - [x] Gizlilik stratejisi belirlendi
-- [x] Session key ��z�m� tasarland1
-- [x] Fheight repo klonland1
-- [x] Asset'ler �1kar1ld1 (180MB - units, tiles, generals, UI, FX)
-- [x] 730 kart JSON format1nda �1kar1ld1
-- [x] Localization entegrasyonu yap1ld1
+- [x] Session key cozumu tasarlandi
+- [x] Duelyst repo klonlandi
+- [x] Asset'ler cikarildi (180MB - units, tiles, generals, UI, FX)
+- [x] 730 kart JSON formatinda cikarildi
+- [x] Localization entegrasyonu yapildi
 - [x] Faz 1: Hardhat + FHEVM Kurulum
-- [x] Faz 2: Smart Contracts tamamland1
-- [x] Deploy scriptleri yaz1ld1
-- [x] T�m testler ge�ti (12/12)
+- [x] Faz 2: Smart Contracts tamamlandi
+- [x] Deploy scriptleri yazildi
+- [x] Tum testler gecti (12/12)
 - [x] Local Hardhat'a deploy edildi
-- [x] Sepolia Testnet Deploy & Verify 
+- [x] Sepolia Testnet Deploy & Verify
 
-### Sepolia Testnet Deploy Adresleri (Verified )
+### Sepolia Testnet Deploy Adresleri (Verified)
 ```
 CardRegistry:        0x143AC4264fa68b0203eb54705BF102f4eFEF9f3b
 GameSession:         0xA82161613062c726Fe4b52C9651B581e028BEF57
@@ -987,61 +985,79 @@ Deployer: 0x78c1e25054E8a3F1BC7f9d16f4E5dAC0BA415CF9
 
 **Dosya:** `fheight-source/app/sdk/actions/action.js`
 
-**Sorun:** ES6'da `super()` constructor'da ilk �ar1lmal1. Orijinal CoffeeScript'te `@type ?= ChildClass.type` �NCE �al1_1yordu.
+**Sorun:** ES6'da `super()` constructor'da ilk carilmali. Orijinal CoffeeScript'te `@type ?= ChildClass.type` ONCE calisiyordu.
 
-**��z�m:**
+**Cozum:**
 ```javascript
 getType() {
   return this.constructor.type || this.type;
 }
 ```
 
-### 2. ZAMA UI Dei_iklikleri
-- Tutorial metinleri ZAMA temal1 yap1ld1
+### 2. ZAMA UI Degisiklikleri
+- Tutorial metinleri ZAMA temali yapildi
 - Gold buton stilleri eklendi (.zama-gold)
-- Loading GIF fhe_wizard olarak g�ncellendi
+- Loading GIF fhe_wizard olarak guncellendi
+
+### 3. hasAttemptedChallengeCategory Bug (2025-12-08)
+
+**Dosya:** `fheight-source/app/ui/managers/progression_manager.js`
+
+**Sorun:** Decaffeinate `_.reduce` icin yanlis context binding uretti.
+
+**Yanlis:**
+```javascript
+return _.reduce(challengesInCategory, function (memo, challenge) {
+    return memo && this.hasAttemptedChallengeOfType(challenge.type);
+}, true, this);  // 4. parametre context icin calismaz
+```
+
+**Dogru:**
+```javascript
+return _.reduce(challengesInCategory, function (memo, challenge) {
+    return memo && this.hasAttemptedChallengeOfType(challenge.type);
+}.bind(this), true);  // .bind(this) kullan
+```
 
 ---
 
 ## FAZ 3: WALLET ENTEGRASYONU
 
 ### Strateji
-Username/Password sistemi kaldırıldı. Sadece wallet ile giriş yapılıyor.
+Username/Password sistemi kaldirildi. Sadece wallet ile giris yapiliyor.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ 1. Connect Wallet  (MetaMask/Injected Provider)                 │
-│    └─> window.ethereum.request({ method: 'eth_requestAccounts'})│
-│                                                                 │
-│ 2. Sign Message (Popup Step 2)                                  │
-│    └─> signer.signMessage("Login to FHEIGHT...")                │
-│                                                                 │
-│ 3. Backend'e gönder: POST /session/wallet-connect               │
-│    { walletAddress, signature, message }                        │
-│                                                                 │
-│ 4. Backend:                                                     │
-│    - Signature doğrula (ecrecover)                              │
-│    - Kullanıcı yoksa: users tablosunda oluştur                  │
-│    - Firebase Custom Token üret                                 │
-│    - Token döndür                                               │
-│                                                                 │
-│ 5. Frontend: authWithCustomToken(token)                         │
-│    └─> Mevcut Firebase sistemi devam eder                       │
-└─────────────────────────────────────────────────────────────────┘
+1. Connect Wallet  (MetaMask/Injected Provider)
+   -> window.ethereum.request({ method: 'eth_requestAccounts'})
+
+2. Sign Message (Popup Step 2)
+   -> signer.signMessage("Login to FHEIGHT...")
+
+3. Backend'e gonder: POST /session/wallet-connect
+   { walletAddress, signature, message }
+
+4. Backend:
+   - Signature dogrula (ecrecover)
+   - Kullanici yoksa: users tablosunda olustur
+   - Firebase Custom Token uret
+   - Token dondur
+
+5. Frontend: authWithCustomToken(token)
+   -> Mevcut Firebase sistemi devam eder
 ```
 
-### Dosya Değişiklikleri
+### Dosya Degisiklikleri
 
-| Dosya | Değişiklik |
+| Dosya | Degisiklik |
 |-------|------------|
-| `app/ui/templates/item/login_menu.hbs` | Username/password inputları kaldırıldı, Connect Wallet butonu |
+| `app/ui/templates/item/login_menu.hbs` | Username/password inputlari kaldirildi, Connect Wallet butonu |
 | `app/ui/views/item/login_menu.js` | Wallet connect logic eklendi |
-| `app/ui/views/item/wallet_connect_dialog.js` | YENİ - 2 adımlı popup (connect + sign) |
-| `app/ui/templates/item/wallet_connect_dialog.hbs` | YENİ - Popup template |
+| `app/ui/views/item/wallet_connect_dialog.js` | YENI - 2 adimli popup (connect + sign) |
+| `app/ui/templates/item/wallet_connect_dialog.hbs` | YENI - Popup template |
 | `app/common/session2.js` | walletConnect() metodu eklendi |
-| `app/common/wallet.js` | YENİ - ethers.js wrapper |
+| `app/common/wallet.js` | YENI - ethers.js wrapper |
 
-### Network Konfigürasyonu
+### Network Konfigurasyonu
 ```javascript
 // Sepolia Testnet
 const SEPOLIA_CONFIG = {
@@ -1066,13 +1082,13 @@ const HARDHAT_CONFIG = {
 router.post('/wallet-connect', async (req, res) => {
   const { walletAddress, signature, message } = req.body;
 
-  // 1. Signature doğrula
+  // 1. Signature dogrula
   const recoveredAddress = ethers.verifyMessage(message, signature);
   if (recoveredAddress.toLowerCase() !== walletAddress.toLowerCase()) {
     return res.status(401).json({ error: 'Invalid signature' });
   }
 
-  // 2. Kullanıcı bul veya oluştur
+  // 2. Kullanici bul veya olustur
   let user = await findUserByWallet(walletAddress);
   if (!user) {
     user = await createUser({
@@ -1081,7 +1097,7 @@ router.post('/wallet-connect', async (req, res) => {
     });
   }
 
-  // 3. Firebase Custom Token üret
+  // 3. Firebase Custom Token uret
   const token = await admin.auth().createCustomToken(user.id);
 
   res.json({ token, userId: user.id });
@@ -1090,4 +1106,27 @@ router.post('/wallet-connect', async (req, res) => {
 
 ---
 
-*Son güncelleme: 2025-12-07*
+## PROJE KLASOR YAPISI
+
+```
+FHEIGHT/
+├── fheight-source/     <- Ana proje (open-duelyst fork)
+│   ├── app/
+│   │   ├── sdk/        <- Oyun mantigi
+│   │   ├── ui/         <- Frontend (Backbone/Marionette)
+│   │   └── common/     <- Paylasilan kod
+│   ├── bin/            <- Sunucu baslaticlari (api, game, sp, worker)
+│   ├── server/         <- Backend kodlari
+│   └── dist/           <- Build ciktisi
+├── game/               <- Cikarilan asset/data deposu
+│   ├── assets/         <- Gorseller (cards, units, fx, etc.)
+│   ├── data/           <- Kart JSON'lari
+│   └── reference/      <- Referans materyaller
+├── duelyst-original/   <- Orijinal kaynak referansi
+├── document/           <- Dokumantasyon
+└── scripts/            <- Yardimci scriptler
+```
+
+---
+
+*Son guncelleme: 2025-12-08*

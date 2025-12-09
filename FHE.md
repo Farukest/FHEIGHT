@@ -1441,12 +1441,172 @@ contract SpiritOrb is ERC721 {
   - Spirit Orb rarity oranlari koddan cikarildi
 
 ### Yapilacak
-- [ ] Smart Contract'lar yazilacak (SpiritOrb.sol, CardNFT.sol, GameGold.sol)
-- [ ] Hardhat + FHEVM kurulumu
-- [ ] Local Hardhat test
-- [ ] Sepolia deploy
+- [x] Smart Contract'lar yazildi (SpiritOrb.sol, CardNFT.sol, GameGold.sol)
+- [x] Hardhat + FHEVM kurulumu tamamlandi
+- [x] Local Hardhat test PASSED
+- [x] Sepolia deploy TAMAMLANDI (2025-12-08)
 - [ ] Frontend entegrasyonu
 - [ ] Gauntlet draft sistemi detayli analiz
+- [x] Etherscan contract verification TAMAMLANDI
+
+---
+
+## SEPOLIA DEPLOYMENT (2025-12-08)
+
+### Deployed Contract Addresses
+
+| Contract | Address | Etherscan | Aciklama |
+|----------|---------|-----------|----------|
+| **GameGold** | `0xf6520f21F9642f5d6ca4f1A3D4aFae8082ea7072` | [Verified](https://sepolia.etherscan.io/address/0xf6520f21F9642f5d6ca4f1A3D4aFae8082ea7072#code) | ERC20 in-game currency |
+| **CardNFT** | `0x0a8faf62DF32d4b6DB24D7A114A4AEC031DF0D89` | [Verified](https://sepolia.etherscan.io/address/0x0a8faf62DF32d4b6DB24D7A114A4AEC031DF0D89#code) | ERC721 game cards with rarity |
+| **SpiritOrb** | `0xd12BD6873f1d2Bf70c77Fd20a78f5Cac98E9cca8` | [Verified](https://sepolia.etherscan.io/address/0xd12BD6873f1d2Bf70c77Fd20a78f5Cac98E9cca8#code) | FHE-based loot box |
+| **FHECounter** | `0x41c589228295C8A71b8bB372D34f644A42d44b63` | [Verified](https://sepolia.etherscan.io/address/0x41c589228295C8A71b8bB372D34f644A42d44b63#code) | Example counter |
+| **GameSession** | `0x3b8A2c2516D973106e83Db412c67e0a1B443e2c4` | [Verified](https://sepolia.etherscan.io/address/0x3b8A2c2516D973106e83Db412c67e0a1B443e2c4#code) | FHE card game with session keys |
+
+### Contract Configuration
+
+```
+SpiritOrb.goldToken  = 0xf6520f21F9642f5d6ca4f1A3D4aFae8082ea7072 (GameGold)
+SpiritOrb.cardNFT    = 0x0a8faf62DF32d4b6DB24D7A114A4AEC031DF0D89 (CardNFT)
+CardNFT.authorizedMinter = 0xd12BD6873f1d2Bf70c77Fd20a78f5Cac98E9cca8 (SpiritOrb)
+```
+
+### Deployer Wallet
+
+```
+Address: 0x78c1e25054e8a3f1bc7f9d16f4e5dac0ba415cf9
+Network: Sepolia (Chain ID: 11155111)
+```
+
+### Contract Source Files
+
+```
+fhevm-contracts/
+├── contracts/
+│   ├── SpiritOrb.sol      # FHE loot box - FHE.randEuint8() kullanir
+│   ├── CardNFT.sol        # ERC721 NFT with rarity system
+│   ├── GameGold.sol       # ERC20 game currency
+│   └── FHECounter.sol     # Example from template
+├── deploy/
+│   └── deploy.ts          # Deployment script
+└── deployed-contracts-sepolia.json  # Deployment info
+```
+
+### Spirit Orb FHE Akisi
+
+```
+1. purchaseOrbs(amount)
+   - Gold token ile orb satin al
+   - unopenedOrbs[user] += amount
+
+2. openOrb(orbIndex)
+   - FHE.randEuint8(128) ile 5 sifreli random uret
+   - FHE.makePubliclyDecryptable() ile public decrypt icin isaretle
+   - orbState = 2 (opened)
+
+3. revealCards(orbIndex, clearValues, decryptionProof)
+   - Frontend publicDecrypt() ile KMS'den decrypt eder
+   - FHE.checkSignatures() ile on-chain dogrulama
+   - Rarity hesaplama (Common/Rare/Epic/Legendary)
+   - CardNFT.mintCard() ile kart NFT'leri mint
+   - orbState = 3 (revealed)
+```
+
+---
+
+## GAMESESSION CONTRACT (2025-12-08)
+
+### Session Key Mimarisi
+
+```
+OYUN BASI (1 kez cuzdan onayi):
+1. Frontend: Tarayicida gecici keypair olustur
+2. Ana cuzdan: createGame(sessionKey, deckCardIds) cagir (1 TX)
+3. Contract: sessionKey'i bu oyun icin yetkilendir
+4. Frontend: FHE decrypt session olustur (1 gun gecerli)
+
+OYUN BOYUNCA (popup YOK):
+- Tum TX'ler sessionKey ile imzalanir
+- Tum decrypt'ler session ile yapilir
+- Kullanici popup gormez
+
+OYUN BITISI:
+- endGame() veya resign() ile oyun biter
+- Session key artik yetkisiz
+```
+
+### GameSession Fonksiyonlari
+
+| Fonksiyon | Aciklama | FHE |
+|-----------|----------|-----|
+| `createGame(sessionKey, deckCardIds)` | Yeni oyun olustur | Deck sifreleme |
+| `joinGame(gameId, sessionKey, deckCardIds)` | Oyuna katil | Deck sifreleme |
+| `completeMulligan(mulliganSlots)` | Mulligan tamamla | - |
+| `drawCard()` | Kart cek | ACL (sadece sahip gorebilir) |
+| `playCard(handSlot, x, y, clearCardId, proof)` | Kart oyna | Public decrypt + checkSignatures |
+| `moveUnit(fromX, fromY, toX, toY)` | Birim hareket ettir | - |
+| `attack(attackerX, attackerY, targetX, targetY)` | Saldir | - |
+| `replaceCard(handSlot)` | Kart degistir | ACL (yeni kart gizli) |
+| `endTurn()` | Turu bitir | Otomatik kart cekimi |
+| `resign()` | Teslim ol | - |
+| `getHand()` | El kartlarini gor | User decrypt gerekli |
+
+### Oyun Akisi
+
+```
+1. Player A: createGame(sessionKeyA, deck) -> gameId
+2. Player B: joinGame(gameId, sessionKeyB, deck)
+   - Her iki oyuncu 5 kart ceker (GIZLI)
+   - Generaller board'a yerlestirilir
+
+3. Mulligan: completeMulligan([true, false, true, false, false])
+   - Secilen kartlar degistirilir
+
+4. Oyun Dongusu:
+   - startTurn: Mana yenilenir, kart cekilir
+   - main: playCard, moveUnit, attack, replaceCard
+   - endTurn: Siraki oyuncuya gec
+
+5. Oyun Sonu:
+   - General HP <= 0 -> Rakip kazanir
+   - resign() -> Rakip kazanir
+```
+
+### Frontend Entegrasyonu
+
+```typescript
+// 1. Instance olustur
+const instance = await createInstance(SepoliaConfig);
+
+// 2. Session key olustur (tarayicida)
+const sessionWallet = ethers.Wallet.createRandom();
+
+// 3. FHE decrypt session olustur
+const keypair = instance.generateKeypair();
+const eip712 = instance.createEIP712(
+    keypair.publicKey,
+    [GAME_SESSION_ADDRESS],
+    startTimestamp,
+    '1' // 1 gun
+);
+const signature = await mainWallet.signTypedData(eip712.domain, eip712.types, eip712.message);
+
+// 4. Oyun olustur (ana cuzdan ile 1 TX)
+const tx = await gameSession.createGame(sessionWallet.address, deckCardIds);
+
+// 5. Kart cek (session key ile, popup YOK)
+const tx2 = await gameSession.connect(sessionWallet).drawCard(gameId);
+
+// 6. Elini gor (user decrypt)
+const handles = await gameSession.getHand(gameId);
+const clearCards = await instance.userDecrypt(
+    handles.map(h => ({ handle: h, contractAddress: GAME_SESSION_ADDRESS })),
+    keypair.privateKey,
+    keypair.publicKey,
+    signature,
+    ...
+);
+```
 
 ---
 

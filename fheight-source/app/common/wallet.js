@@ -111,6 +111,15 @@ WalletManager.prototype.connect = function() {
         self.provider = provider;
 
         Logger.module('WALLET').log('connect: success', self.address);
+
+        // Detect and cache current network
+        return self.getChainId();
+      })
+      .then(function(chainId) {
+        var networkName = self.getNetworkName(chainId);
+        currentNetwork = networkName;
+        Logger.module('WALLET').log('connect: network detected', networkName, chainId);
+
         self.emit('connected', self.address);
 
         // Listen for account changes
@@ -125,8 +134,10 @@ WalletManager.prototype.connect = function() {
 
         // Listen for chain changes
         provider.on('chainChanged', function(chainId) {
-          Logger.module('WALLET').log('chainChanged:', chainId);
-          self.emit('chainChanged', chainId);
+          var networkName = self.getNetworkName(chainId);
+          currentNetwork = networkName;
+          Logger.module('WALLET').log('chainChanged:', chainId, '-> network:', networkName);
+          self.emit('chainChanged', { chainId: chainId, network: networkName });
         });
 
         // Listen for disconnect
@@ -299,8 +310,49 @@ WalletManager.prototype.getFormattedAddress = function() {
   return this.formatAddress(this.address);
 };
 
+/**
+ * Get current network name from chain ID
+ * @param {string} chainId - Chain ID in hex (e.g. '0xaa36a7')
+ * @returns {string} Network name ('sepolia', 'hardhat', or 'unknown')
+ */
+WalletManager.prototype.getNetworkName = function(chainId) {
+  if (!chainId) return 'unknown';
+  var normalizedChainId = chainId.toLowerCase();
+
+  for (var networkName in NETWORKS) {
+    if (NETWORKS[networkName].chainId.toLowerCase() === normalizedChainId) {
+      return networkName;
+    }
+  }
+  return 'unknown';
+};
+
+/**
+ * Get current network name (async - queries wallet)
+ * @returns {Promise<string>} Network name
+ */
+WalletManager.prototype.getCurrentNetwork = function() {
+  var self = this;
+  return this.getChainId().then(function(chainId) {
+    return self.getNetworkName(chainId);
+  });
+};
+
+/**
+ * Check if FHE is supported on current network
+ * @returns {Promise<boolean>}
+ */
+WalletManager.prototype.isFHESupported = function() {
+  return this.getCurrentNetwork().then(function(network) {
+    return network === 'sepolia' || network === 'hardhat';
+  });
+};
+
 // Singleton instance
 var instance = null;
+
+// Current detected network (updated on connect and chainChanged)
+var currentNetwork = null;
 
 module.exports = {
   getInstance: function() {
@@ -310,5 +362,11 @@ module.exports = {
     return instance;
   },
   NETWORKS: NETWORKS,
-  TARGET_NETWORK: TARGET_NETWORK
+  TARGET_NETWORK: TARGET_NETWORK,
+  getCurrentNetwork: function() {
+    return currentNetwork;
+  },
+  setCurrentNetwork: function(network) {
+    currentNetwork = network;
+  }
 };

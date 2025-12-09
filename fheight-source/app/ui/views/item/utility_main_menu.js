@@ -22,6 +22,7 @@ var openUrl = require('app/common/openUrl');
 var i18next = require('i18next');
 var BosterPackUnlockView = require('../layouts/booster_pack_collection');
 var UtilityMenuItemView = require('./utility_menu');
+var Wallet = require('app/common/wallet');
 
 /**
  * Out of game utility menu that shows basic utilities plus buttons for quests, profile, shop, and gold/boosters.
@@ -37,6 +38,8 @@ var UtilityMainMenuItemView = UtilityMenuItemView.extend({
     $goldButton: '.gold',
     $diamondCount: '.diamond-count',
     $diamondButton: '.diamond',
+    $networkIndicator: '.network-indicator',
+    $networkName: '.network-name',
     $boosterPackCollection: '.booster-pack-collection',
     $boosterPackCountLabel: '.booster-pack-count-label',
     $boosterPackCountNumberLabel: '.booster-pack-count-label > span.count',
@@ -105,6 +108,46 @@ var UtilityMainMenuItemView = UtilityMenuItemView.extend({
     this.onUpdateGoldCount();
     this.onUpdateBoosters();
     this.onPremiumCurrencyChange();
+    this.onUpdateNetworkIndicator();
+
+    // Listen for chain changes from wallet
+    var self = this;
+    var walletManager = Wallet.getInstance();
+
+    // Store bound handlers for cleanup
+    this._onChainChanged = function() {
+      self.onUpdateNetworkIndicator();
+    };
+
+    this._onWalletDisconnected = function() {
+      Logger.module('UI').log('Wallet disconnected, logging out...');
+      Session.logout();
+    };
+
+    walletManager.on('chainChanged', this._onChainChanged);
+    walletManager.on('disconnected', this._onWalletDisconnected);
+
+    // Also listen directly to provider for chain changes and account changes (more reliable)
+    if (walletManager.isProviderAvailable()) {
+      var provider = walletManager.getProvider();
+      if (provider) {
+        this._onProviderChainChanged = function(chainId) {
+          Logger.module('UI').log('Provider chainChanged event:', chainId);
+          self.onUpdateNetworkIndicator();
+        };
+        provider.on('chainChanged', this._onProviderChainChanged);
+
+        // Listen for accounts changed - empty array means disconnected
+        this._onProviderAccountsChanged = function(accounts) {
+          Logger.module('UI').log('Provider accountsChanged event:', accounts);
+          if (!accounts || accounts.length === 0) {
+            Logger.module('UI').log('No accounts - wallet disconnected, logging out...');
+            Session.logout();
+          }
+        };
+        provider.on('accountsChanged', this._onProviderAccountsChanged);
+      }
+    }
   },
 
   onLoggedOutShow: function () {
@@ -113,6 +156,26 @@ var UtilityMainMenuItemView = UtilityMenuItemView.extend({
     this.stopListening(InventoryManager.getInstance().walletModel, 'change:gold_amount', this.onUpdateGoldCount);
     this.stopListening(InventoryManager.getInstance().boosterPacksCollection, 'add remove', this.onUpdateBoosters);
     this.stopListening(InventoryManager.getInstance().walletModel, 'change:premium_amount', this.onPremiumCurrencyChange);
+
+    // Cleanup wallet event listeners
+    var walletManager = Wallet.getInstance();
+    if (this._onChainChanged) {
+      walletManager.off('chainChanged', this._onChainChanged);
+    }
+    if (this._onWalletDisconnected) {
+      walletManager.off('disconnected', this._onWalletDisconnected);
+    }
+    if (walletManager.isProviderAvailable()) {
+      var provider = walletManager.getProvider();
+      if (provider && provider.removeListener) {
+        if (this._onProviderChainChanged) {
+          provider.removeListener('chainChanged', this._onProviderChainChanged);
+        }
+        if (this._onProviderAccountsChanged) {
+          provider.removeListener('accountsChanged', this._onProviderAccountsChanged);
+        }
+      }
+    }
   },
 
   onLoggedInRender: function () {
@@ -245,6 +308,61 @@ var UtilityMainMenuItemView = UtilityMenuItemView.extend({
 
   onPremiumCurrencyChange: function () {
     this.ui.$diamondCount.text(InventoryManager.getInstance().getWalletModelPremiumAmount());
+  },
+
+  onUpdateNetworkIndicator: function () {
+    var self = this;
+    var walletManager = Wallet.getInstance();
+
+    // Check if we have a provider (wallet extension available)
+    if (!walletManager.isProviderAvailable()) {
+      if (self.ui.$networkIndicator instanceof $) {
+        self.ui.$networkIndicator.removeClass('sepolia hardhat').addClass('unknown');
+        self.ui.$networkName.text('No Wallet');
+      }
+      return;
+    }
+
+    // Get current network directly from provider
+    var provider = walletManager.getProvider();
+    if (!provider) {
+      if (self.ui.$networkIndicator instanceof $) {
+        self.ui.$networkIndicator.removeClass('sepolia hardhat').addClass('unknown');
+        self.ui.$networkName.text('No Provider');
+      }
+      return;
+    }
+
+    // Query chainId directly from provider
+    provider.request({ method: 'eth_chainId' })
+      .then(function(chainId) {
+        if (!(self.ui.$networkIndicator instanceof $)) return;
+
+        var network = walletManager.getNetworkName(chainId);
+
+        // Remove all network classes first
+        self.ui.$networkIndicator.removeClass('sepolia hardhat unknown');
+
+        if (network === 'sepolia') {
+          self.ui.$networkIndicator.addClass('sepolia');
+          self.ui.$networkName.text('Sepolia');
+        } else if (network === 'hardhat') {
+          self.ui.$networkIndicator.addClass('hardhat');
+          self.ui.$networkName.text('Local H.');
+        } else {
+          self.ui.$networkIndicator.addClass('unknown');
+          self.ui.$networkName.text('Chain ' + parseInt(chainId, 16));
+        }
+
+        Logger.module('UI').log('Network indicator updated:', network, chainId);
+      })
+      .catch(function(err) {
+        Logger.module('UI').error('Failed to get chainId:', err);
+        if (self.ui.$networkIndicator instanceof $) {
+          self.ui.$networkIndicator.removeClass('sepolia hardhat').addClass('unknown');
+          self.ui.$networkName.text('Error');
+        }
+      });
   },
 
   onUpdateBoosters: function () {

@@ -30,6 +30,42 @@ REDIS_HOST=localhost
 
 ---
 
+## ONEMLI: DEPLOY SONRASI ADRES GUNCELLEME
+
+**HER DEPLOY SONRASI ASAGIDAKI ADIMLARI UYGULAMALIYIM:**
+
+1. **JSON Dosyalari Otomatik Guncellenir:**
+   - `fhevm-contracts/deployed-contracts-localhost.json` (local hardhat)
+   - `fhevm-contracts/deployed-contracts-sepolia.json` (Sepolia testnet)
+
+2. **fhe_session.js Manuel Guncellenmeli:**
+   - Dosya: `fheight-source/app/common/fhe_session.js`
+   - `DEPLOYED_CONTRACTS.sepolia` ve `DEPLOYED_CONTRACTS.hardhat` objeleri
+   - Tum contract adresleri: GameSession, CardRegistry, SpiritOrb, CardNFT, GameGold
+
+3. **ASLA eski adreslerle devam etme!**
+   - Deploy sonrasi adresler degisir
+   - Eski adresler artik gecersiz olabilir
+   - Testlerde "contract not deployed" hatasi alirsam adresleri kontrol et
+
+**Guncel Adresler:**
+
+SEPOLIA:
+- GameGold: 0xdB1274A736812A28b782879128f237f35fed7B81
+- CardNFT: 0xD200776dE5A8472382F5b8b902a676E2117d7A31
+- SpiritOrb: 0xD0C7a512BAEaCe7a52E9BEe47A1B13868A0345B3
+- CardRegistry: 0xf9EB68605c1df066fC944c28770fFF8476ADE8fc
+- GameSession: 0x64A19A560643Cf39BA3FbbcF405F3545f6E813CB
+
+LOCALHOST (Hardhat):
+- GameGold: 0xa513E6E4b8f2a923D98304ec87F64353C4D5C853
+- CardNFT: 0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6
+- SpiritOrb: 0x8A791620dd6260079BF849Dc5567aDC3F2FdC318
+- CardRegistry: 0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82
+- GameSession: 0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44
+
+---
+
 ## 1. MIMARI BILESENLER
 
 | Bilesen | Aciklama |

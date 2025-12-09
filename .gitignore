@@ -225,3 +225,19 @@ client/node_modules/
 # ===== GAME DATA (Large generated files) =====
 # Keep cards-full.json but ignore other large generated files
 game/assets/
+
+# ===== FHEVM CONTRACTS =====
+# Environment files with private keys
+fhevm-contracts/.env
+fhevm-contracts/*.env
+
+# Build artifacts
+fhevm-contracts/artifacts/
+fhevm-contracts/cache/
+fhevm-contracts/types/
+fhevm-contracts/typechain-types/
+fhevm-contracts/deployments/
+fhevm-contracts/fhevmTemp/
+fhevm-contracts/node_modules/
+fhevm-contracts/coverage/
+fhevm-contracts/dist/

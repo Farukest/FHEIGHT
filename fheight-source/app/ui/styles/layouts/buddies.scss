@@ -47,11 +47,11 @@
 				.add-buddy {
 					font-size: 1.4rem;
 					text-transform: uppercase;
-					color: #00fbff;
+					color: #ffd208;
 					transition: color 0.5s, text-shadow 0.5s;
 					&:hover {
 						color: #fff;
-						text-shadow: 0 0 0.8rem #00fbff;
+						text-shadow: 0 0 0.8rem #ffd208;
 					}
 				}
 				.do-not-disturb {
@@ -93,7 +93,7 @@
 					border: solid 0.1rem rgba(255,255,255,0.2);
 					margin:0;
 					&:focus {
-						border: solid 0.1rem transparentize(#00fbff,0.25);
+						border: solid 0.1rem transparentize(#ffd208,0.25);
 					}
 				}
 				span {

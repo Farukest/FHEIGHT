@@ -433,7 +433,7 @@ class CosmeticsLookup {
       Frostfire: 40003,
       Vetruvian: 40004,
       Shimzar: 40005,
-      BlueForest: 40006
+      ZamatForest: 40006
   };
   
     this.BattleMap = {

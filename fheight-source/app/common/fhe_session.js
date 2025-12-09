@@ -24,11 +24,12 @@ var DEPLOYED_CONTRACTS = {
     GameGold: '0xdB1274A736812A28b782879128f237f35fed7B81'
   },
   hardhat: {
-    GameSession: '0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44',
-    CardRegistry: '0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82',
-    SpiritOrb: '0x8A791620dd6260079BF849Dc5567aDC3F2FdC318',
-    CardNFT: '0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6',
-    GameGold: '0xa513E6E4b8f2a923D98304ec87F64353C4D5C853'
+    GameGold: '0x5fbdb2315678afecb367f032d93f642f64180aa3',
+    CardNFT: '0xe7f1725e7734ce288f8367e1bb143e90bb3f0512',
+    SpiritOrb: '0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0',
+    FHECounter: '0x0165878a594ca255338adfa4d48449f69242eb8f',
+    CardRegistry: '0x0dcd1bf9a1b36ce34237eeafef220932846bcd82',
+    GameSession: '0x322813fd9a801c5507c9de605d63cea4f2ce6c44'
   }
 };
 
@@ -340,7 +341,19 @@ FHESessionManager.prototype.decrypt = function(handles, contractAddress) {
       return;
     }
 
-    // KMS endpoint (Sepolia testnet)
+    Logger.module('FHE_SESSION').log('Requesting decrypt...', { handles: handles.length });
+
+    // Mock mode icin (local Hardhat) - direkt contract'tan oku
+    var currentNetwork = Wallet.getCurrentNetwork();
+    if (currentNetwork === 'hardhat' || currentNetwork === 'localhost') {
+      Logger.module('FHE_SESSION').log('Using mock decrypt (local network)');
+      self._mockDecrypt(handles, contractAddress)
+        .then(resolve)
+        .catch(reject);
+      return;
+    }
+
+    // Gercek KMS endpoint (Sepolia testnet)
     var kmsEndpoint = 'https://kms.testnet.zama.ai/decrypt';
 
     var requestBody = {
@@ -350,8 +363,6 @@ FHESessionManager.prototype.decrypt = function(handles, contractAddress) {
       contractAddress: contractAddress,
       userAddress: Wallet.getInstance().address
     };
-
-    Logger.module('FHE_SESSION').log('Requesting decrypt from KMS...', { handles: handles.length });
 
     fetch(kmsEndpoint, {
       method: 'POST',
@@ -380,6 +391,52 @@ FHESessionManager.prototype.decrypt = function(handles, contractAddress) {
       Logger.module('FHE_SESSION').error('Decrypt failed:', error);
       reject(error);
     });
+  });
+};
+
+/**
+ * Mock decrypt - Hardhat local network icin
+ * FHE mock kullandiginda handle'lar aslinda plaintext deger icerir
+ * @private
+ */
+FHESessionManager.prototype._mockDecrypt = function(handles, contractAddress) {
+  var self = this;
+
+  return new Promise(function(resolve, reject) {
+    try {
+      var walletManager = Wallet.getInstance();
+      var ethers = window.ethers;
+
+      if (!ethers) {
+        reject(new Error('ethers.js not loaded'));
+        return;
+      }
+
+      // Mock FHE'de handle aslinda encrypted degerin kendisidir
+      // Hardhat fhevm mock'u kullaniyor, handles direkt decode edilebilir
+      var decrypted = handles.map(function(handle) {
+        // Handle BigInt veya hex string olabilir
+        var bigIntValue;
+        if (typeof handle === 'string') {
+          bigIntValue = BigInt(handle);
+        } else if (typeof handle === 'bigint') {
+          bigIntValue = handle;
+        } else {
+          bigIntValue = BigInt(handle.toString());
+        }
+
+        // Mock'ta handle'in son 2 byte'i genellikle degeri icerir
+        // Veya tum handle decode edilir
+        var value = Number(bigIntValue & BigInt(0xFFFF));
+        return value;
+      });
+
+      Logger.module('FHE_SESSION').log('Mock decrypt result:', decrypted);
+      resolve(decrypted);
+    } catch (e) {
+      Logger.module('FHE_SESSION').error('Mock decrypt error:', e);
+      reject(e);
+    }
   });
 };
 

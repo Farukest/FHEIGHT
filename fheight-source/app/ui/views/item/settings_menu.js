@@ -447,6 +447,8 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
       this._zodiacModel = new ZodiacSymbolModel({ canvas: canvas });
       // Override shadow color to ZAMA yellow
       this._zodiacModel.shadowColor = '#ffd208';
+      // Slow down animation (0.25 = 4x slower)
+      this._zodiacModel.animationSpeed = 0.25;
       this._zodiacModel.startDrawing();
       // Apply additional CSS for alignment (after ZodiacSymbolModel sets its styles)
       $canvas.css({

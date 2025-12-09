@@ -607,6 +607,10 @@ var MainMenuItemView = Backbone.Marionette.ItemView.extend({
       if (!zodiacModel) {
         // setup new zodiac symbol
         zodiacModel = this._zodiacModels[i] = new ZodiacSymbolModel({ canvas: canvas });
+        // ZAMA yellow theme
+        zodiacModel.shadowColor = '#ffd208';
+        // Slow down animation (0.25 = 4x slower)
+        zodiacModel.animationSpeed = 0.25;
         zodiacModel.listenTo(this, 'destroy', zodiacModel.stopDrawing.bind(zodiacModel));
       } else {
         // provide canvas to zodiac symbol

@@ -75,7 +75,7 @@ const MainMagaariEmberHighlandsLayer = require('app/view/layers/start/MainMagaar
 const MainFrostfireLayer = require('app/view/layers/start/MainFrostfireLayer');
 const MainVetruvianLayer = require('app/view/layers/start/MainVetruvianLayer');
 const MainShimzarLayer = require('app/view/layers/start/MainShimzarLayer');
-const MainBlueForestLayer = require('app/view/layers/start/MainBlueForestLayer');
+const MainZamatForestLayer = require('app/view/layers/start/MainZamatForestLayer');
 const MatchmakingLayer = require('app/view/layers/pregame/MatchmakingLayer');
 const GameLayer = require('app/view/layers/game/GameLayer');
 
@@ -411,11 +411,11 @@ var _Scene = cc.Scene.extend({
       this._mainLayerClass = MainVetruvianLayer;
     } else if (selectedSceneId === SDK.CosmeticsLookup.Scene.Shimzar) {
       this._mainLayerClass = MainShimzarLayer;
-    } else if (selectedSceneId === SDK.CosmeticsLookup.Scene.BlueForest) {
-      this._mainLayerClass = MainBlueForestLayer;
+    } else if (selectedSceneId === SDK.CosmeticsLookup.Scene.ZamatForest) {
+      this._mainLayerClass = MainZamatForestLayer;
     } else {
-      // Default to BlueForest if no valid scene selected
-      this._mainLayerClass = MainBlueForestLayer;
+      // Default to ZamatForest if no valid scene selected
+      this._mainLayerClass = MainZamatForestLayer;
     }
 
     return this.showContentByClass(this._mainLayerClass, true);

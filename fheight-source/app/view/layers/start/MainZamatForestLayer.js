@@ -1,4 +1,4 @@
-// pragma PKGS: BlueForestMainMenu
+// pragma PKGS: ZamatForestMainMenu
 
 const RSX = require('app/data/resources');
 const PKGS = require('app/data/packages');
@@ -13,10 +13,10 @@ const BaseParticleSystem = require('../../nodes/BaseParticleSystem');
 const FXFlockSprite = require('../../nodes/fx/FXFlockSprite');
 
 /** **************************************************************************
- MainBlueForestLayer
+ MainZamatForestLayer
  *************************************************************************** */
 
-const MainBlueForestLayer = FXCompositeLayer.extend({
+const MainZamatForestLayer = FXCompositeLayer.extend({
 
   /* region INITIALIZE */
 
@@ -28,46 +28,46 @@ const MainBlueForestLayer = FXCompositeLayer.extend({
       if (!this.getAreResourcesValid(requestId)) return; // load invalidated or resources changed
 
       // scene elements
-      this.bg = BaseSprite.create(RSX.scene_blue_forest_background.img);
-      this.pillar1 = BaseSprite.create(RSX.scene_blue_forest_pillars_far.img);
-      this.pillar2 = BaseSprite.create(RSX.scene_blue_forest_pillars_near.img);
-      this.fg = BaseSprite.create(RSX.scene_blue_forest_foreground.img);
-      this.vignette = BaseSprite.create(RSX.scene_blue_forest_vignette.img);
+      this.bg = BaseSprite.create(RSX.scene_zamat_forest_background.img);
+      this.pillar1 = BaseSprite.create(RSX.scene_zamat_forest_pillars_far.img);
+      this.pillar2 = BaseSprite.create(RSX.scene_zamat_forest_pillars_near.img);
+      this.fg = BaseSprite.create(RSX.scene_zamat_forest_foreground.img);
+      this.vignette = BaseSprite.create(RSX.scene_zamat_forest_vignette.img);
       this.vignette.setAnchorPoint(0.0, 0.5);
 
       this.lanternsSmall1 = new BaseParticleSystem({
-        plistFile: RSX.scene_blue_forest_lantern_small_particles.plist,
+        plistFile: RSX.scene_zamat_forest_lantern_small_particles.plist,
         fadeInAtLifePct: 0.05,
         fadeOutAtLifePct: 0.95,
         parallaxMode: true,
       });
       this.lanternsSmall2 = new BaseParticleSystem({
-        plistFile: RSX.scene_blue_forest_lantern_small_particles.plist,
+        plistFile: RSX.scene_zamat_forest_lantern_small_particles.plist,
         fadeInAtLifePct: 0.05,
         fadeOutAtLifePct: 0.95,
         parallaxMode: true,
       });
       this.lanternsLarge1 = new BaseParticleSystem({
-        plistFile: RSX.scene_blue_forest_lantern_large_1_particles.plist,
+        plistFile: RSX.scene_zamat_forest_lantern_large_1_particles.plist,
         fadeInAtLifePct: 0.05,
         fadeOutAtLifePct: 0.95,
         parallaxMode: true,
       });
       this.lanternsLarge2 = new BaseParticleSystem({
-        plistFile: RSX.scene_blue_forest_lantern_large_2_particles.plist,
+        plistFile: RSX.scene_zamat_forest_lantern_large_2_particles.plist,
         fadeInAtLifePct: 0.05,
         fadeOutAtLifePct: 0.95,
         parallaxMode: true,
       });
       this.lanternsLarge3 = new BaseParticleSystem({
-        plistFile: RSX.scene_blue_forest_lantern_large_3_particles.plist,
+        plistFile: RSX.scene_zamat_forest_lantern_large_3_particles.plist,
         fadeInAtLifePct: 0.05,
         fadeOutAtLifePct: 0.95,
         parallaxMode: true,
       });
 
       this.stars = new BaseParticleSystem({
-        plistFile: RSX.scene_blue_forest_stars_particles.plist,
+        plistFile: RSX.scene_zamat_forest_stars_particles.plist,
         fadeInAtLifePct: 0.10,
         fadeOutAtLifePct: 0.90,
       });
@@ -122,7 +122,7 @@ const MainBlueForestLayer = FXCompositeLayer.extend({
   /* region RESOURCES */
 
   getRequiredResources() {
-    return FXCompositeLayer.prototype.getRequiredResources.call(this).concat(PKGS.getPkgForIdentifier('BlueForestMainMenu'));
+    return FXCompositeLayer.prototype.getRequiredResources.call(this).concat(PKGS.getPkgForIdentifier('ZamatForestMainMenu'));
   },
 
   /* endregion RESOURCES */
@@ -251,8 +251,8 @@ const MainBlueForestLayer = FXCompositeLayer.extend({
   },
 });
 
-MainBlueForestLayer.create = function (layer) {
-  return FXCompositeLayer.create(layer || new MainBlueForestLayer());
+MainZamatForestLayer.create = function (layer) {
+  return FXCompositeLayer.create(layer || new MainZamatForestLayer());
 };
 
-module.exports = MainBlueForestLayer;
+module.exports = MainZamatForestLayer;

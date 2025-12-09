@@ -3850,25 +3850,25 @@ const RSX = {
   scene_magaari_ember_highlands_vignette: { name: 'scene_magaari_ember_highlands_vignette', img: 'resources/scenes/magaari_ember_highlands/magaari_ember_highlands_vignette.png', noScale: true },
   scene_magaari_ember_highlands_light_ray: { name: 'scene_magaari_ember_highlands_light_ray', img: 'resources/scenes/magaari_ember_highlands/magaari_ember_highlands_light_ray.jpg', noScale: true },
 
-  // Blue Forest Parallax Scene (Frostfire clone)
-  scene_blue_forest_background: { name: 'scene_blue_forest_background', img: 'resources/scenes/blue_forest/background.png' },
-  scene_blue_forest_pillars_far: { name: 'scene_blue_forest_pillars_far', img: 'resources/scenes/blue_forest/pillars_far.png' },
-  scene_blue_forest_pillars_near: { name: 'scene_blue_forest_pillars_near', img: 'resources/scenes/blue_forest/pillars_near.png' },
-  scene_blue_forest_foreground: { name: 'scene_blue_forest_foreground', img: 'resources/scenes/blue_forest/foreground.png' },
-  scene_blue_forest_vignette: { name: 'scene_blue_forest_vignette', img: 'resources/scenes/blue_forest/vignette.png', noScale: true },
-  scene_blue_forest_lantern_small_particles: {
-    name: 'scene_blue_forest_lantern_small_particles', img: 'resources/scenes/blue_forest/lantern_small.png', plist: 'resources/scenes/blue_forest/lanterns_small.plist', noScale: true,
+  // Zamat Forest Parallax Scene
+  scene_zamat_forest_background: { name: 'scene_zamat_forest_background', img: 'resources/scenes/zamat_forest/background.png' },
+  scene_zamat_forest_pillars_far: { name: 'scene_zamat_forest_pillars_far', img: 'resources/scenes/zamat_forest/pillars_far.png' },
+  scene_zamat_forest_pillars_near: { name: 'scene_zamat_forest_pillars_near', img: 'resources/scenes/zamat_forest/pillars_near.png' },
+  scene_zamat_forest_foreground: { name: 'scene_zamat_forest_foreground', img: 'resources/scenes/zamat_forest/foreground.png' },
+  scene_zamat_forest_vignette: { name: 'scene_zamat_forest_vignette', img: 'resources/scenes/zamat_forest/vignette.png', noScale: true },
+  scene_zamat_forest_lantern_small_particles: {
+    name: 'scene_zamat_forest_lantern_small_particles', img: 'resources/scenes/zamat_forest/lantern_small.png', plist: 'resources/scenes/zamat_forest/lanterns_small.plist', noScale: true,
   },
-  scene_blue_forest_lantern_large_1_particles: {
-    name: 'scene_blue_forest_lantern_large_1_particles', img: 'resources/scenes/blue_forest/lantern_large_1.png', plist: 'resources/scenes/blue_forest/lanterns_large_1.plist', noScale: true,
+  scene_zamat_forest_lantern_large_1_particles: {
+    name: 'scene_zamat_forest_lantern_large_1_particles', img: 'resources/scenes/zamat_forest/lantern_large_1.png', plist: 'resources/scenes/zamat_forest/lanterns_large_1.plist', noScale: true,
   },
-  scene_blue_forest_lantern_large_2_particles: {
-    name: 'scene_blue_forest_lantern_large_2_particles', img: 'resources/scenes/blue_forest/lantern_large_2.png', plist: 'resources/scenes/blue_forest/lanterns_large_2.plist', noScale: true,
+  scene_zamat_forest_lantern_large_2_particles: {
+    name: 'scene_zamat_forest_lantern_large_2_particles', img: 'resources/scenes/zamat_forest/lantern_large_2.png', plist: 'resources/scenes/zamat_forest/lanterns_large_2.plist', noScale: true,
   },
-  scene_blue_forest_lantern_large_3_particles: {
-    name: 'scene_blue_forest_lantern_large_3_particles', img: 'resources/scenes/blue_forest/lantern_large_3.png', plist: 'resources/scenes/blue_forest/lanterns_large_3.plist', noScale: true,
+  scene_zamat_forest_lantern_large_3_particles: {
+    name: 'scene_zamat_forest_lantern_large_3_particles', img: 'resources/scenes/zamat_forest/lantern_large_3.png', plist: 'resources/scenes/zamat_forest/lanterns_large_3.plist', noScale: true,
   },
-  scene_blue_forest_stars_particles: { name: 'scene_blue_forest_stars_particles', plist: 'resources/scenes/blue_forest/stars.plist' },
+  scene_zamat_forest_stars_particles: { name: 'scene_zamat_forest_stars_particles', plist: 'resources/scenes/zamat_forest/stars.plist' },
 
   scene_frostfire_background: { name: 'scene_frostfire_background', img: 'resources/scenes/frostfire/background.jpg' },
   scene_frostfire_pillars_far: { name: 'scene_frostfire_pillars_far', img: 'resources/scenes/frostfire/pillars_far.png' },

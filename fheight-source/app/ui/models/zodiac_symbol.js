@@ -18,6 +18,7 @@ var ZodiacSymbolModel = Backbone.Model.extend({
   requestAnimationFrameId: null,
   shadowColor: '#a4ffff',
   lineWidth: 1,
+  animationSpeed: 1.0, // Speed multiplier (0.25 = 4x slower, 1.0 = normal)
 
   initialize: function (opts) {
     this.timestamp = new Date();
@@ -227,8 +228,9 @@ var ZodiacSymbolModel = Backbone.Model.extend({
         var deltaX = (dp.x - p.x) / (dt);
         var deltaY = (dp.y - p.y) / (dt);
         if (Math.abs(deltaX) > 0.05) {
-          p.x += deltaX;
-          p.y += deltaY;
+          // Apply speed multiplier to movement, not to threshold check
+          p.x += deltaX * this.animationSpeed;
+          p.y += deltaY * this.animationSpeed;
         } else {
           this.generateDestinationPoints();
         }

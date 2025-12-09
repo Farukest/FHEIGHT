@@ -326,36 +326,115 @@ FHEGameSession.prototype.playCard = function(handSlot, x, y) {
 
     Logger.module('FHE_GAME').log('Playing card from slot', handSlot, 'to', x, y);
 
-    // Public decrypt gerekiyor - KMS'ten proof al
-    var handle = self.handHandles[handSlot];
+    var Wallet = require('app/common/wallet');
+    var currentNetwork = Wallet.getCurrentNetwork();
 
-    // TODO: Gercek public decrypt implementasyonu
-    // Simdilik placeholder - gercek KMS entegrasyonu gerekiyor
+    // Zaten decrypt edilmis kart ID'sini al
     var clearCardId = self.decryptedHand[handSlot];
-    var encodedCardId = self._encodeCardId(clearCardId);
-    var proof = '0x'; // Placeholder
 
-    self.contract.playCard(
-      self.gameId,
-      handSlot,
-      x,
-      y,
-      encodedCardId,
-      proof
-    )
+    if (clearCardId === undefined || clearCardId === null) {
+      reject(new Error('Card not decrypted yet'));
+      return;
+    }
+
+    var encodedCardId = self._encodeCardId(clearCardId);
+
+    // Mock mode (Hardhat) - proof gerekmez
+    if (currentNetwork === 'hardhat' || currentNetwork === 'localhost') {
+      Logger.module('FHE_GAME').log('Mock mode - skipping KMS proof');
+      var proof = '0x'; // Mock'ta bos proof kabul edilir
+
+      self.contract.playCard(
+        self.gameId,
+        handSlot,
+        x,
+        y,
+        encodedCardId,
+        proof
+      )
+        .then(function(tx) {
+          return tx.wait();
+        })
+        .then(function(receipt) {
+          Logger.module('FHE_GAME').log('Card played (mock mode)');
+          self._removeCardFromHand(handSlot);
+          resolve(receipt);
+        })
+        .catch(reject);
+      return;
+    }
+
+    // Gercek mode - KMS'ten public decrypt proof al
+    Logger.module('FHE_GAME').log('Requesting public decrypt proof from KMS...');
+    self._getPublicDecryptProof(self.handHandles[handSlot])
+      .then(function(result) {
+        return self.contract.playCard(
+          self.gameId,
+          handSlot,
+          x,
+          y,
+          result.encodedValue,
+          result.proof
+        );
+      })
       .then(function(tx) {
         return tx.wait();
       })
       .then(function(receipt) {
         Logger.module('FHE_GAME').log('Card played');
-
-        // Elden cikar
-        self.decryptedHand.splice(handSlot, 1);
-        self.handHandles.splice(handSlot, 1);
-
+        self._removeCardFromHand(handSlot);
         resolve(receipt);
       })
       .catch(reject);
+  });
+};
+
+/**
+ * Elden kart cikar
+ * @private
+ */
+FHEGameSession.prototype._removeCardFromHand = function(handSlot) {
+  this.decryptedHand.splice(handSlot, 1);
+  this.handHandles.splice(handSlot, 1);
+};
+
+/**
+ * KMS'ten public decrypt proof al
+ * @private
+ */
+FHEGameSession.prototype._getPublicDecryptProof = function(handle) {
+  var self = this;
+  var Wallet = require('app/common/wallet');
+
+  return new Promise(function(resolve, reject) {
+    var kmsEndpoint = 'https://kms.testnet.zama.ai/public-decrypt';
+
+    var requestBody = {
+      handle: handle.toString(),
+      contractAddress: self.contractAddress,
+      userAddress: Wallet.getInstance().address
+    };
+
+    fetch(kmsEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    })
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('KMS public decrypt failed: ' + response.status);
+      }
+      return response.json();
+    })
+    .then(function(result) {
+      resolve({
+        encodedValue: result.abiEncodedValue,
+        proof: result.decryptionProof
+      });
+    })
+    .catch(reject);
   });
 };
 

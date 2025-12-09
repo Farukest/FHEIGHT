@@ -35,6 +35,7 @@ const Profile = FHEIGHTFirebase.Model.extend({
     this.on("change:stickyTargeting", this.onStickyTargetingChange, this);
     this.on("change:showInGameTips", this.onShowInGameTipsChange, this);
     this.on("change:razerChromaEnabled", this.onRazerChromaEnabled, this);
+    this.on("change:fheEnabled", this.onFHEEnabledChange, this);
     this.on("change:masterVolume", this.onMasterVolumeChange, this);
     this.on("change:musicVolume", this.onMusicVolumeChange, this);
     this.on("change:voiceVolume", this.onVoiceVolumeChange, this);
@@ -79,6 +80,7 @@ const Profile = FHEIGHTFirebase.Model.extend({
     stickyTargeting: false,
     showInGameTips: true,
     razerChromaEnabled: false,
+    fheEnabled: true, // FHE Secure Mode - default enabled for maximum security
     showPrismaticsInCollection: true,
     showPrismaticsWhileCrafting: false,
     showSkinsInCollection: true,
@@ -143,6 +145,10 @@ const Profile = FHEIGHTFirebase.Model.extend({
 
   onRazerChromaEnabled() {
     return this.setRazerChromaEnabled(this.get('razerChromaEnabled'));
+  },
+
+  onFHEEnabledChange() {
+    return this.setFHEEnabled(this.get('fheEnabled'));
   },
 
   onMasterVolumeChange() {
@@ -229,6 +235,12 @@ const Profile = FHEIGHTFirebase.Model.extend({
 
   setRazerChromaEnabled(val) {
     return CONFIG.razerChromaEnabled = window.isDesktop && val;
+  },
+
+  setFHEEnabled(val) {
+    CONFIG.fheEnabled = val;
+    Logger.module("UI").log("FHE Secure Mode:", val ? "ENABLED" : "DISABLED");
+    return CONFIG.fheEnabled;
   },
 
   setMasterVolume(val) {

@@ -25,6 +25,7 @@ var ActivityDialogItemView = require('./activity_dialog');
 var ChangeUsernameItemView = require('./change_username');
 var AccountInventoryResetModalView = require('./account_inventory_reset_modal');
 var RedeemGiftCodeModalView = require('./redeem_gift_code_modal');
+var ZodiacSymbolModel = require('app/ui/models/zodiac_symbol');
 
 var SettingsMenuView = Backbone.Marionette.ItemView.extend({
 
@@ -58,6 +59,7 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
     $checkboxStickyTargeting: '#checkbox-sticky-targeting',
     $checkboxShowInGameTips: '#checkbox-show-in-game-tips',
     $checkboxRazerChromaEnabled: '#checkbox-razer-chroma-enabled',
+    $checkboxFHEEnabled: '#checkbox-fhe-enabled',
     $masterVolume: '#master-volume',
     $musicVolume: '#music-volume',
     $voiceVolume: '#voice-volume',
@@ -90,6 +92,7 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
     'change #checkbox-sticky-targeting': 'changeStickyTargeting',
     'change #checkbox-show-in-game-tips': 'changeShowInGameTips',
     'change #checkbox-razer-chroma-enabled': 'changeRazerChromaEnabled',
+    'change #checkbox-fhe-enabled': 'changeFHEEnabled',
     'change #master-volume': 'changeMasterVolume',
     'change #music-volume': 'changeMusicVolume',
     'change #voice-volume': 'changeVoiceVolume',
@@ -102,6 +105,7 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
   animateIn: Animations.fadeIn,
   animateOut: Animations.fadeOut,
   _requestId: null,
+  _zodiacModel: null,
 
   initialize: function () {
     // generate unique id for requests
@@ -162,6 +166,7 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
     this.ui.$checkboxStickyTargeting.prop('checked', this.model.get('stickyTargeting'));
     this.ui.$checkboxShowInGameTips.prop('checked', this.model.get('showInGameTips'));
     this.ui.$checkboxRazerChromaEnabled.prop('checked', this.model.get('razerChromaEnabled'));
+    this.ui.$checkboxFHEEnabled.prop('checked', this.model.get('fheEnabled') !== false); // Default true
     this.ui.$masterVolume.val(parseFloat(this.model.get('masterVolume')));
     this.ui.$musicVolume.val(parseFloat(this.model.get('musicVolume')));
     this.ui.$voiceVolume.val(parseFloat(this.model.get('voiceVolume')));
@@ -197,6 +202,9 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
     this.listenTo(this.model, 'change:shadowQuality', this._updateShadowQualityUI.bind(this));
     this.listenTo(this.model, 'change:boardQuality', this._updateBoardQualityUI.bind(this));
 
+    // Initialize ZAMA colored zodiac symbol for settings header
+    this._initZodiacSymbol();
+
     // change gradient color mapping
     Scene.getInstance().getFX().showGradientColorMap(this._requestId, CONFIG.ANIMATE_FAST_DURATION, {
       r: 194, g: 203, b: 220, a: 255,
@@ -210,6 +218,11 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
   onPrepareForDestroy: function () {
     // hide ZENDESK widget
     window.zE && window.zE.hide && window.zE.hide();
+
+    // Stop zodiac animation
+    if (this._zodiacModel) {
+      this._zodiacModel.stopDrawing();
+    }
 
     // reset gradient color mapping
     Scene.getInstance().getFX().clearGradientColorMap(this._requestId, CONFIG.ANIMATE_MEDIUM_DURATION);
@@ -349,6 +362,10 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
     this.model.set('razerChromaEnabled', this.ui.$checkboxRazerChromaEnabled.prop('checked'));
   },
 
+  changeFHEEnabled: function () {
+    this.model.set('fheEnabled', this.ui.$checkboxFHEEnabled.prop('checked'));
+  },
+
   changeShowInGameTips: function () {
     this.model.set('showInGameTips', this.ui.$checkboxShowInGameTips.prop('checked'));
   },
@@ -419,6 +436,23 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
       // low quality board
       this.ui.$buttonBoardQualityLow.addClass('active');
       this.ui.$buttonBoardQualityHigh.removeClass('active');
+    }
+  },
+
+  _initZodiacSymbol: function () {
+    var $canvas = this.$el.find('.settings-zodiac-canvas');
+    var canvas = $canvas[0];
+    if (canvas) {
+      // Create ZAMA themed zodiac model with gold color
+      this._zodiacModel = new ZodiacSymbolModel({ canvas: canvas });
+      // Override shadow color to ZAMA yellow
+      this._zodiacModel.shadowColor = '#ffd208';
+      this._zodiacModel.startDrawing();
+      // Apply additional CSS for alignment (after ZodiacSymbolModel sets its styles)
+      $canvas.css({
+        'vertical-align': 'middle',
+        'margin-right': '1rem',
+      });
     }
   },
 

@@ -16,6 +16,20 @@
 			max-width: 20rem;
 		}
 	}
+
+	// ZAMA Zodiac Canvas positioning
+	.header-dashed-text {
+		// Hide default dashes icon, use canvas instead
+		&:before {
+			display: none;
+		}
+
+		// Canvas inside title - inline aligned
+		.settings-zodiac-canvas {
+			vertical-align: top;
+			margin-right: 1rem;
+		}
+	}
 }
 
 .settings-category {
@@ -146,4 +160,45 @@
 	bottom: -4.0rem;
 	left: 50%;
 	transform: translateX(-50%);
+}
+
+/* ---------- SETTINGS - ZAMA THEME ---------- */
+
+// ZAMA Color Variables
+$zama-yellow: #ffd208;
+$zama-yellow-dark: #716023;
+$zama-yellow-light: #ffe566;
+$zama-yellow-border: #b89b1a;
+
+// Settings Quality Buttons - ZAMA Theme (lighting, shadow, board)
+.settings-category {
+	.btn-group {
+		.btn-primary {
+			background: rgba(113, 96, 35, 0.4);
+			border: 1px solid $zama-yellow-border;
+			color: $zama-yellow-light;
+			text-shadow: 0 0.1rem 0.2rem rgba(0,0,0,0.5);
+			transition: all 0.15s ease;
+
+			&:hover, &:focus {
+				background: rgba(113, 96, 35, 0.6);
+				border-color: $zama-yellow;
+				color: $zama-yellow;
+			}
+
+			&:active {
+				background: rgba(113, 96, 35, 0.8);
+			}
+
+			&.active {
+				background: linear-gradient(180deg, $zama-yellow 0%, #c9a820 100%);
+				border-color: $zama-yellow;
+				color: $zama-yellow-dark;
+				text-shadow: 0 0.1rem 0 rgba(255,255,255,0.3);
+				box-shadow:
+					0 0 0.8rem rgba(255, 210, 8, 0.5),
+					inset 0 0.1rem 0 rgba(255,255,255,0.3);
+			}
+		}
+	}
 }

@@ -1354,6 +1354,9 @@ CONFIG.reset = function () {
 
   // razer chroma integration
   CONFIG.razerChromaEnabled = false;
+
+  // FHE Secure Mode - enables ZAMA FHE encryption for multiplayer games
+  CONFIG.fheEnabled = true;
 };
 CONFIG.resetLastGameData = function () {
   // global animation speed modifier used by replay playback

@@ -146,6 +146,8 @@ Thumbs.db
 *.swo
 *~
 
+CLAUDE.md
+
 # Private server setup documentation
 SERVER_SETUP.md
 

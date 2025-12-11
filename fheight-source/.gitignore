@@ -26,3 +26,5 @@ dump.rdb
 
 # OSX-specific artifacts
 .DS_Store
+
+CLAUDE.md

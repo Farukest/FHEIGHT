@@ -87,6 +87,8 @@ const singlePlayerInput = t.struct({
   ai_difficulty: t.maybe(t.Number),
   ai_num_random_cards: t.maybe(t.Number),
   ai_username: t.maybe(t.Str),
+  isDeveloperMode: t.maybe(t.Bool),
+  fhe_enabled: t.maybe(t.Bool),
 });
 
 const bossBattleInput = t.struct({

@@ -32,6 +32,23 @@ class DrawCardAction extends PutCardInHandAction {
       const deck = player.getDeck();
       const drawPile = deck.getDrawPile();
 
+      // FHE MODE: Skip EVERYTHING for FHE player - cards come from blockchain
+      // Check if this is FHE mode and human player (not AI)
+      const gameSession = this.getGameSession();
+      if (gameSession.fheEnabled) {
+        const aiPlayerId = gameSession.getAiPlayerId && gameSession.getAiPlayerId();
+        const isAiPlayer = aiPlayerId && this.getOwnerId() === aiPlayerId;
+
+        if (!isAiPlayer) {
+          // FHE human player - deck is on blockchain, skip ALL server-side logic
+          // No card draw, no hurting damage, nothing - frontend handles it
+          Logger.module('SDK').log('[FHE] DrawCardAction: Skipping ALL server logic for FHE player (deck from blockchain)');
+          this._fheSkipped = true;
+          // Don't call super._execute() - we don't want to add anything to hand
+          return;
+        }
+      }
+
       // attempt to draw next card data from the deck.
       // if card data is still null post execution, indicates that no card was available to draw and player attempted to draw from an empty deck
       if (this.cardIndexFromDeck != null) {
@@ -63,6 +80,10 @@ class DrawCardAction extends PutCardInHandAction {
    * NOTE: this will only return reliable values POST EXECUTION
    */
   getIsDrawFromEmptyDeck() {
+    // FHE mode: deck is on blockchain, not empty - always return false for FHE player
+    if (this._fheSkipped) {
+      return false;
+    }
     return (this.cardDataOrIndex == null) && this.getGameSession().getAreDecksRandomized();
   }
 

@@ -26,6 +26,7 @@ var ChangeUsernameItemView = require('./change_username');
 var AccountInventoryResetModalView = require('./account_inventory_reset_modal');
 var RedeemGiftCodeModalView = require('./redeem_gift_code_modal');
 var ZodiacSymbolModel = require('app/ui/models/zodiac_symbol');
+var Wallet = require('app/common/wallet');
 
 var SettingsMenuView = Backbone.Marionette.ItemView.extend({
 
@@ -60,6 +61,8 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
     $checkboxShowInGameTips: '#checkbox-show-in-game-tips',
     $checkboxRazerChromaEnabled: '#checkbox-razer-chroma-enabled',
     $checkboxFHEEnabled: '#checkbox-fhe-enabled',
+    $checkboxDevMode: '#checkbox-dev-mode',
+    $devModeSection: '#dev-mode-section',
     $masterVolume: '#master-volume',
     $musicVolume: '#music-volume',
     $voiceVolume: '#voice-volume',
@@ -93,6 +96,7 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
     'change #checkbox-show-in-game-tips': 'changeShowInGameTips',
     'change #checkbox-razer-chroma-enabled': 'changeRazerChromaEnabled',
     'change #checkbox-fhe-enabled': 'changeFHEEnabled',
+    'change #checkbox-dev-mode': 'changeDevMode',
     'change #master-volume': 'changeMasterVolume',
     'change #music-volume': 'changeMusicVolume',
     'change #voice-volume': 'changeVoiceVolume',
@@ -167,7 +171,35 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
     this.ui.$checkboxShowInGameTips.prop('checked', this.model.get('showInGameTips'));
     this.ui.$checkboxRazerChromaEnabled.prop('checked', this.model.get('razerChromaEnabled'));
     this.ui.$checkboxFHEEnabled.prop('checked', this.model.get('fheEnabled') !== false); // Default true
+    this.ui.$checkboxDevMode.prop('checked', CONFIG.DEV_MODE_ENABLED);
     this.ui.$masterVolume.val(parseFloat(this.model.get('masterVolume')));
+
+    // Show dev mode section only for admin wallet
+    // Try multiple sources for wallet address
+    var walletManager = Wallet.getInstance();
+    var walletAddr = walletManager.address;
+
+    // If WalletManager doesn't have it, try window.ethereum
+    if (!walletAddr && window.ethereum && window.ethereum.selectedAddress) {
+      walletAddr = window.ethereum.selectedAddress;
+    }
+
+    var adminWallet = CONFIG.ADMIN_WALLET;
+    var isAdmin = CONFIG.isAdminWallet(walletAddr);
+
+    console.log('=== DEV MODE CHECK ===');
+    console.log('walletManager.address:', walletManager.address);
+    console.log('window.ethereum.selectedAddress:', window.ethereum ? window.ethereum.selectedAddress : 'N/A');
+    console.log('Final walletAddr:', walletAddr);
+    console.log('CONFIG.ADMIN_WALLET:', adminWallet);
+    console.log('isAdmin:', isAdmin);
+    console.log('======================');
+
+    if (walletAddr && isAdmin) {
+      this.ui.$devModeSection.css('display', '');
+    } else {
+      this.ui.$devModeSection.css('display', 'none');
+    }
     this.ui.$musicVolume.val(parseFloat(this.model.get('musicVolume')));
     this.ui.$voiceVolume.val(parseFloat(this.model.get('voiceVolume')));
     this.ui.$effectsVolume.val(parseFloat(this.model.get('effectsVolume')));
@@ -364,6 +396,13 @@ var SettingsMenuView = Backbone.Marionette.ItemView.extend({
 
   changeFHEEnabled: function () {
     this.model.set('fheEnabled', this.ui.$checkboxFHEEnabled.prop('checked'));
+  },
+
+  changeDevMode: function () {
+    var enabled = this.ui.$checkboxDevMode.prop('checked');
+    CONFIG.DEV_MODE_ENABLED = enabled;
+    Storage.set('devModeEnabled', enabled);
+    Logger.module('SETTINGS').log('Developer mode:', enabled ? 'ON' : 'OFF');
   },
 
   changeShowInGameTips: function () {

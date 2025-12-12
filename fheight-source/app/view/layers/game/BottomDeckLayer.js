@@ -555,6 +555,37 @@ var BottomDeckLayer = BaseLayer.extend({
 
   /* endregion BINDING */
 
+  /* region FHE DECRYPT */
+
+  /**
+   * Shows FHE decrypt state on all starting hand cards.
+   */
+  showFHEDecryptState() {
+    const cardNodes = this.getCardNodes();
+    const numCards = CONFIG.STARTING_HAND_SIZE;
+    for (let i = 0; i < numCards; i++) {
+      const cardNode = cardNodes[i];
+      if (cardNode && cardNode.showFHEDecryptState) {
+        cardNode.showFHEDecryptState();
+      }
+    }
+  },
+
+  /**
+   * Hides FHE decrypt state on all cards.
+   */
+  hideFHEDecryptState() {
+    const cardNodes = this.getCardNodes();
+    for (let i = 0; i < cardNodes.length; i++) {
+      const cardNode = cardNodes[i];
+      if (cardNode && cardNode.hideFHEDecryptState) {
+        cardNode.hideFHEDecryptState();
+      }
+    }
+  },
+
+  /* endregion FHE DECRYPT */
+
 });
 
 BottomDeckLayer.STATUS = {

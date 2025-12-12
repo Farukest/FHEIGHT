@@ -360,7 +360,7 @@ router.post "/session/wallet-connect", (req, res, next) ->
 
   try
     # Recover the address from the signature
-    recoveredAddress = ethers.verifyMessage(message, signature)?.toLowerCase()
+    recoveredAddress = ethers.utils.verifyMessage(message, signature)?.toLowerCase()
 
     if recoveredAddress != walletAddress
       return res.status(401).json({message: 'Invalid signature'})

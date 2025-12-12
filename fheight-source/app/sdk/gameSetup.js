@@ -163,6 +163,16 @@ GameSetup.setupDeck = function(gameSession, player) {
 };
 
 GameSetup.addCardsToDeck = function(gameSession, player, playerData, playerCardsData) {
+  // FHE MODE: Skip deck setup for FHE player - cards come from blockchain
+  if (gameSession.fheEnabled && playerData.fhePlayer) {
+    console.log('[GAME SETUP] FHE MODE: Skipping deck setup for FHE player (cards from blockchain)');
+    console.log('[GAME SETUP] FHE player ID:', player.getPlayerId());
+    // Just initialize empty deck - frontend will populate from blockchain
+    const playerDeck = player.getDeck();
+    playerDeck.setOwnerId(player.getPlayerId());
+    return;
+  }
+
   if (playerCardsData != null) {
     let card, cardData, index, playerStartingHandSize;
     const playerDeck = player.getDeck();
@@ -194,11 +204,15 @@ GameSetup.addCardsToDeck = function(gameSession, player, playerData, playerCards
 
 
     // add cards to hand
+    // DEBUG: Check developer mode status
+    console.log('[GAME SETUP] isDeveloperMode:', gameSession.getIsDeveloperMode(), 'areDecksRandomized:', gameSession.getAreDecksRandomized());
     for (let i = 0, end = playerStartingHandSize, asc = 0 <= end; asc ? i < end : i > end; asc ? i++ : i--) {
       if (!gameSession.getAreDecksRandomized()) {
         index = playerCardsData.length - 1;
+        console.log('[GAME SETUP] Deterministic pick - index:', index);
       } else {
         index = Math.floor(Math.random() * playerCardsData.length);
+        console.log('[GAME SETUP] Random pick - index:', index);
       }
       cardData = playerCardsData.splice(index, 1)[0];
       card = gameSession.getExistingCardFromIndexOrCreateCardFromData(cardData);

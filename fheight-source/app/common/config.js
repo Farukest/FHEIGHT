@@ -1380,4 +1380,16 @@ CONFIG.resetLastSelectedDeckData = function () {
 
 CONFIG.reset();
 
+// Admin wallet for dev mode toggle (lowercase, matches .env)
+CONFIG.ADMIN_WALLET = '0x78c1e25054e8a3f1bc7f9d16f4e5dac0ba415cf9';
+
+// Developer mode flag (can be toggled by admin)
+CONFIG.DEV_MODE_ENABLED = false;
+
+// Check if connected wallet is admin
+CONFIG.isAdminWallet = function(walletAddress) {
+  if (!walletAddress) return false;
+  return walletAddress.toLowerCase() === CONFIG.ADMIN_WALLET.toLowerCase();
+};
+
 module.exports = CONFIG;

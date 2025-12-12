@@ -96,6 +96,10 @@ const EVENTS = {
   start_boss_battle: 'start_boss_battle',
   start_replay: 'start_replay',
 
+  // FHE events
+  fhe_card_drawn: 'fhe_card_drawn',
+  fhe_starting_hand_ready: 'fhe_starting_hand_ready',
+
   // show ui
   show_login: 'show_login',
   show_terms: 'show_terms',

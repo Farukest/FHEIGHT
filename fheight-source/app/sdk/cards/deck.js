@@ -22,11 +22,12 @@ const _ = require('underscore');
 
 class Deck extends SDKObject {
   static initClass() {
-  
+
     this.prototype.numCardsReplacedThisTurn = 0; // counter of card replacements player has made, reset each turn
     this.prototype.drawPile = null; // record of card indices still available to draw
     this.prototype.hand = null; // record of card indices in hand
     this.prototype.ownerId = null;
+    this.prototype.fheDeckRemaining = null; // FHE mode: remaining cards in blockchain deck
   }
 
   constructor(gameSession, ownerId) {
@@ -118,7 +119,21 @@ class Deck extends SDKObject {
   }
 
   getNumCardsInDrawPile() {
+    // FHE mode: use blockchain deck count if available
+    if (this.fheDeckRemaining !== null) {
+      return this.fheDeckRemaining;
+    }
     return this.drawPile.length;
+  }
+
+  // FHE mode: set remaining cards in blockchain deck
+  setFheDeckRemaining(count) {
+    this.fheDeckRemaining = count;
+  }
+
+  // FHE mode: get remaining cards in blockchain deck
+  getFheDeckRemaining() {
+    return this.fheDeckRemaining;
   }
 
   flushCachedCards() {

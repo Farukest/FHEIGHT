@@ -80,6 +80,11 @@ const TwitchManager = (window.TwitchManager = require('app/ui/managers/twitch_ma
 const ShopManager = (window.ShopManager = require('app/ui/managers/shop_manager'));
 const StreamManager = (window.StreamManager = require('app/ui/managers/stream_manager'));
 
+// FHE Modules
+const FHE = require('app/sdk/fhe');
+const FHESession = require('app/common/fhe_session');
+const Wallet = require('app/common/wallet');
+
 // Views
 const Helpers = require('app/ui/views/helpers');
 
@@ -1801,6 +1806,13 @@ App._startSinglePlayerGame = function(myPlayerDeck, myPlayerFactionId, myPlayerG
   }
 
   Logger.module("APPLICATION").log("App._startSinglePlayerGame");
+
+  // Check if FHE mode is enabled
+  if (CONFIG.fheEnabled) {
+    Logger.module("APPLICATION").log("App._startSinglePlayerGame -> FHE mode enabled, using blockchain flow");
+    return App._startSinglePlayerGameFHE(myPlayerDeck, myPlayerFactionId, myPlayerGeneralId, myPlayerCardBackId, myPlayerBattleMapId, aiGeneralId, aiDifficulty, aiNumRandomCards);
+  }
+
   // analytics call
   Analytics.page("Single Player Game",{ path: "/#single_player" });
 
@@ -1814,6 +1826,8 @@ App._startSinglePlayerGame = function(myPlayerDeck, myPlayerFactionId, myPlayerG
   }
 
   // request single player game
+  // DEBUG: Log what we're sending to server
+  Logger.module("APPLICATION").log("Sending to server - isDeveloperMode:", CONFIG.DEV_MODE_ENABLED);
   App._singlePlayerGamePromise = new Promise(function(resolve, reject) {
     const request = $.ajax({
       url: process.env.API_URL + '/api/me/games/single_player',
@@ -1825,7 +1839,8 @@ App._startSinglePlayerGame = function(myPlayerDeck, myPlayerFactionId, myPlayerG
         ai_general_id: aiGeneralId,
         ai_difficulty: aiDifficulty,
         ai_num_random_cards: aiNumRandomCards,
-        ai_username: aiGeneralName
+        ai_username: aiGeneralName,
+        isDeveloperMode: CONFIG.DEV_MODE_ENABLED
       }),
       type: 'POST',
       contentType: 'application/json',
@@ -1873,6 +1888,164 @@ App._cancelSinglePlayer = function() {
     App._singlePlayerGamePromise.cancel();
     return App._singlePlayerGamePromise = null;
   }
+};
+
+/**
+ * FHE-enabled Single Player Game
+ * Uses smart contract for encrypted game state
+ */
+App._startSinglePlayerGameFHE = function(myPlayerDeck, myPlayerFactionId, myPlayerGeneralId, myPlayerCardBackId, myPlayerBattleMapId, aiGeneralId, aiDifficulty, aiNumRandomCards) {
+  Logger.module("APPLICATION").log("App._startSinglePlayerGameFHE");
+
+  // analytics call
+  Analytics.page("Single Player Game (FHE)",{ path: "/#single_player_fhe" });
+
+  // set status to in game
+  ChatManager.getInstance().setStatus(ChatManager.STATUS_GAME);
+
+  let aiGeneralName = null;
+  const aiGeneralCard = SDK.GameSession.getCardCaches().getCardById(aiGeneralId);
+  if (aiGeneralCard != null) {
+    aiGeneralName = aiGeneralCard.getName();
+  }
+
+  // init finding game view
+  const findingGameItemView = new FindingGameItemView({model: new Backbone.Model({gameType: SDK.GameType.SinglePlayer, fheEnabled: true})});
+  findingGameItemView.listenTo(findingGameItemView, "destroy", App._cancelSinglePlayer);
+
+  // Extract card IDs from deck (deck is array of {id: cardId})
+  // IMPORTANT: In normal flow, deck[0] is the general card which is placed on board, not in deck
+  // We need to skip the first card (general) for FHE deck
+  const deckCardIds = myPlayerDeck.slice(1).map(function(card) {
+    return card.id;
+  });
+  Logger.module("APPLICATION").log("FHE: Deck card count (excluding general):", deckCardIds.length);
+
+  // Get FHE session and contract addresses
+  const fheSession = FHESession.getInstance();
+  const walletManager = Wallet.getInstance();
+
+  // FHE game creation promise
+  App._singlePlayerGamePromise = new Promise(function(resolve, reject) {
+    // Step 1: Ensure wallet is connected
+    if (!walletManager.connected) {
+      Logger.module("APPLICATION").log("FHE: Wallet not connected, connecting...");
+      walletManager.connect()
+        .then(function() {
+          return proceedWithFHEGame();
+        })
+        .catch(reject);
+    } else {
+      proceedWithFHEGame().catch(reject);
+    }
+
+    function proceedWithFHEGame() {
+      // Step 2: Initialize FHE Game Mode
+      const fheGameMode = FHE.GameMode.getInstance();
+      const contractAddresses = fheSession.getContractAddresses();
+      const gameSessionAddress = contractAddresses.GameSession;
+
+      Logger.module("APPLICATION").log("FHE: Initializing with contract:", gameSessionAddress);
+
+      return fheGameMode.initialize(gameSessionAddress)
+        .then(function() {
+          Logger.module("APPLICATION").log("FHE: Creating SINGLE PLAYER game on blockchain...");
+
+          // Step 3: Create single player game on contract
+          // This uses createSinglePlayerGame which doesn't require joinGame
+          // The game starts immediately without waiting for player 2
+          return fheGameMode.createSinglePlayerGame(myPlayerGeneralId, deckCardIds);
+        })
+        .then(function(gameId) {
+          Logger.module("APPLICATION").log("FHE: Game created with ID:", gameId);
+
+          // Step 4: Now we need to start the game with traditional backend
+          // But with FHE flag so backend knows to use contract state
+          // DEBUG: Log what we're sending to server in FHE mode
+          Logger.module("APPLICATION").log("FHE: Sending to server - isDeveloperMode:", CONFIG.DEV_MODE_ENABLED);
+          const request = $.ajax({
+            url: process.env.API_URL + '/api/me/games/single_player',
+            data: JSON.stringify({
+              deck: myPlayerDeck,
+              cardBackId: myPlayerCardBackId,
+              battleMapId: myPlayerBattleMapId,
+              hasPremiumBattleMaps: InventoryManager.getInstance().hasAnyBattleMapCosmetics(),
+              ai_general_id: aiGeneralId,
+              ai_difficulty: aiDifficulty,
+              ai_num_random_cards: aiNumRandomCards,
+              ai_username: aiGeneralName,
+              isDeveloperMode: CONFIG.DEV_MODE_ENABLED,
+              // FHE specific data
+              fhe_enabled: true,
+              fhe_game_id: gameId,
+              fhe_contract_address: gameSessionAddress,
+              fhe_player_wallet: walletManager.address
+            }),
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json'
+          });
+
+          request.done(function(res) {
+            // Add FHE data to response
+            res.fhe_enabled = true;
+            res.fhe_game_id = gameId;
+            res.fhe_contract_address = gameSessionAddress;
+            resolve(res);
+          });
+
+          request.fail(function(jqXHR) {
+            reject((jqXHR && jqXHR.responseJSON && (jqXHR.responseJSON.error || jqXHR.responseJSON.message)) || "Connection error. Please retry.");
+          });
+        });
+    }
+  }).cancellable();
+
+  // show ui
+  return Promise.all([
+    Scene.getInstance().showContentByClass(PlayLayer, true),
+    Scene.getInstance().showFindingGame(myPlayerFactionId, myPlayerGeneralId),
+    NavigationManager.getInstance().showContentView(findingGameItemView),
+    NavigationManager.getInstance().showUtilityView(new UtilityMatchmakingMenuItemView({model: ProfileManager.getInstance().profile}))
+  ]).then(function() {
+    // when we have single player game data
+    if (App._singlePlayerGamePromise != null) {
+      return App._singlePlayerGamePromise.then(function(gameListingData) {
+        App._singlePlayerGamePromise = null;
+
+        // don't allow user triggered navigation now that we've found a game
+        NavigationManager.getInstance().requestUserTriggeredNavigationLocked(App._userNavLockId);
+
+        // get found game data from game listing data
+        const playerDataModel = App._playerDataFromGameListingData(gameListingData);
+
+        // Store FHE info in game session
+        if (gameListingData.fhe_enabled) {
+          SDK.GameSession.getInstance().fheEnabled = true;
+          SDK.GameSession.getInstance().fheGameId = gameListingData.fhe_game_id;
+          SDK.GameSession.getInstance().fheContractAddress = gameListingData.fhe_contract_address;
+          Logger.module("APPLICATION").log("FHE: Game session configured with FHE data");
+        }
+
+        // show found game
+        return Promise.all([
+          Scene.getInstance().showVsForGame(playerDataModel.get("myPlayerFactionId"), playerDataModel.get("opponentPlayerFactionId"), playerDataModel.get("myPlayerIsPlayer1"), CONFIG.ANIMATE_MEDIUM_DURATION, playerDataModel.get("myPlayerGeneralId"), playerDataModel.get("opponentPlayerGeneralId")),
+          Scene.getInstance().showNewGame(playerDataModel.get("player1GeneralId"), playerDataModel.get("player2GeneralId")),
+          NavigationManager.getInstance().destroyNonContentViews(),
+          findingGameItemView.showFoundGame(playerDataModel)
+        ]).then(function() {
+          // join found game
+          return App._joinGame(gameListingData);
+        });
+      });
+    }
+  }).catch(Promise.CancellationError, function(e) {
+    Logger.module("APPLICATION").log("App:_startSinglePlayerGameFHE -> promise chain cancelled");
+  }).catch(function(errorMessage) {
+    // Shutdown FHE on error
+    FHE.GameMode.getInstance().shutdown();
+    return App._error((errorMessage != null) ? "Failed to start FHE single player game: " + errorMessage : undefined);
+  });
 };
 
 App._startBossBattleGame = function(myPlayerDeck, myPlayerFactionId, myPlayerGeneralId, myPlayerCardBackId, myPlayerBattleMapId, aiGeneralId) {
@@ -2260,6 +2433,14 @@ App._startGameWithChallenge = function(challenge) {
   SDK.GameSession.getInstance().setUserId(ProfileManager.getInstance().get('id'));
   challenge.setupSession(SDK.GameSession.getInstance());
 
+  // apply developer mode setting (disables deck randomization for testing)
+  if (CONFIG.DEV_MODE_ENABLED) {
+    SDK.GameSession.getInstance().setIsDeveloperMode(true);
+    console.log('=== DEV MODE APPLIED TO CHALLENGE ===');
+    console.log('getIsDeveloperMode:', SDK.GameSession.getInstance().getIsDeveloperMode());
+    console.log('getAreDecksRandomized:', SDK.GameSession.getInstance().getAreDecksRandomized());
+  }
+
   // get ui promise
   if (CONFIG.LOAD_ALL_AT_START) {
     ui_promise = Promise.resolve();
@@ -2283,6 +2464,12 @@ App._startGameWithData = function(sessionData) {
   SDK.GameSession.getInstance().deserializeSessionFromFirebase(sessionData);
   SDK.GameSession.getInstance().setUserId(ProfileManager.getInstance().get('id'));
 
+  // apply developer mode setting (disables deck randomization for testing)
+  if (CONFIG.DEV_MODE_ENABLED) {
+    SDK.GameSession.getInstance().setIsDeveloperMode(true);
+    Logger.module("APPLICATION").log("Developer mode ENABLED - deck randomization disabled");
+  }
+
   // do not start games that are already over
   if (!SDK.GameSession.getInstance().isOver()) {
     return App._startGame();
@@ -2296,6 +2483,14 @@ App._startGame = function() {
   let allowUntargetable;
   const gameSession = SDK.GameSession.getInstance();
   Logger.module("APPLICATION").log("App:_startGame", gameSession.getStatus());
+
+  // Debug dev mode status
+  console.log('=== _startGame DEV MODE STATUS ===');
+  console.log('CONFIG.DEV_MODE_ENABLED:', CONFIG.DEV_MODE_ENABLED);
+  console.log('gameSession.getIsDeveloperMode():', gameSession.getIsDeveloperMode());
+  console.log('gameSession.getAreDecksRandomized():', gameSession.getAreDecksRandomized());
+  console.log('gameSession.isChallenge():', gameSession.isChallenge());
+  console.log('==================================');
 
   if (gameSession.getIsSpectateMode()) {
     ChatManager.getInstance().setStatus(ChatManager.STATUS_WATCHING);
@@ -3970,6 +4165,12 @@ App.on("start", function(options) {
   if (userHiDPIEnabled != null) {
     if (userHiDPIEnabled === "true") { CONFIG.hiDPIEnabled = true;
     } else if (userHiDPIEnabled === "false") { CONFIG.hiDPIEnabled = false; }
+  }
+
+  // load developer mode setting (admin only feature)
+  const userDevModeEnabled = Storage.get("devModeEnabled");
+  if (userDevModeEnabled != null) {
+    CONFIG.DEV_MODE_ENABLED = userDevModeEnabled === "true" || userDevModeEnabled === true;
   }
 
   // update last resolution values to initial

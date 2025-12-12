@@ -98,7 +98,7 @@ FHEGameMode.prototype.initialize = function(contractAddress) {
 };
 
 /**
- * Yeni FHE oyunu olustur
+ * Yeni FHE oyunu olustur (Multiplayer)
  *
  * @param {number} generalCardId - General kart ID
  * @param {number[]} deckCardIds - 40 kartlik deste
@@ -113,7 +113,7 @@ FHEGameMode.prototype.createGame = function(generalCardId, deckCardIds) {
       return;
     }
 
-    Logger.module('FHE_MODE').log('Creating FHE game');
+    Logger.module('FHE_MODE').log('Creating FHE multiplayer game');
 
     self.fheGameSession.createGame(generalCardId, deckCardIds)
       .then(function(gameId) {
@@ -125,7 +125,43 @@ FHEGameMode.prototype.createGame = function(generalCardId, deckCardIds) {
       })
       .then(function() {
         self.cardHandler.fheGameSession.playerIndex = 0;
-        Logger.module('FHE_MODE').log('FHE game created:', self.gameId);
+        Logger.module('FHE_MODE').log('FHE multiplayer game created:', self.gameId);
+        resolve(self.gameId);
+      })
+      .catch(reject);
+  });
+};
+
+/**
+ * Yeni Single Player FHE oyunu olustur
+ * joinGame gerektirmez, oyun direkt baslar
+ *
+ * @param {number} generalCardId - General kart ID
+ * @param {number[]} deckCardIds - 40 kartlik deste
+ * @returns {Promise<number>} gameId
+ */
+FHEGameMode.prototype.createSinglePlayerGame = function(generalCardId, deckCardIds) {
+  var self = this;
+
+  return new Promise(function(resolve, reject) {
+    if (self.state !== FHEModeState.ACTIVE) {
+      reject(new Error('FHE mode not active. Call initialize() first.'));
+      return;
+    }
+
+    Logger.module('FHE_MODE').log('Creating FHE SINGLE PLAYER game');
+
+    self.fheGameSession.createSinglePlayerGame(generalCardId, deckCardIds)
+      .then(function(gameId) {
+        self.gameId = gameId;
+        self.playerIndex = 0;
+
+        // Card handler'i etkinlestir
+        return self.cardHandler.enable(self.contractAddress, gameId);
+      })
+      .then(function() {
+        self.cardHandler.fheGameSession.playerIndex = 0;
+        Logger.module('FHE_MODE').log('FHE single player game created:', self.gameId);
         resolve(self.gameId);
       })
       .catch(reject);

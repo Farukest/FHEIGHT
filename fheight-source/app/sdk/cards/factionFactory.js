@@ -333,7 +333,20 @@ fmap[Factions.Faction1] = {
     {id: Cards.Neutral.StormmetalGolem},
     {id: Cards.Neutral.Bloodletter},
     {id: Cards.Neutral.DragoneboneGolem},
-    {id: Cards.Neutral.DragoneboneGolem}
+    {id: Cards.Neutral.DragoneboneGolem},
+    // 40 kart icin eklenenler (FHE contract gereksimi)
+    {id: Cards.Neutral.HailstoneGolem},
+    {id: Cards.Neutral.HailstoneGolem},
+    {id: Cards.Neutral.HailstoneGolem},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter}
   ]
 };
 
@@ -425,7 +438,20 @@ fmap[Factions.Faction2] = {
     {id: Cards.Neutral.Bloodletter},
     {id: Cards.Neutral.Bloodletter},
     {id: Cards.Neutral.DragoneboneGolem},
-    {id: Cards.Neutral.DragoneboneGolem}
+    {id: Cards.Neutral.DragoneboneGolem},
+    // 40 kart icin eklenenler (FHE contract gereksimi)
+    {id: Cards.Neutral.BloodshardGolem},
+    {id: Cards.Neutral.BloodshardGolem},
+    {id: Cards.Neutral.BloodshardGolem},
+    {id: Cards.Neutral.PutridMindflayer},
+    {id: Cards.Neutral.PutridMindflayer},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.StormmetalGolem}
   ]
 };
 
@@ -517,7 +543,20 @@ fmap[Factions.Faction3] = {
     {id: Cards.Neutral.Necroseer},
     {id: Cards.Neutral.Necroseer},
     {id: Cards.Neutral.DragoneboneGolem},
-    {id: Cards.Neutral.DragoneboneGolem}
+    {id: Cards.Neutral.DragoneboneGolem},
+    // 40 kart icin eklenenler (FHE contract gereksimi)
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.Bloodletter},
+    {id: Cards.Neutral.Bloodletter},
+    {id: Cards.Neutral.Bloodletter}
   ]
 };
 
@@ -609,7 +648,20 @@ fmap[Factions.Faction4] = {
     {id: Cards.Neutral.StormmetalGolem},
     {id: Cards.Neutral.StormmetalGolem},
     {id: Cards.Neutral.DragoneboneGolem},
-    {id: Cards.Neutral.DragoneboneGolem}
+    {id: Cards.Neutral.DragoneboneGolem},
+    // 40 kart icin eklenenler (FHE contract gereksimi)
+    {id: Cards.Neutral.BloodshardGolem},
+    {id: Cards.Neutral.BloodshardGolem},
+    {id: Cards.Neutral.BloodshardGolem},
+    {id: Cards.Neutral.SaberspineTiger},
+    {id: Cards.Neutral.SaberspineTiger},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.Bloodletter}
   ]
 };
 
@@ -701,7 +753,20 @@ fmap[Factions.Faction5] = {
     {id: Cards.Neutral.StormmetalGolem},
     {id: Cards.Neutral.Bloodletter},
     {id: Cards.Neutral.DragoneboneGolem},
-    {id: Cards.Neutral.DragoneboneGolem}
+    {id: Cards.Neutral.DragoneboneGolem},
+    // 40 kart icin eklenenler (FHE contract gereksimi)
+    {id: Cards.Neutral.HailstoneGolem},
+    {id: Cards.Neutral.HailstoneGolem},
+    {id: Cards.Neutral.HailstoneGolem},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.FlameWing},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.PrimusShieldmaster}
   ]
 };
 
@@ -793,7 +858,20 @@ fmap[Factions.Faction6] = {
     {id: Cards.Neutral.StormmetalGolem},
     {id: Cards.Neutral.Bloodletter},
     {id: Cards.Neutral.DragoneboneGolem},
-    {id: Cards.Neutral.DragoneboneGolem}
+    {id: Cards.Neutral.DragoneboneGolem},
+    // 40 kart icin eklenenler (FHE contract gereksimi)
+    {id: Cards.Neutral.BloodshardGolem},
+    {id: Cards.Neutral.BloodshardGolem},
+    {id: Cards.Neutral.BloodshardGolem},
+    {id: Cards.Neutral.SaberspineTiger},
+    {id: Cards.Neutral.SaberspineTiger},
+    {id: Cards.Neutral.SaberspineTiger},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.ThornNeedler},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter},
+    {id: Cards.Neutral.ValeHunter}
   ]
 };
 

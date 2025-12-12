@@ -2,6 +2,7 @@
 
 var EVENTS = require('app/common/event_types');
 var SDK = require('app/sdk');
+var CONFIG = require('app/common/config');
 var Animations = require('app/ui/views/animations');
 var GameChooseHandTemplate = require('app/ui/templates/item/game_choose_hand.hbs');
 

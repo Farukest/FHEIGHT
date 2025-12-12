@@ -153,6 +153,23 @@ createSinglePlayerGame = (userId,name,gameType,deck,cardBackId,battleMapIndexesT
     @.newGameSession.gameFormat = GameFormat.Legacy
     @.newGameSession.version = version
     @.newGameSession.setIsRunningAsAuthoritative(true)
+
+    # check if dev mode is requested via gameSetupOptions
+    if gameSetupOptions?.isDeveloperMode
+      @.newGameSession.setIsDeveloperMode(true)
+      Logger.module("SINGLE PLAYER").debug "Developer mode ENABLED - deck randomization disabled"
+
+    # check if FHE mode is requested via gameSetupOptions
+    if gameSetupOptions?.fheEnabled
+      @.newGameSession.fheEnabled = true
+      # Mark human player's data with fhePlayer flag (before swap, player1DataForGame is human)
+      # After swap logic above, we need to find which playerData has the real userId (not 'ai')
+      if player1DataForGame.userId == userId
+        player1DataForGame.fhePlayer = true
+      else
+        player2DataForGame.fhePlayer = true
+      Logger.module("SINGLE PLAYER").debug "FHE mode ENABLED - human player deck will be skipped (comes from blockchain)"
+
     GameSetup.setupNewSession(@.newGameSession, player1DataForGame, player2DataForGame, withoutManaTiles)
 
     # set ai properties for later retrieval by ai

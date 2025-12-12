@@ -35,6 +35,8 @@ var moment = require('moment');
 var FHEIGHTFirebase = require('app/ui/extensions/fheight_firebase');
 var i18next = require('i18next');
 const Chroma = require('app/common/chroma');
+var FHEGameSession = require('app/sdk/fhe/fheGameSession');
+var FHESession = require('app/common/fhe_session');
 var GamePlayer2Layout = require('./game_player2');
 var GamePlayer1Layout = require('./game_player1');
 
@@ -79,6 +81,7 @@ var GameLayout = Backbone.Marionette.LayoutView.extend({
   _numTurnsSinceReplaceUsed: -1,
   _remindReplaceCardTimeoutId: null,
   _spectatorNotificationTimeout: null,
+  _fheDecrypting: false,
 
   /* region INITIALIZATION */
 
@@ -272,6 +275,7 @@ var GameLayout = Backbone.Marionette.LayoutView.extend({
   onShowEndTurn: function () {
     this._stopReminderTimeouts();
     this.hideTurnTimerBar();
+    // FHE MODE: No TX here - card draw is handled by onFHEDrawCard when DrawCardAction step is received
   },
 
   _stopReminderTimeouts: function () {
@@ -286,6 +290,13 @@ var GameLayout = Backbone.Marionette.LayoutView.extend({
   },
 
   onAfterShowStartTurn: function () {
+    var self = this;
+
+    // FHE MODE: Draw card from blockchain on my turn start
+    var gameSession = SDK.GameSession.getInstance();
+    // FHE MODE: Card draw is now handled in onAfterShowEndTurn when DrawCardAction is detected
+    // No need to draw again on turn start - removed duplicate draw logic
+
     if (CONFIG.razerChromaEnabled) {
       if (Scene.getInstance().getGameLayer().getIsMyTurn()) {
         Chroma.flashActionThrottled(CONFIG.razerChromaIdleColor, 50, 2)
@@ -368,6 +379,46 @@ var GameLayout = Backbone.Marionette.LayoutView.extend({
     var step = e && e.step;
     if (step != null) {
       var action = step.getAction();
+
+      // FHE MODE: DrawCardAction tetiklendiginde kart cek
+      // Contract'tan getHand() + userDecrypt() ile yeni karti ogren (TX YOK!)
+      // DrawCardAction, EndTurnAction'in sub-action'i olarak gelebilir, bu yuzden
+      // tum action tree'yi kontrol etmemiz lazim (getFlattenedActionTree)
+      if (CONFIG.fheEnabled && !this._fheDecrypting) {
+        var myPlayerId = SDK.GameSession.getInstance().getMyPlayerId();
+
+        // Tum action agacini kontrol et (ana action + sub-actions)
+        var allActions = action.getFlattenedActionTree();
+        var myDrawCardActions = allActions.filter(function(a) {
+          return a instanceof SDK.DrawCardAction && a.getOwnerId() === myPlayerId;
+        });
+
+        if (myDrawCardActions.length > 0) {
+          this._fheDecrypting = true;
+          var fheSession = FHEGameSession.getInstance();
+
+          Logger.module('FHE').log('[DRAW] DrawCardAction detected for my player (count: ' + myDrawCardActions.length + ')');
+
+          // Contract'tan getHand + decrypt (TX yok, gas yok)
+          fheSession.drawCard()
+            .then(function(cardId) {
+              if (cardId !== null) {
+                Logger.module('FHE').log('[DRAW] FHE card drawn:', cardId);
+                // SDK'ya karti ekle
+                this._addFHECardToHand(cardId);
+                // UI refresh icin event tetikle
+                EventBus.getInstance().trigger(EVENTS.fhe_card_drawn, { cardId: cardId });
+              } else {
+                Logger.module('FHE').warn('[DRAW] Deck empty - fatigue!');
+              }
+              this._fheDecrypting = false;
+            }.bind(this))
+            .catch(function(error) {
+              Logger.module('FHE').error('[DRAW] FHE draw failed:', error);
+              this._fheDecrypting = false;
+            }.bind(this));
+        }
+      }
 
       // reset reminder counters on my actions
       if (action.getOwnerId() === SDK.GameSession.getInstance().getMyPlayerId()) {
@@ -486,6 +537,7 @@ var GameLayout = Backbone.Marionette.LayoutView.extend({
   /* region STATES */
 
   showNextStepInGameSetup: function () {
+    var self = this;
     Logger.module('UI').log('GameLayout.showNextStepInGameSetup');
     if (SDK.GameSession.getInstance().isActive()) {
       return this.showActiveGame();
@@ -519,6 +571,85 @@ var GameLayout = Backbone.Marionette.LayoutView.extend({
       if (SDK.GameSession.current().getMyPlayer().getHasStartingHand()) {
         return this.showStartingHand();
       } else {
+        // FHE MODE: Decrypt and populate hand BEFORE showing choose hand UI
+        var gameSession = SDK.GameSession.getInstance();
+        var fheEnabled = gameSession.fheEnabled || CONFIG.fheEnabled;
+        var isDeveloperMode = gameSession.getIsDeveloperMode();
+        var isSinglePlayerGame = gameSession.isSinglePlayer() || gameSession.isBossBattle() || gameSession.isChallenge() || gameSession.isSandbox();
+
+        if (fheEnabled && !isDeveloperMode && isSinglePlayerGame) {
+          Logger.module('FHE_UI').log('[FHE] showNextStepInGameSetup: FHE mode detected');
+
+          var fheGameSession = FHEGameSession.getInstance();
+          if (fheGameSession && fheGameSession.gameId) {
+            // First show choose hand UI
+            var showPromise = self.showChooseHand();
+
+            // Show FHE decrypt state on all card nodes
+            var scene = Scene.getInstance();
+            var gameLayer = scene && scene.getGameLayer();
+            if (gameLayer && gameLayer.bottomDeckLayer) {
+              gameLayer.bottomDeckLayer.showFHEDecryptState();
+            }
+
+            // Also disable continue button while decrypting
+            self._fheDecrypting = true;
+            if (self.chooseHandView) {
+              self.chooseHandView.setConfirmButtonVisibility(false);
+            }
+
+            // Then start decrypt in background
+            Logger.module('FHE_UI').log('[FHE] Starting background decrypt for gameId:', fheGameSession.gameId);
+
+            fheGameSession.decryptHand()
+              .then(function(decryptedCardIds) {
+                Logger.module('FHE_UI').log('[FHE] Hand decrypted:', decryptedCardIds);
+
+                // Get player info from blockchain to get real deckRemaining
+                return fheGameSession.getPlayerInfo(fheGameSession.playerIndex)
+                  .then(function(playerInfo) {
+                    Logger.module('FHE_UI').log('[FHE] Player info from blockchain:', playerInfo);
+                    return { decryptedCardIds: decryptedCardIds, deckRemaining: playerInfo.deckRemaining };
+                  });
+              })
+              .then(function(result) {
+                var decryptedCardIds = result.decryptedCardIds;
+                var deckRemaining = result.deckRemaining;
+
+                // Populate SDK deck with decrypted cards and real deck remaining from blockchain
+                self._populateFHEHand(decryptedCardIds, [], deckRemaining);
+
+                // Hide FHE decrypt state on cards
+                if (gameLayer && gameLayer.bottomDeckLayer) {
+                  gameLayer.bottomDeckLayer.hideFHEDecryptState();
+                }
+
+                // Enable continue button
+                self._fheDecrypting = false;
+                if (self.chooseHandView) {
+                  self.chooseHandView.setConfirmButtonVisibility(true);
+                }
+
+                // Refresh the card display in GameLayer
+                Scene.getInstance().getGameLayer().showChooseHand();
+              })
+              .catch(function(err) {
+                Logger.module('FHE_UI').error('[FHE] Decrypt failed:', err);
+                // Hide decrypt state even on error
+                if (gameLayer && gameLayer.bottomDeckLayer) {
+                  gameLayer.bottomDeckLayer.hideFHEDecryptState();
+                }
+                self._fheDecrypting = false;
+                if (self.chooseHandView) {
+                  self.chooseHandView.setConfirmButtonVisibility(true);
+                }
+              });
+
+            return showPromise;
+          }
+        }
+
+        // Normal flow (non-FHE)
         return this.showChooseHand();
       }
     }
@@ -606,8 +737,93 @@ var GameLayout = Backbone.Marionette.LayoutView.extend({
   },
 
   showSubmitChosenHand: function () {
+    var self = this;
+
+    // Check if still decrypting - show warning and don't proceed
+    if (this._fheDecrypting) {
+      Logger.module('FHE_UI').log('[FHE] Cannot submit - still decrypting cards');
+      // Show notification using existing navigation manager
+      var NavigationManager = require('app/ui/managers/navigation_manager');
+      NavigationManager.getInstance().showDialogForError('Decrypting your cards! Please wait for decryption to complete.');
+      return;
+    }
+
     // create an action to set the starting hand based on selected mulligan cards
     var mulliganIndices = Scene.getInstance().getGameLayer().getMulliganIndices();
+
+    // Check if FHE mode is enabled
+    var gameSession = SDK.GameSession.getInstance();
+    var fheEnabled = gameSession.fheEnabled || CONFIG.fheEnabled;
+    var isDeveloperMode = gameSession.getIsDeveloperMode();
+
+    Logger.module('FHE_UI').log('=== showSubmitChosenHand FHE CHECK ===');
+    Logger.module('FHE_UI').log('[FHE] mulliganIndices:', mulliganIndices);
+    Logger.module('FHE_UI').log('[FHE] fheEnabled:', fheEnabled);
+    Logger.module('FHE_UI').log('[FHE] isDeveloperMode:', isDeveloperMode);
+
+    if (fheEnabled && !isDeveloperMode) {
+      // FHE MODE
+      Logger.module('FHE_UI').log('[FHE] FHE MODE detected');
+
+      var fheGameSession = FHEGameSession.getInstance();
+
+      // SINGLE PLAYER MODE: Contract zaten mulligan'i atladi (createSinglePlayerGame)
+      // Oyun direkt InProgress durumunda, completeMulligan cagirmaya gerek yok
+      // Sadece SDK tarafini sync edelim
+      var isSinglePlayerGame = gameSession.isSinglePlayer() || gameSession.isBossBattle() || gameSession.isChallenge() || gameSession.isSandbox();
+      Logger.module('FHE_UI').log('[FHE] isSinglePlayerGame:', isSinglePlayerGame);
+      Logger.module('FHE_UI').log('[FHE] fheGameSession.gameId:', fheGameSession.gameId);
+
+      if (isSinglePlayerGame) {
+        // Single player FHE: Contract'ta mulligan yok, direkt SDK ile devam et
+        Logger.module('FHE_UI').log('[FHE] SINGLE PLAYER - Skipping contract completeMulligan (already in InProgress state)');
+        self._proceedWithMulligan(mulliganIndices);
+      } else if (fheGameSession.gameId !== null && fheGameSession.contract) {
+        // MULTIPLAYER FHE: Contract completeMulligan cagir
+        Logger.module('FHE_UI').log('[FHE] MULTIPLAYER - Calling completeMulligan on contract...');
+
+        // Convert mulliganIndices to bool[5] array
+        // mulliganIndices = [1, 3] means replace cards at index 1 and 3
+        var mulliganSlots = [false, false, false, false, false];
+        for (var i = 0; i < mulliganIndices.length; i++) {
+          var idx = mulliganIndices[i];
+          if (idx >= 0 && idx < 5) {
+            mulliganSlots[idx] = true;
+          }
+        }
+
+        Logger.module('FHE_UI').log('[FHE] mulliganSlots for contract:', mulliganSlots);
+
+        // Call contract completeMulligan
+        fheGameSession.completeMulligan(mulliganSlots)
+          .then(function() {
+            Logger.module('FHE_UI').log('[FHE] completeMulligan TX confirmed');
+            Logger.module('FHE_UI').log('[FHE] New hand ready, decrypting...');
+
+            // Hand is already decrypted by completeMulligan (it calls decryptHand internally)
+            var decryptedHand = fheGameSession.decryptedHand;
+            Logger.module('FHE_UI').log('[FHE] Decrypted hand after mulligan:', decryptedHand);
+
+            // Now proceed with SDK action (for UI sync)
+            self._proceedWithMulligan(mulliganIndices);
+          })
+          .catch(function(error) {
+            Logger.module('FHE_UI').error('[FHE] completeMulligan failed:', error);
+            // Fallback to SDK
+            self._proceedWithMulligan(mulliganIndices);
+          });
+      } else {
+        Logger.module('FHE_UI').warn('[FHE] FHE game session not initialized');
+        self._proceedWithMulligan(mulliganIndices);
+      }
+    } else {
+      // Normal mode (dev mode or FHE disabled)
+      Logger.module('FHE_UI').log('[FHE] Normal mode - using SDK mulligan');
+      self._proceedWithMulligan(mulliganIndices);
+    }
+  },
+
+  _proceedWithMulligan: function(mulliganIndices) {
     var drawStartingHandAction = SDK.GameSession.getInstance().getMyPlayer().actionDrawStartingHand(mulliganIndices);
 
     // submit chosen hand to server to get new cards
@@ -632,29 +848,202 @@ var GameLayout = Backbone.Marionette.LayoutView.extend({
 
   onDrawStartingHand: function (event) {
     var action = event.action;
+    var self = this;
 
     if (action instanceof SDK.DrawStartingHandAction && action.ownerId === SDK.GameSession.getInstance().getMyPlayerId()) {
       Logger.module('UI').log('GameLayout.onDrawStartingHand', action.mulliganIndices);
       this.stopListening(SDK.GameSession.getInstance().getEventBus(), EVENTS.action, this.onDrawStartingHand);
 
-      // show next step once we've transitioned to starting hand
-      Scene.getInstance().getGameLayer().showDrawStartingHand(action.mulliganIndices).then(function () {
-        this.showNextStepInGameSetup();
-      }.bind(this));
+      // Check if FHE mode is enabled
+      var gameSession = SDK.GameSession.getInstance();
+      var fheEnabled = gameSession.fheEnabled || CONFIG.fheEnabled;
+      var isDeveloperMode = gameSession.getIsDeveloperMode();
 
-      // if (SDK.GameType.isMultiplayerGameType(SDK.GameSession.getInstance().getGameType())) {
-      //  var mulliganStartMoment = moment(SDK.GameSession.getInstance().createdAt);
-      //  var mulliganEndMoment = moment();
-      //  var mulliganDurationMoment = moment.duration(mulliganEndMoment.diff(mulliganStartMoment));
-      //  var playerSetupData = SDK.GameSession.getInstance().getPlayerSetupDataForPlayerId(SDK.GameSession.getInstance().getMyPlayerId());
-      //  var factionName = SDK.FactionFactory.factionForIdentifier(playerSetupData.factionId).name;
-      //  Analytics.track("Mulligan Duration", {
-      //    category:"Game",
-      //    label:factionName,
-      //    value:mulliganDurationMoment.asSeconds(),
-      //    nonInteraction:1
-      //  },Analytics.EventPriority.Optional);
-      // }
+      Logger.module('FHE_UI').log('=== onDrawStartingHand FHE CHECK ===');
+      Logger.module('FHE_UI').log('[FHE] fheEnabled:', fheEnabled);
+      Logger.module('FHE_UI').log('[FHE] isDeveloperMode:', isDeveloperMode);
+
+      if (fheEnabled && !isDeveloperMode) {
+        Logger.module('FHE_UI').log('[FHE] FHE MODE ACTIVE');
+
+        // FHE Mode: Get hand from contract and decrypt
+        var fheGameSession = FHEGameSession.getInstance();
+
+        // SINGLE PLAYER MODE: Contract islemleri basarisiz olabilir, SDK hand kullan
+        // gameId 0 ise TX basarisiz olmus demektir
+        var isSinglePlayerGame = gameSession.isSinglePlayer() || gameSession.isBossBattle() || gameSession.isChallenge() || gameSession.isSandbox();
+        var hasValidGameId = fheGameSession.gameId !== null && fheGameSession.gameId > 0;
+
+        Logger.module('FHE_UI').log('[FHE] isSinglePlayerGame:', isSinglePlayerGame);
+        Logger.module('FHE_UI').log('[FHE] fheGameSession.gameId:', fheGameSession.gameId);
+        Logger.module('FHE_UI').log('[FHE] hasValidGameId:', hasValidGameId);
+
+        // FHE MODE: Kartlar zaten showNextStepInGameSetup'ta populate edildi
+        // Burada tekrar decrypt/populate yapmaya GEREK YOK
+        // Sadece UI'ı güncelle ve devam et
+        Logger.module('FHE_UI').log('[FHE] Cards already populated in showNextStepInGameSetup, skipping re-populate');
+        Scene.getInstance().getGameLayer().showDrawStartingHand(action.mulliganIndices).then(function () {
+          self.showNextStepInGameSetup();
+        });
+      } else {
+        Logger.module('FHE_UI').log('[FHE] Developer mode or FHE disabled - using SDK hand');
+
+        // Normal mode: use SDK hand
+        Scene.getInstance().getGameLayer().showDrawStartingHand(action.mulliganIndices).then(function () {
+          self.showNextStepInGameSetup();
+        });
+      }
+    }
+  },
+
+  /**
+   * Adds a single card from FHE blockchain to the player's hand.
+   * Used for turn-start card draw in FHE mode.
+   *
+   * @param {number} cardId - Card ID from FHE contract
+   */
+  _addFHECardToHand: function(cardId) {
+    Logger.module('FHE_UI').log('[FHE] === _addFHECardToHand START ===');
+    Logger.module('FHE_UI').log('[FHE] Card ID:', cardId);
+
+    var gameSession = SDK.GameSession.getInstance();
+    var myPlayerId = gameSession.getMyPlayerId();
+    var myPlayer = gameSession.getPlayerById(myPlayerId);
+
+    if (!myPlayer) {
+      Logger.module('FHE_UI').error('[FHE] Player not found!');
+      return;
+    }
+
+    var deck = myPlayer.getDeck();
+    var CardFactory = require('app/sdk/cards/cardFactory');
+
+    // Find first empty slot in hand
+    var emptySlot = -1;
+    for (var i = 0; i < deck.hand.length; i++) {
+      if (deck.hand[i] === null) {
+        emptySlot = i;
+        break;
+      }
+    }
+
+    if (emptySlot === -1) {
+      Logger.module('FHE_UI').log('[FHE] Hand is full, cannot add card');
+      return;
+    }
+
+    // Create the card
+    var fheCard = CardFactory.cardForIdentifier(cardId, gameSession);
+    if (!fheCard) {
+      Logger.module('FHE_UI').error('[FHE] Failed to create card for ID:', cardId);
+      return;
+    }
+
+    // SDK's own index generation function
+    var cardIndex = gameSession.generateIndex();
+    fheCard.setIndex(cardIndex);
+    fheCard.setOwnerId(myPlayerId);
+    fheCard.setOwner(myPlayer);
+    gameSession.cardsByIndex[cardIndex] = fheCard;
+
+    // Add to hand
+    deck.hand[emptySlot] = cardIndex;
+    deck.flushCachedCardsInHand();
+
+    // FHE mode: Decrement deck remaining count
+    var currentRemaining = deck.getFheDeckRemaining();
+    if (currentRemaining !== null && currentRemaining > 0) {
+      deck.setFheDeckRemaining(currentRemaining - 1);
+      Logger.module('FHE_UI').log('[FHE] Deck remaining:', currentRemaining - 1);
+    }
+
+    // UI UPDATE: bindCardNodeAtIndex ile UI'ya karti bagla
+    var gameLayer = Scene.getInstance().getGameLayer();
+    if (gameLayer && gameLayer.bottomDeckLayer) {
+      gameLayer.bottomDeckLayer.bindCardNodeAtIndex(emptySlot);
+      Logger.module('FHE_UI').log('[FHE] Called bindCardNodeAtIndex for slot:', emptySlot);
+    }
+
+    Logger.module('FHE_UI').log('[FHE] Added ' + fheCard.getName() + ' (ID: ' + cardId + ', index: ' + cardIndex + ') to slot ' + emptySlot);
+    Logger.module('FHE_UI').log('[FHE] === _addFHECardToHand COMPLETE ===');
+  },
+
+  /**
+   * Populates the player's hand with cards from FHE blockchain.
+   * In FHE mode, server doesn't create deck - we populate it here from blockchain.
+   *
+   * @param {number[]} decryptedCardIds - Card IDs from FHE contract
+   * @param {number[]} mulliganIndices - Indices of cards that were mulliganed (unused for now)
+   * @param {number} deckRemaining - Remaining cards in deck from blockchain (from getPlayerInfo)
+   */
+  _populateFHEHand: function(decryptedCardIds, mulliganIndices, deckRemaining) {
+    Logger.module('FHE_UI').log('[FHE] === _populateFHEHand START ===');
+    Logger.module('FHE_UI').log('[FHE] FHE Card IDs:', decryptedCardIds);
+    Logger.module('FHE_UI').log('[FHE] Card count:', decryptedCardIds.length);
+
+    var gameSession = SDK.GameSession.getInstance();
+    var myPlayerId = gameSession.getMyPlayerId();
+    var myPlayer = gameSession.getPlayerById(myPlayerId);
+
+    if (!myPlayer) {
+      Logger.module('FHE_UI').error('[FHE] Player not found!');
+      return;
+    }
+
+    var deck = myPlayer.getDeck();
+    var CardFactory = require('app/sdk/cards/cardFactory');
+
+    Logger.module('FHE_UI').log('[FHE] Current deck hand (should be empty):', deck.hand.slice());
+    Logger.module('FHE_UI').log('[FHE] fheEnabled on gameSession:', gameSession.fheEnabled);
+
+    // FHE modda deck bos geliyor - direkt kart olustur ve ekle
+    var addedCount = 0;
+    for (var i = 0; i < decryptedCardIds.length; i++) {
+      var fheCardId = decryptedCardIds[i];
+
+      // BigInt ise number'a cevir
+      if (typeof fheCardId === 'bigint') {
+        fheCardId = Number(fheCardId);
+      }
+
+      // FHE kartini olustur
+      var fheCard = CardFactory.cardForIdentifier(fheCardId, gameSession);
+      if (!fheCard) {
+        Logger.module('FHE_UI').error('[FHE] Failed to create card for ID:', fheCardId);
+        continue;
+      }
+
+      // SDK'nin kendi index uretme fonksiyonunu kullan (normal akisla ayni)
+      var cardIndex = gameSession.generateIndex();
+      fheCard.setIndex(cardIndex);
+      fheCard.setOwnerId(myPlayerId);
+      fheCard.setOwner(myPlayer);
+      gameSession.cardsByIndex[cardIndex] = fheCard;
+
+      // Eli guncelle - bu slot'a kart ekle
+      deck.hand[i] = cardIndex;
+
+      Logger.module('FHE_UI').log('[FHE] Slot ' + i + ': ' + fheCard.getName() + ' (ID: ' + fheCardId + ', index: ' + cardIndex + ')');
+      addedCount++;
+    }
+
+    // Cache'leri temizle
+    deck.flushCachedCardsInHand();
+
+    // FHE mode: Set deck remaining from blockchain (passed as parameter from getPlayerInfo)
+    // This value comes directly from contract.getPlayerInfo() - NOT hardcoded!
+    deck.setFheDeckRemaining(deckRemaining);
+    Logger.module('FHE_UI').log('[FHE] Set FHE deck remaining from blockchain:', deckRemaining);
+
+    Logger.module('FHE_UI').log('[FHE] === POPULATE COMPLETE ===');
+    Logger.module('FHE_UI').log('[FHE] Added ' + addedCount + ' FHE cards to empty deck');
+
+    // Dogrulama: Eli logla
+    var newHand = deck.getCardsInHandExcludingMissing();
+    Logger.module('FHE_UI').log('[FHE] Verified hand after populate:');
+    for (var k = 0; k < newHand.length; k++) {
+      var card = newHand[k];
+      Logger.module('FHE_UI').log('[FHE]   [' + k + '] ' + card.getName() + ' (ID: ' + card.getId() + ')');
     }
   },
 

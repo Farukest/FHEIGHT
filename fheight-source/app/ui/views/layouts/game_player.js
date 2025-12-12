@@ -418,6 +418,16 @@ var GamePlayerLayout = Backbone.Marionette.LayoutView.extend({
     var maxHandSize = CONFIG.MAX_HAND_SIZE;
     var maxDeckSize = SDK.GameSession.getInstance().isGauntlet() ? CONFIG.MAX_DECK_SIZE_GAUNTLET : CONFIG.MAX_DECK_SIZE;
 
+    // FHE mode: Override deck size from blockchain if available
+    var gameSession = SDK.GameSession.getInstance();
+    var isMyPlayer = sdkPlayer === gameSession.getMyPlayer();
+    if (isMyPlayer && gameSession.fheEnabled) {
+      var fheDeckRemaining = sdkPlayer.getDeck().getFheDeckRemaining();
+      if (fheDeckRemaining !== null) {
+        currDeckSize = fheDeckRemaining;
+      }
+    }
+
     this.ui.$deckCountCurrent.text(currDeckSize);
     this.ui.$deckCountMax.text(maxDeckSize);
     this.ui.$handCountCurrent.text(currHandSize);

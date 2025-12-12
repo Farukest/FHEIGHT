@@ -34,10 +34,14 @@ var TARGET_NETWORK = (typeof process !== 'undefined' && process.env && process.e
 /**
  * Wallet Manager Class - uses Backbone.Events for event handling
  */
+var ethers = require('ethers');
+
 function WalletManager() {
   this.address = null;
   this.connected = false;
-  this.provider = null;
+  this.provider = null;       // window.ethereum
+  this.ethersProvider = null; // ethers.providers.Web3Provider
+  this.signer = null;         // ethers signer for TX
   this._eventHandlers = {};
 }
 
@@ -110,7 +114,13 @@ WalletManager.prototype.connect = function() {
         self.connected = true;
         self.provider = provider;
 
+        // ethers.js provider ve signer olustur (TX imzalamak icin)
+        Logger.module('WALLET').log('Creating Web3Provider with window.ethereum');
+        self.ethersProvider = new ethers.providers.Web3Provider(window.ethereum, 'any');
+        self.signer = self.ethersProvider.getSigner();
+
         Logger.module('WALLET').log('connect: success', self.address);
+        Logger.module('WALLET').log('Signer created:', !!self.signer);
 
         // Detect and cache current network
         return self.getChainId();
@@ -166,6 +176,8 @@ WalletManager.prototype.disconnect = function() {
   this.address = null;
   this.connected = false;
   this.provider = null;
+  this.ethersProvider = null;
+  this.signer = null;
   this.emit('disconnected');
 };
 
@@ -308,6 +320,17 @@ WalletManager.prototype.formatAddress = function(address) {
  */
 WalletManager.prototype.getFormattedAddress = function() {
   return this.formatAddress(this.address);
+};
+
+/**
+ * Get ethers.js signer for signing transactions and typed data
+ * @returns {object} ethers Signer object
+ */
+WalletManager.prototype.getSigner = function() {
+  if (!this.signer) {
+    throw new Error('Wallet not connected - no signer available');
+  }
+  return this.signer;
 };
 
 /**

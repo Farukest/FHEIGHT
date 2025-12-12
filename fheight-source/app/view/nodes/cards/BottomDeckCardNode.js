@@ -45,6 +45,9 @@ const BottomDeckCardNode = SdkNode.extend({
   _statChangeShowing: false,
   _statChangeQueue: null,
   _statsChangeNode: null,
+  _showingFHEDecrypt: false,
+  _fheDecryptLabel: null,
+  _fheDecryptSpinner: null,
 
   ctor(sdkCard) {
     // initialize properties that may be required in init
@@ -399,6 +402,64 @@ const BottomDeckCardNode = SdkNode.extend({
   },
 
   /** endregion MULLIGAN * */
+
+  /* region FHE DECRYPT */
+
+  /**
+   * Shows FHE decrypt loading state on the card.
+   */
+  showFHEDecryptState() {
+    if (!this._showingFHEDecrypt) {
+      this._showingFHEDecrypt = true;
+      const contentSize = this.getContentSize();
+
+      // Create decrypt label if not exists
+      if (this._fheDecryptLabel == null) {
+        this._fheDecryptLabel = new cc.LabelTTF('Decrypting...', RSX.font_bold.name, 10);
+        this._fheDecryptLabel.setFontFillColor(cc.color(255, 215, 0)); // Gold color
+        this._fheDecryptLabel.setAnchorPoint(0.5, 0.5);
+        this._fheDecryptLabel.setPosition(cc.p(contentSize.width * 0.5, contentSize.height * 0.5));
+        this._containerNode.addChild(this._fheDecryptLabel, 10);
+      }
+
+      // Show and animate the label
+      this._fheDecryptLabel.setOpacity(255);
+      const pulseAction = cc.sequence(
+        cc.fadeTo(0.5, 128),
+        cc.fadeTo(0.5, 255)
+      ).repeatForever();
+      pulseAction.setTag(CONFIG.FHE_DECRYPT_TAG || 999);
+      this._fheDecryptLabel.runAction(pulseAction);
+
+      // Also show glow rings for visual effect
+      this._glowRings.resumeSystem();
+    }
+  },
+
+  /**
+   * Hides FHE decrypt loading state.
+   */
+  hideFHEDecryptState() {
+    if (this._showingFHEDecrypt) {
+      this._showingFHEDecrypt = false;
+
+      if (this._fheDecryptLabel != null) {
+        this._fheDecryptLabel.stopActionByTag(CONFIG.FHE_DECRYPT_TAG || 999);
+        this._fheDecryptLabel.fadeToInvisible(CONFIG.FADE_FAST_DURATION);
+      }
+
+      this._glowRings.stopSystem();
+    }
+  },
+
+  /**
+   * Returns true if showing FHE decrypt state.
+   */
+  getIsShowingFHEDecryptState() {
+    return this._showingFHEDecrypt;
+  },
+
+  /* endregion FHE DECRYPT */
 
   /* region PRISMATIC */
 

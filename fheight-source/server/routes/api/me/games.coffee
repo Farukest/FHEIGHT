@@ -407,6 +407,19 @@ router.post "/single_player", (req, res, next) ->
       }
     }
 
+    # debug log incoming request
+    Logger.module("SINGLE PLAYER").debug "Request body isDeveloperMode: #{result.value.isDeveloperMode}"
+
+    # add developer mode if requested
+    if result.value.isDeveloperMode
+      gameSetupOptions.isDeveloperMode = true
+      Logger.module("SINGLE PLAYER").debug "Developer mode ENABLED - adding to gameSetupOptions"
+
+    # add FHE mode if requested
+    if result.value.fhe_enabled
+      gameSetupOptions.fheEnabled = true
+      Logger.module("SINGLE PLAYER").debug "FHE mode ENABLED - player deck will come from blockchain"
+
     # create game
     return createSinglePlayerGame(userId,"You",GameType.SinglePlayer,deck,cardBackId,battleMapIndexesToSampleFrom,aiPlayerId,aiUsername,aiGeneralId,null,aiDifficulty,aiNumRandomCards,null,gameSetupOptions)
   .then (responseData)-> # send data back to the player

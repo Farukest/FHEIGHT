@@ -1,0 +1,44 @@
+{
+  "network": "localhost",
+  "chainId": 31337,
+  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "timestamp": "2025-12-09T23:28:27.018Z",
+  "contracts": {
+    "GameGold": {
+      "address": "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
+      "description": "ERC20 in-game currency token"
+    },
+    "CardNFT": {
+      "address": "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9",
+      "description": "ERC721 NFT for game cards with rarity system"
+    },
+    "SpiritOrb": {
+      "address": "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
+      "description": "FHE-based loot box using encrypted random for provably fair card generation"
+    },
+    "CardRegistry": {
+      "address": "0x998abeb3E57409262aE5b751f60747921B33613E",
+      "description": "On-chain card statistics registry for cheat-proof game logic"
+    },
+    "FHECounter": {
+      "address": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
+      "description": "Example FHE counter contract from template"
+    },
+    "GameSession": {
+      "address": "0x4c5859f0F772848b2D91F1D83E2Fe57935348029",
+      "description": "FHE-based card game with session keys, encrypted hands, and on-chain game logic"
+    }
+  },
+  "configuration": {
+    "SpiritOrb.goldToken": "0x9E545E3C0baAB3E08CdfD552C960A1050f373042",
+    "SpiritOrb.cardNFT": "0xa82fF9aFd8f496c3d6ac40E2a0F282E47488CFc9",
+    "CardNFT.authorizedMinter": "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
+    "GameSession.cardRegistry": "0x998abeb3E57409262aE5b751f60747921B33613E"
+  },
+  "fhevm": {
+    "ACL_CONTRACT": "0xf0Ffdc93b7E186bC2f8CB3dAA75D86d1930A433D",
+    "KMS_VERIFIER": "0xbE0E383937d564D7FF0BC3b46c51f0bF8d5C311A",
+    "INPUT_VERIFIER": "0xBBC1fFCdc7C316aAAd72E807D9b0272BE8F84DA0",
+    "FHEVM_EXECUTOR": "0x92C920834Ec8941d2C77D188936E1f7A6f49c127"
+  }
+}
